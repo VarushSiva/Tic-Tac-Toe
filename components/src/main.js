@@ -118,3 +118,38 @@ function GameController(playerOneName = "Player One", playerTwoName = "Player Tw
     return { playRound, getActivePlayer, getBoard: board.getBoard() }
 }
 
+// Add Screen Controller
+function ScreenController() {
+    // Set gameController
+    const game = GameController();
+
+    // Target HTML Div
+    const playerTurnDiv = document.querySelector('.turn')
+    const boardDiv = document.querySelector('.board')
+
+    // Update Screen method 
+    const updateScreen = () => {
+        // Clear Board
+        boardDiv.textContent = "";
+
+        // Get New version of board + active Player
+        const board = game.getBoard;
+        const activePlayer = game.getActivePlayer();
+
+        // Display the player's turn
+        playerTurnDiv.textContent = `${activePlayer.name}'s Turn.`
+
+        // Render board squares
+        board.forEach((row, rowIndex) => {
+            row.forEach((cell, colIndex) => {
+                // Create Buttons
+                const cellButton = document.createElement("button");
+                cellButton.classList.add('cell');
+                // Create a data attribute to identify the column + set textContent to cell value
+                cellButton.dataset.position = `${rowIndex} ${colIndex}`
+                cellButton.textContent = cell.getValue;
+                boardDiv.appendChild(cellButton);
+            })
+        })
+    }
+}
