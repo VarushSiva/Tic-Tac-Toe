@@ -91,7 +91,7 @@ function GameController(playerOneName = "Player One", playerTwoName = "Player Tw
     // Print new round 
     const printNewRound = () => {
         // Print board using method + Print/Log Players turn using method getActivePlayer 
-        board.getBoard();
+        board.printBoard();
         console.log(`${getActivePlayer().name}'s Turn.`)
     }
 
@@ -115,7 +115,7 @@ function GameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
     // Return Methods:
     // Console playRound | UI Version = getActivePlayer + getBoard
-    return { playRound, getActivePlayer, getBoard: board.getBoard() }
+    return { playRound, getActivePlayer, getBoard: board.getBoard }
 }
 
 // Add Screen Controller
@@ -133,7 +133,7 @@ function ScreenController() {
         boardDiv.textContent = "";
 
         // Get New version of board + active Player
-        const board = game.getBoard;
+        const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
 
         // Display the player's turn
@@ -146,8 +146,9 @@ function ScreenController() {
                 const cellButton = document.createElement("button");
                 cellButton.classList.add('cell');
                 // Create a data attribute to identify the column + set textContent to cell value
-                cellButton.dataset.position = `${rowIndex} ${colIndex}`
-                cellButton.textContent = cell.getValue;
+                cellButton.dataset.row = rowIndex;
+                cellButton.dataset.col = colIndex;
+                cellButton.textContent = cell.getValue();
                 boardDiv.appendChild(cellButton);
             })
         })
@@ -156,13 +157,14 @@ function ScreenController() {
     // Add eventListeners for the board
     function clickHandlerBoard(e) {
         // Target the element with the dataset name previously set
-        const selectedCell = e.target.dataset.position;
+        const selectedRow = e.target.dataset.row;
+        const selectedCol = e.target.dataset.col;
         // Make sure a column was clicked and not the gaps
-        if (!selectedCell) return;
+        if (!selectedRow || !selectedCol) return;
 
         // Play round and after every round --> Update Screen
-        game.playRound(selectedCell);
-        updateScreen;
+        game.playRound(selectedRow, selectedCol);
+        updateScreen();
     }
 
     boardDiv.addEventListener("click", clickHandlerBoard)
