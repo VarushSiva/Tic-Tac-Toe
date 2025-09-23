@@ -36,13 +36,15 @@ function Cell() {
     let value = "";
 
     // Accept a players move to change the value of the cell
-
+    const validMove = (player) => {
+        value = player;
+    } 
 
     // Method to retrieve the current value of the cell through closure
-
+    const getValue = () => value;
 
     // Return methods
-
+    return { validMove, getValue }
 
 }
 
@@ -50,7 +52,7 @@ function Cell() {
 // Including Win Conditions
 function GameController(playerOneName = "Player One", playerTwoName = "Player Two") {
     // Set up gameboard
-
+    
 
     // Set up players
 
