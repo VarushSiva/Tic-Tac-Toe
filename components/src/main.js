@@ -6,17 +6,25 @@ function gameBoard() {
 
     // Create a 2D array to represent the board
     // For every row, create an array of cells
-    
+    for (let  i = 0; i < rows; i++) {
+        board[i] = [];
+        for (let j = 0; j < cols; j++) {
+            board[i].push(Cell());
+        }
+    }
 
     // Create a method to get entire board --> UI needs this to render board
-
+    const getBoard = () => board;
 
     // Create a method to print the board to console
     // Helpful to seeing the board after each turn
-
+    const printBoard = () => {
+        const boardWithCellValues = board.map((row) => row.map((cell) => cell.getValue()))
+        console.log(boardWithCellValues)
+    }
 
     // Return methods
-
+    return { getBoard, printBoard }
 
 }
 
