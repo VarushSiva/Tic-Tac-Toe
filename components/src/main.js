@@ -152,4 +152,23 @@ function ScreenController() {
             })
         })
     }
+
+    // Add eventListeners for the board
+    function clickHandlerBoard(e) {
+        // Target the element with the dataset name previously set
+        const selectedCell = e.target.dataset.position;
+        // Make sure a column was clicked and not the gaps
+        if (!selectedCell) return;
+
+        // Play round and after every round --> Update Screen
+        game.playRound(selectedCell);
+        updateScreen;
+    }
+
+    boardDiv.addEventListener("click", clickHandlerBoard)
+
+    // Initial Render
+    updateScreen();
 }
+
+ScreenController();
