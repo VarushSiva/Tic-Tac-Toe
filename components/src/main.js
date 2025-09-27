@@ -97,14 +97,24 @@ function GameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
     // Play Round Logic
     const playRound = (row, col) => {
+        // If token is already present, return + add error message
+        const gameBoard = board.getBoard();
+        const validPosition = gameBoard[row][col].getValue() === "";
+        const errorMsg = document.querySelector('.error-message');
+        if (!validPosition) {
+            errorMsg.textContent = "Invalid Move, Try a spot that is not taken!"
+            return;
+        }
+
         // Add token for the current player
         console.log(`Adding ${getActivePlayer().name}'s Token into row ${row}, column ${col}`);
+
         // Use displayToken method from gameboard using parameters --> row + column + Player Token Identification
         board.displayToken(row, col, getActivePlayer().token);
 
         /* Check for Winner + Win Message Logic */
 
-
+        errorMsg.textContent = "";
         switchPlayerTurn();
         printNewRound();
     };
@@ -124,8 +134,9 @@ function ScreenController() {
     const game = GameController();
 
     // Target HTML Div
-    const playerTurnDiv = document.querySelector('.turn')
-    const boardDiv = document.querySelector('.board')
+    const playerTurnDiv = document.querySelector('.turn');
+    const boardDiv = document.querySelector('.board');
+    const errorMsg = document.querySelector('.error-message');
 
     // Update Screen method 
     const updateScreen = () => {
