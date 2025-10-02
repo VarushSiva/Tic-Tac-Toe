@@ -89,6 +89,32 @@ function GameController(playerOneName = "Player One", playerTwoName = "Player Tw
         console.log(`${getActivePlayer().name}'s Turn.`)
     }
 
+    // Check for Winner
+    const checkForWinner = () => {
+        const gameBoard = board.getBoard();
+        // Win Condition combos
+        winCondition = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ]
+        // Check with each combo if there is a match
+        for (let win of winCondition) {
+            const [a, b, c] = win;
+            // Check if board[a] has a value (Not '') and then compare to board[b] and board[c]
+            if (gameBoard[a].getValue() && gameBoard[a].getValue() == gameBoard[b].getValue() && gameBoard[a].getValue() == gameBoard[c].getValue()) {
+                // Return index to add winner class later
+                return [a, b, c];
+            }
+        }
+        return [];
+    }
+
     // Play Round Logic
     const playRound = (cell) => {
         // If token is already present, return + add error message
@@ -108,6 +134,9 @@ function GameController(playerOneName = "Player One", playerTwoName = "Player Tw
         errorMsg.textContent = "";
 
         /* Check for Winner + Win Message Logic */
+        if (checkForWinner().length === 3) {
+            return checkForWinner();
+        }
 
         switchPlayerTurn();
         printNewRound();
@@ -132,22 +161,13 @@ function ScreenController() {
     const boardDiv = document.querySelector('.board');
 
     // Update Screen method 
-    const updateScreen = (winnerName = "") => {
+    const updateScreen = (isWinner = []) => {
         // Clear Board
         boardDiv.textContent = "";
 
         // Get New version of board + active Player
         const board = game.getBoard();
-        const activePlayer = game.getActivePlayer();
-
-        // Display the player's turn / winner
-        let mainTextContent = `${activePlayer.name}'s Turn.`
-        if (winnerName) {
-            mainTextContent = `${winnerName} Wins!!`
-            // Can redirect to transparent Game Over screen
-            return;
-        }
-        playerTurnDiv.textContent = mainTextContent
+        const activePlayer = game.getActivePlayer().name;
 
         // Render board squares
         board.forEach((cell, index) => {
@@ -159,7 +179,24 @@ function ScreenController() {
             cellButton.textContent = cell.getValue();
             boardDiv.appendChild(cellButton);
         })
+
+        if (isWinner.length > 0) {
+            // Set variables for isWinner Values
+            const [a, b, c] = isWinner;
+            const cells = document.querySelectorAll(".cell");
+
+            [a, b, c].forEach(index => cells[index].classList.add("winner"));
+            cells.forEach(cell => cell.disabled = true);
+
+            // Print Winner
+            playerTurnDiv.textContent = `${activePlayer} Wins!`;
+            console.log(`${activePlayer} is the WINNER!`)
+            // Can redirect to transparent Game Over screen
+            return;
+        }
+        playerTurnDiv.textContent = `${activePlayer}'s Turn.`;
     }
+
 
     // Add eventListeners for the board
     function clickHandlerBoard(e) {
@@ -169,8 +206,8 @@ function ScreenController() {
         if (!selectedCell) return;
 
         // Play round and after every round --> Update Screen
-        game.playRound(selectedCell);
-        updateScreen();
+
+        updateScreen(game.playRound(selectedCell));
     }
 
     boardDiv.addEventListener("click", clickHandlerBoard)

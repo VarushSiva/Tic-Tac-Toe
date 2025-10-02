@@ -24,8 +24,8 @@
 
 .winner {
     animation-name: scaleText;
-    animation-duration: 0.3s;
-    animation-iteration-count: 1;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
     color: rgb(8, 207, 8);
     background-color: rgb(159, 241, 159);
