@@ -15,8 +15,30 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    font-size: 2rem;
+    font-size: 3rem;
     border: 1px solid grey;
     background: lightblue;
     cursor: pointer;
+    font-weight: 700;
+}
+
+.winner {
+    animation-name: scaleText;
+    animation-duration: 0.3s;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in-out;
+    color: rgb(8, 207, 8);
+    background-color: rgb(159, 241, 159);
+}
+
+@keyframes scaleText {
+    0% {
+        font-size: 3rem;
+    }
+    50% {
+        font-size: 4rem;
+    }
+    100% {
+        font-size: 3rem;
+    }
 }
