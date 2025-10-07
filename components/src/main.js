@@ -117,12 +117,10 @@ function GameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
     // Play Round Logic
     const playRound = (cell) => {
-        // If token is already present, return + add error message
+        // If token is already present, return 
         const gameBoard = board.getBoard();
         const validPosition = gameBoard[cell].getValue() === "";
-        const errorMsg = document.querySelector('.error-message');
         if (!validPosition) {
-            errorMsg.textContent = "Invalid Move, Try a spot that is not taken!"
             return;
         }
 
@@ -131,7 +129,6 @@ function GameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
         // Use displayToken method from gameboard using parameters --> row + column + Player Token Identification
         board.displayToken(cell, getActivePlayer().token);
-        errorMsg.textContent = "";
 
         /* Check for Winner + Win Message Logic */
         if (checkForWinner().length === 3) {
