@@ -74,6 +74,7 @@ a, a:active {
 .cell:hover {
     background-color: #7189FF;
     border: 2px solid #A0DDFF;
+    transform: scale(1.1);
     transition: 0.3s;
 }
 
@@ -98,6 +99,7 @@ a, a:active {
     background-color: #7189FF;
     color: #624CAB;
     border: 2px solid #A0DDFF;
+    transform: scale(1.1);
     transition: 0.3s;
 }
 
@@ -135,12 +137,26 @@ a, a:active {
     padding: 0 20px;
 }
 
-.colourPalette > div {
+.palette {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 10px;
+}
+
+.palette:hover {
+    filter: brightness(0.7);
+    transform: translateY(-10px);
+    transition: 0.3s;
+    cursor: pointer;
+    
+}
+
+.palette:hover > .colour > #colourID {
+    visibility: visible;
+    opacity: 1;
+    transition: 0.9s;
 }
 
 .colour {
@@ -153,24 +169,12 @@ a, a:active {
     align-items: center;
 }
 
-.colour > p {
+#colourID {
     visibility: hidden;
 }
 
-.colour > p, .colourText {
+#colourID, .colourText {
     color: black;
-}
-
-.colour:hover {
-    filter: brightness(0.7);
-    transition: 0.3s;
-    cursor: pointer;
-}
-
-.colour:hover > p {
-    visibility: visible;
-    opacity: 1;
-    transition: 0.9s;
 }
 
 .uranianBlue > .colour {
