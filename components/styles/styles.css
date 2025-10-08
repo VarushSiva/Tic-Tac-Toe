@@ -23,6 +23,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
+    padding-left: 20px;
 }
 
 .title {
@@ -147,10 +148,6 @@ a, a:active {
 
 /* #region MARK: Colour Palette */
 .colourPalette {
-    /* display: grid;
-    height: 600px;
-    width: 120px;
-    grid-template-rows: repeat(5, 1fr); */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -228,7 +225,7 @@ a, a:active {
     display: flex;
     align-items: center;
     justify-content: end;
-    padding: 0 20px;
+    padding: 10px 20px;
 }
 
 .scoreBoard {
