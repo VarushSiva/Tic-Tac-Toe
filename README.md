@@ -32,7 +32,7 @@ ensuring a clean separation between game logic and user interface.
 Tic-Tac-Toe/ 
 - │── components/ 
 - │   &emsp;&ensp;│── src/ 
-- │   &emsp;&emsp;&emsp;&ensp; └── main.js &emsp;&emsp;# Game logic & UI handling 
+- │   &emsp;&ensp;│&emsp;&nbsp; └── main.js &emsp;&emsp;# Game logic & UI handling 
 - │   &emsp;&ensp;└── styles/ 
 - │   &emsp;&emsp;&emsp;&ensp;&nbsp;├── reset.css &emsp;&nbsp;# CSS reset for clean baseline 
 - │   &emsp;&emsp;&emsp;&ensp;&nbsp;└── styles.css &ensp;&ensp;# Game styling 
