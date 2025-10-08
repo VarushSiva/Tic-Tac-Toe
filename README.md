@@ -4,6 +4,8 @@ A classic game of Tic Tac Toe built with **HTML, CSS, and JavaScript** as part o
 The goal of this project is to structure JavaScript Code using **factory functions** and the **module pattern**, 
 ensuring a clean separation between game logic and user interface.
 
+🎯 **Live Demo:** [Play the Game Here!](https://varushsiva.github.io/Tic-Tac-Toe/)
+
 ---
 
 ## 🛠️ Technologies Used
