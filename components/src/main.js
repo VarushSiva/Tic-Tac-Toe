@@ -12,13 +12,11 @@ function gameBoard() {
 
     // Display token when clicked on a valid cell
     const displayToken = (cell, player) => {
-        const availableCells = board.filter((cell) => cell.getValue() === "")
-
-        // if No cells are empty --> Return / Check for win condition
-        if (!availableCells.length) return;
+        const selectedCell = board[cell];
+        if (selectedCell.getValue() !== "") return;
 
         // Else add token to the available cell
-        board[cell].addToken(player);
+        selectedCell.addToken(player);
     }
 
     // Create a method to print the board to console
@@ -115,15 +113,10 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
     const checkForWinner = () => {
         const gameBoard = board.getBoard();
         // Win Condition combos
-        winCondition = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
+        const winCondition = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
         ]
         // Check with each combo if there is a match
         for (let win of winCondition) {
@@ -153,9 +146,8 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
         board.displayToken(cell, getActivePlayer().token);
 
         /* Check for Winner + Win Message Logic */
-        if (checkForWinner().length === 3) {
-            return checkForWinner();
-        }
+        const winner = checkForWinner();
+        if (winner.length === 3) return winner;
 
         switchPlayerTurn();
         printNewRound();
@@ -174,6 +166,7 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
 function ScreenController() {
     // Set gameController
     const game = GameController();
+    const board = game.getBoard();
 
     // Target HTML Div
     const playerTurnDiv = document.querySelector('.turn');
@@ -185,24 +178,11 @@ function ScreenController() {
 
     // Update Screen method 
     const updateScreen = (isWinner = []) => {
-        // Clear Board
-        boardDiv.textContent = "";
-
         // Get New version of board + active Player
-        const board = game.getBoard();
         const activePlayer = game.getActivePlayer().name;
         updateScoreBoard();
 
-        // Render board squares
-        board.forEach((cell, index) => {
-            // Create Buttons
-            const cellButton = document.createElement("button");
-            cellButton.classList.add('cell');
-            // Create a data attribute to identify the column + set textContent to cell value
-            cellButton.dataset.index = index;
-            cellButton.textContent = cell.getValue();
-            boardDiv.appendChild(cellButton);
-        })
+        renderBoard(board);
 
         if (isWinner.length > 0) {
             // Set variables for isWinner Values
@@ -265,10 +245,18 @@ function ScreenController() {
 
     // Function to Reset Game
     function resetGame() {
+        console.clear();
+        renderBoard(board, "new");
+        game.resetPlayer()
+        const activePlayer = game.getActivePlayer().name;
+        playerTurnDiv.textContent = `${activePlayer}'s Turn`;
+        updateScoreBoard();
+    }
+
+    // Function to Render Board
+    function renderBoard(board, status="existing") {
         // Clear Board
         boardDiv.textContent = "";
-
-        const board = game.getBoard();
         
         board.forEach((cell, index) => {
             // Create Buttons
@@ -276,20 +264,19 @@ function ScreenController() {
             cellButton.classList.add('cell');
             // Create a data attribute to identify the column + set textContent to cell value
             cellButton.dataset.index = index;
+            if (status === "existing") {
+                cellButton.textContent = cell.getValue();
+            } else {
             cellButton.textContent = cell.resetValue();
+            }
             boardDiv.appendChild(cellButton);
         })
-
-        game.resetPlayer()
-        const activePlayer = game.getActivePlayer().name;
-        playerTurnDiv.textContent = `${activePlayer}'s Turn`;
-        updateScoreBoard();
     }
 
     // Function to Reset Scoreboard
     function resetScore() {
         game.resetWins();
-        resetGame();
+        updateScoreBoard();
     }
 
     boardDiv.addEventListener("click", clickHandlerBoard);
