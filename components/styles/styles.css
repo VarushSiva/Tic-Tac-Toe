@@ -64,6 +64,7 @@ a, a:active {
 .turn {
     font-size: 2rem;
     margin: 5px 10px;
+    padding: 10px 0;
 }
 
 .board {
