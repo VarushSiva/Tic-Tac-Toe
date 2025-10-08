@@ -35,9 +35,9 @@ Tic-Tac-Toe/
 - │   &emsp;&ensp;│&emsp;&nbsp; └── main.js &emsp;&emsp;# Game logic & UI handling 
 - │   &emsp;&ensp;└── styles/ 
 - │   &emsp;&emsp;&emsp;&ensp;&nbsp;├── reset.css &emsp;&nbsp;# CSS reset for clean baseline 
-- │   &emsp;&emsp;&emsp;&ensp;&nbsp;└── styles.css &ensp;&ensp;# Game styling 
+- │   &emsp;&emsp;&emsp;&ensp;&nbsp;└── styles.css &ensp;&ensp;# Game styling
+- │── .gitattributes &emsp;&emsp;&emsp;&emsp;# Git configuration for handling file types  
 - │── index.html &emsp;&emsp;&emsp;&emsp;&emsp;# Main HTML file 
-- │── .gitattributes &emsp;&emsp;&emsp;&emsp;# Git configuration for handling file types 
 - │── README.md &emsp;&emsp;&emsp;&emsp;# Project documentation
 
 ---
