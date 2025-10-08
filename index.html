@@ -6,19 +6,30 @@
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="./components/styles/styles.css">
     <link rel="stylesheet" href="./components/styles/reset.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chicle&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1 class="title">Tic-Tac-Toe</h1>
-    <div class="container">
-        <h2 class="turn"></h2>
-        <div class="board"></div>
-        <div class="resetBtn">
-            <button>Reset Game</button>
-            <button>Reset Scorboard</button>
+    <div class="scoreBoardContainer">
+        <div class="scoreBoard">
+            <h4 class="scoreBoardLabel">SCOREBOARD</h4>
+            <div class="playerXScore"><p id="playerXScore"></p></div>
+            <div class="playerOScore"><p id="playerOScore"></p></div>
         </div>
-        <div class="scorboard"></div>
     </div>
-    <h4 class="author">Created By: <a href="https://github.com/VarushSiva">@VarushSiva</a></h4>
+    <div class="mainContainer">
+        <h1 class="title">Tic-Tac-Toe</h1>
+        <div class="container">
+            <h2 class="turn"></h2>
+            <div class="board"></div>
+            <div class="resetBtn">
+                <button class="resetGame">Reset Game</button>
+                <button class="resetScore">Reset Scorboard</button>
+            </div>
+        </div>
+        <h4 class="author">Created By: <a href="https://github.com/VarushSiva">@VarushSiva</a></h4>
+    </div>
     <div class="colourPalette">
         <div class="uranianBlue palette">
             <div class="colour"><p id="colourID">#A0DDFF</p></div>
