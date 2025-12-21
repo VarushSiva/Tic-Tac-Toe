@@ -1,0 +1,24 @@
+{
+  "name": "tic-tac-toe",
+  "version": "1.0.0",
+  "description": "A classic game of Tic Tac Toe built with **HTML, CSS, and JavaScript** as part of [The Odin Project](https://www.theodinproject.com/) curriculum.\r The goal of this project is to structure JavaScript Code using **factory functions** and the **module pattern**, \r ensuring a clean separation between game logic and user interface.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VarushSiva/Tic-Tac-Toe.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/VarushSiva/Tic-Tac-Toe/issues"
+  },
+  "homepage": "https://github.com/VarushSiva/Tic-Tac-Toe#readme",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

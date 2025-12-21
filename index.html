@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="./components/styles/styles.css">
-    <link rel="stylesheet" href="./components/styles/reset.css">
+    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="stylesheet" href="./styles/reset.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chicle&display=swap" rel="stylesheet">
@@ -15,8 +15,10 @@
     <div class="mainContainer">
         <h1 class="title">Tic-Tac-Toe</h1>
         <div class="container">
-            <h2 class="turn"></h2>
-            <div class="board"></div>
+            <!-- aria-atomic makes sure entire message is read -->
+            <h2 class="turn" role="status" aria-live="polite" aria-atomic="true"></h2>
+            <div class="board" role="group" aria-label="tic-tac-toe board" aria-describedby="game-instructions game-status"></div>
+            <!-- <p id="game-instructions">Use arrow keys to move between cells. Press Enter or space to place your mark.</p> -->
             <div class="resetBtn">
                 <button class="resetGame">New Game</button>
                 <button class="resetScore">Reset Scorboard</button>
@@ -53,6 +55,6 @@
             <div class="colourText">Royal Purple</div>
         </div>
     </div>
-    <script src="./components/src/main.js"></script>
+    <script src="./dist/main.js"></script>
 </body>
 </html>
