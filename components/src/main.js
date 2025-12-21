@@ -49,6 +49,7 @@ function Cell() {
     // Reset Cell Value
     const resetValue = () => {
         value = '';
+        return value;
     }
 
     // Return methods
@@ -234,9 +235,9 @@ function ScreenController() {
     // Add eventListeners for the board
     function clickHandlerBoard(e) {
         // Target the element with the dataset name previously set
-        const selectedCell = e.target.dataset.index;
+        const selectedCell = Number(e.target.dataset.index);
         // Make sure a column was clicked and not the gaps
-        if (!selectedCell) return;
+        if (Number.isNaN(selectedCell)) return;
 
         // Play round and after every round --> Update Screen
 

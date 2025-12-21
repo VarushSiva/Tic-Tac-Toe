@@ -175,7 +175,7 @@ a, a:active {
     
 }
 
-.palette:hover > .colour > #colourID {
+.palette:hover > .colour > .colourID {
     visibility: visible;
     opacity: 1;
     transition: 0.9s;
@@ -191,11 +191,11 @@ a, a:active {
     align-items: center;
 }
 
-#colourID {
+.colourID {
     visibility: hidden;
 }
 
-#colourID, .colourText {
+.colourID, .colourText {
     color: black;
     text-align: center;
 }
