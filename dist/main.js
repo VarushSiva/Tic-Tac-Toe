@@ -47,7 +47,7 @@ function Cell() {
     const getValue = () => value;
     // Reset Cell Value
     const resetValue = () => {
-        value = '';
+        value = "";
         return value;
     };
     // Return methods
@@ -98,7 +98,7 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
     };
     // Check for Winner
     const checkForWinner = () => {
-        const gameBoard = board.getBoard();
+        const boardState = board.getBoard();
         // Win Condition combos
         const winCondition = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -108,7 +108,7 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
         // Check with each combo if there is a match
         for (const [a, b, c] of winCondition) {
             // Check if board[a] has a value (Not '') and then compare to board[b] and board[c]
-            if (gameBoard[a].getValue() && gameBoard[a].getValue() == gameBoard[b].getValue() && gameBoard[a].getValue() == gameBoard[c].getValue()) {
+            if (boardState[a].getValue() && boardState[a].getValue() === boardState[b].getValue() && boardState[a].getValue() === boardState[c].getValue()) {
                 // Return index to add winner class later
                 return [a, b, c];
             }
@@ -152,6 +152,58 @@ function ScreenController() {
     const playerOScore = mustFind(document.querySelector("#playerOScore"), "#playerOScore");
     const resetGameBtn = mustFind(document.querySelector(".resetGame"), ".resetGame");
     const resetScoreBtn = mustFind(document.querySelector(".resetScore"), ".resetScore");
+    let focusedCellIndex = 0;
+    // Keyboard Navigation Handler
+    function handleKeyboardNavigation(e) {
+        const cells = Array.from(boardDiv.querySelectorAll(".cell"));
+        // Only handle if Focus is on a Cell
+        const activeElement = document.activeElement;
+        if (!(activeElement instanceof HTMLElement) || !activeElement.classList.contains('cell'))
+            return;
+        // Handle Arrow Keys
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+            e.preventDefault();
+            const currentRow = Math.floor(focusedCellIndex / 3);
+            const currentCol = focusedCellIndex % 3;
+            let newIndex = focusedCellIndex;
+            switch (e.key) {
+                case "ArrowUp":
+                    newIndex = currentRow > 0 ? focusedCellIndex - 3 : focusedCellIndex;
+                    break;
+                case "ArrowDown":
+                    newIndex = currentRow < 2 ? focusedCellIndex + 3 : focusedCellIndex;
+                    break;
+                case "ArrowLeft":
+                    newIndex = currentCol > 0 ? focusedCellIndex - 1 : focusedCellIndex;
+                    break;
+                case "ArrowRight":
+                    newIndex = currentCol < 2 ? focusedCellIndex + 1 : focusedCellIndex;
+                    break;
+            }
+            // TabIndex Update
+            cells[focusedCellIndex].tabIndex = -1;
+            cells[newIndex].tabIndex = 0;
+            cells[newIndex].focus();
+            focusedCellIndex = newIndex;
+        }
+        // Handle Enter/Space to Place Token
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            const currentCell = cells[focusedCellIndex];
+            if (currentCell && !currentCell.disabled)
+                currentCell.click();
+        }
+    }
+    // Track Focused Cell
+    function handleCellFocus(e) {
+        const target = e.target;
+        if (!(target instanceof HTMLElement))
+            return;
+        const index = target.dataset.index;
+        if (index !== undefined) {
+            focusedCellIndex = Number(index);
+        }
+    }
     const updateScoreBoard = () => {
         // Remove and Readd Active player class
         const activePlayer = game.getActivePlayer().name;
@@ -193,7 +245,7 @@ function ScreenController() {
         playerTurnDiv.textContent = `${activePlayer}'s Turn`;
         updateScoreBoard();
         // Re-enable buttons after game reset
-        const cells = Array.from(document.querySelectorAll(".cell"));
+        const cells = Array.from(boardDiv.querySelectorAll(".cell"));
         cells.forEach((btn) => (btn.disabled = false));
     }
     // Function to Render Board
@@ -207,6 +259,8 @@ function ScreenController() {
             cellButton.classList.add('cell');
             // Create a data attribute to identify the column + set textContent to cell value
             cellButton.dataset.index = String(index);
+            // Make Keyboard Focusable
+            cellButton.tabIndex = index === focusedCellIndex ? 0 : -1;
             if (status === "existing") {
                 cellButton.textContent = cell.getValue();
             }
@@ -219,8 +273,13 @@ function ScreenController() {
             const value = cell.getValue();
             const state = value === "" ? "empty" : value;
             cellButton.setAttribute("aria-label", `Row ${row} Column ${col}, ${state}`);
+            // Add Focus Event Listener
+            cellButton.addEventListener("focus", handleCellFocus);
             boardDiv.appendChild(cellButton);
         });
+        // Sticky Focus
+        const cells = Array.from(boardDiv.querySelectorAll(".cell"));
+        cells[focusedCellIndex]?.focus();
     }
     // Update Screen method 
     const updateScreen = (isWinner = null) => {
@@ -231,7 +290,7 @@ function ScreenController() {
         if (isWinner) {
             // Set variables for isWinner Values
             const [a, b, c] = isWinner;
-            const cells = Array.from(document.querySelectorAll(".cell"));
+            const cells = Array.from(boardDiv.querySelectorAll(".cell"));
             [a, b, c].forEach(index => cells[index]?.classList.add("winner"));
             cells.forEach((cellBtn) => (cellBtn.disabled = true));
             // Print Winner
@@ -256,6 +315,7 @@ function ScreenController() {
         playerTurnDiv.textContent = "Scoreboard reset.";
     }
     boardDiv.addEventListener("click", clickHandlerBoard);
+    boardDiv.addEventListener("keydown", handleKeyboardNavigation);
     resetGameBtn.addEventListener("click", resetGame);
     resetScoreBtn.addEventListener("click", resetScore);
     // Initial Render

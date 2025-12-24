@@ -98,6 +98,16 @@ a, a:active {
     transition: 0.3s;
 }
 
+.cell:focus, .cell:focus-visible {
+    outline: 3px solid #624CAB;
+    outline-offset: 2px;
+    background-color: #C1CEFE;
+}
+
+.cell:focus:not(:focus-visible) {
+    outline: none;
+}
+
 .resetBtn {
     display: flex;
     flex-direction: column;
@@ -122,6 +132,11 @@ a, a:active {
     border: 2px solid #A0DDFF;
     transform: scale(1.05);
     transition: 0.3s ease;
+}
+
+.resetBtn > button:focus-visible {
+    outline: 3px solid #624CAB;
+    outline-offset: 2px;
 }
 
 .winner {
