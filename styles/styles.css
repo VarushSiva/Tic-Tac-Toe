@@ -131,18 +131,17 @@ a, a:active {
     animation-timing-function: ease-in-out;
     color: #624CAB;
     background-color: #7189FF;
-    border: 2px solid #A0DDFF;
+    border: 3px solid #A0DDFF;
 }
 
 @keyframes scaleText {
-    0% {
-        font-size: 3rem;
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(113, 137, 255, 0.5);
     }
     50% {
-        font-size: 4rem;
-    }
-    100% {
-        font-size: 3rem;
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(113, 137, 255, 0.8);
     }
 }
 
