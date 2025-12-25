@@ -217,6 +217,28 @@ function ScreenController() {
     const resetGameBtn = mustFind(document.querySelector<HTMLButtonElement>(".resetGame"), ".resetGame");
     const resetScoreBtn = mustFind(document.querySelector<HTMLButtonElement>(".resetScore"), ".resetScore");
 
+    const settingsBtn = mustFind(document.querySelector<HTMLButtonElement>(".settingsBtn"), ".settingsBtn");
+    const settingsOverlay = mustFind(document.querySelector<HTMLElement>("#settingsOverlay"), "#settingsOverlay");
+    const closeSettingsBtn = mustFind(document.querySelector<HTMLButtonElement>(".closeSettings"), ".closeSettings");
+    const reduceMotionCheckbox = mustFind(document.querySelector<HTMLInputElement>("#reduceMotion"), "#reduceMotion");
+
+    // Settings Panel Functions
+    function openSettings() {
+        settingsOverlay.setAttribute("aria-hidden", "false");
+        closeSettingsBtn.focus();
+    }
+
+    function closeSettings() {
+        settingsOverlay.setAttribute("aria-hidden", "true");
+        settingsBtn.focus();
+    }
+
+    function handleSettingsKeydown(e: KeyboardEvent) {
+        if (e.key === "Escape") {
+            closeSettings();
+        }
+    }
+
     let focusedCellIndex = 0;
 
     // Keyboard Navigation Handler
@@ -408,6 +430,14 @@ function ScreenController() {
     boardDiv.addEventListener("keydown", handleKeyboardNavigation);
     resetGameBtn.addEventListener("click", resetGame);
     resetScoreBtn.addEventListener("click", resetScore);
+
+    // Settings Event Listeners
+    settingsBtn.addEventListener("click", openSettings);
+    closeSettingsBtn.addEventListener("click", closeSettings);
+    settingsOverlay.addEventListener("click", (e) => {
+        if (e.target === settingsOverlay) closeSettings();
+    });
+    settingsOverlay.addEventListener("keydown", handleSettingsKeydown);
 
     // Initial Render
     updateScreen();

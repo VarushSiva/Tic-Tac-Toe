@@ -14,6 +14,7 @@
     <div class="empty"></div>
     <div class="mainContainer">
         <h1 class="title">Tic-Tac-Toe</h1>
+        <!-- GameBoard -->
         <div class="container">
             <!-- aria-atomic makes sure entire message is read -->
             <h2 id="game-status" class="turn" role="status" aria-live="polite" aria-atomic="true"></h2>
@@ -23,6 +24,7 @@
                 <button type="button" class="resetGame">New Game</button>
                 <button type="button" class="resetScore">Reset Scoreboard</button>
             </div>
+            <!-- ScoreBoard -->
             <div class="scoreBoardContainer">
                 <div class="scoreBoard">
                     <h4 class="scoreBoardLabel">SCOREBOARD</h4>
@@ -33,6 +35,7 @@
         </div>
         <h4 class="author">Created By: <a href="https://github.com/VarushSiva">@VarushSiva</a></h4>
     </div>
+    <!-- Colour Palette -->
     <div class="colourPalette">
         <div class="uranianBlue palette">
             <div class="colour"><p class="colourID">#A0DDFF</p></div>
@@ -55,6 +58,28 @@
             <div class="colourText">Royal Purple</div>
         </div>
     </div>
+    <!-- Settings Panel -->
+     <div class="settingsOverlay" id="settingsOverlay" aria-hidden="true">
+        <div class="settingsModal" role="dialog" aria-labelledby="settingsTitle" aria-modal="true">
+            <div class="settingsHeader">
+                <h2 id="settingsTitle">Accessibility Settings</h2>
+                <button type="button" class="closeSettings" aria-label="Close settings">×</button>
+            </div>
+            <div class="settingsContent">
+                <div class="settingItem">
+                    <label for="reduceMotion">
+                        <input type="checkbox" id="reduceMotion" />
+                        <span>Reduce Motion</span>
+                    </label>
+                    <p class="settingDescription">Disables Animations</p>
+                </div>
+            </div>
+        </div>
+     </div>
+     <!-- Settings Button -->
+      <button type="button" class="settingsBtn" aria-label="Open accessibility settings">
+        <span aria-hidden="true"></span> Settings
+      </button>
     <script src="./dist/main.js" defer></script>
 </body>
 </html>
