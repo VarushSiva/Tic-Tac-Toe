@@ -142,9 +142,10 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
 }
 // Add Screen Controller
 function ScreenController() {
-    // Set gameController
-    const game = GameController();
-    const board = game.getBoard();
+    // Initiate Game after Player Names
+    let game;
+    let board;
+    let isGameInitialized = false;
     // Target HTML Div
     const playerTurnDiv = mustFind(document.querySelector(".turn"), ".turn");
     const boardDiv = mustFind(document.querySelector(".board"), ".board");
@@ -152,10 +153,16 @@ function ScreenController() {
     const playerOScore = mustFind(document.querySelector("#playerOScore"), "#playerOScore");
     const resetGameBtn = mustFind(document.querySelector(".resetGame"), ".resetGame");
     const resetScoreBtn = mustFind(document.querySelector(".resetScore"), ".resetScore");
+    // Settings Elements
     const settingsBtn = mustFind(document.querySelector(".settingsBtn"), ".settingsBtn");
     const settingsOverlay = mustFind(document.querySelector("#settingsOverlay"), "#settingsOverlay");
     const closeSettingsBtn = mustFind(document.querySelector(".closeSettings"), ".closeSettings");
     const reduceMotionCheckbox = mustFind(document.querySelector("#reduceMotion"), "#reduceMotion");
+    // Player Setup Elements
+    const playerSetupOverlay = mustFind(document.querySelector("#playerSetupOverlay"), "#playerSetupOverlay");
+    const playerXNameInput = mustFind(document.querySelector("#playerXName"), "#playerXName");
+    const playerONameInput = mustFind(document.querySelector("#playerOName"), "#playerOName");
+    const startGameBtn = mustFind(document.querySelector(".startGameBtn"), ".startGameBtn");
     // Settings Panel Functions
     function openSettings() {
         settingsOverlay.setAttribute("aria-hidden", "false");
@@ -199,6 +206,27 @@ function ScreenController() {
         toggleAnimations();
         localStorage.setItem('reduceMotion', reduceMotionCheckbox.checked.toString());
     });
+    // Player Setup Functions
+    function initializeGame(playerXName, playerOName) {
+        game = GameController(playerXName, playerOName);
+        board = game.getBoard();
+        isGameInitialized = true;
+        updateScreen();
+        updateScoreBoard();
+    }
+    function startGame() {
+        const playerXName = playerXNameInput.value.trim() || "Player X";
+        const playerOName = playerONameInput.value.trim() || "Player O";
+        initializeGame(playerXName, playerOName);
+        playerSetupOverlay.setAttribute("aria-hidden", "true");
+        // Focus first cell after starting
+        const firstCell = document.querySelector(".cell");
+        firstCell?.focus();
+    }
+    function handlePlayerSetupKeydown(e) {
+        if (e.key === "Enter")
+            startGame();
+    }
     let focusedCellIndex = 0;
     // Keyboard Navigation Handler
     function handleKeyboardNavigation(e) {
@@ -252,6 +280,8 @@ function ScreenController() {
         }
     }
     const updateScoreBoard = () => {
+        if (!isGameInitialized)
+            return;
         // Remove and Readd Active player class
         const activePlayer = game.getActivePlayer().name;
         if (activePlayer === "Player X") {
@@ -271,6 +301,8 @@ function ScreenController() {
     };
     // Add eventListeners for the board
     function clickHandlerBoard(e) {
+        if (!isGameInitialized)
+            return;
         const target = e.target;
         if (!(target instanceof HTMLElement))
             return;
@@ -285,6 +317,8 @@ function ScreenController() {
     }
     // Function to Reset Game
     function resetGame() {
+        if (!isGameInitialized)
+            return;
         console.clear();
         renderBoard(board, "new");
         game.resetPlayer();
@@ -330,6 +364,8 @@ function ScreenController() {
     }
     // Update Screen method 
     const updateScreen = (isWinner = null) => {
+        if (!isGameInitialized)
+            return;
         // Get New version of board + active Player
         const activePlayer = game.getActivePlayer().name;
         updateScoreBoard();
@@ -357,10 +393,13 @@ function ScreenController() {
     };
     // Function to Reset Scoreboard
     function resetScore() {
+        if (!isGameInitialized)
+            return;
         game.resetWins();
         updateScoreBoard();
         playerTurnDiv.textContent = "Scoreboard reset.";
     }
+    // Board Event Listeners
     boardDiv.addEventListener("click", clickHandlerBoard);
     boardDiv.addEventListener("keydown", handleKeyboardNavigation);
     resetGameBtn.addEventListener("click", resetGame);
@@ -373,7 +412,9 @@ function ScreenController() {
             closeSettings();
     });
     settingsOverlay.addEventListener("keydown", handleSettingsKeydown);
-    // Initial Render
-    updateScreen();
+    // Player Setup Event Listeners
+    startGameBtn.addEventListener("click", startGame);
+    playerSetupOverlay.addEventListener("keydown", handlePlayerSetupKeydown);
+    playerXNameInput.focus();
 }
 ScreenController();

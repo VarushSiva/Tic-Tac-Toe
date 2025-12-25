@@ -76,6 +76,25 @@
             </div>
         </div>
      </div>
+     <!-- Player Setup Modal -->
+      <div class="playerSetupOverlay" id="playerSetupOverlay" aria-hidden="false">
+        <div class="playerSetupModal" role="dialog" aria-labelledby="playerSetupTitle" aria-modal="true">
+            <div class="playerSetupHeader">
+                <h2 id="playerSetupTitle">Player Setup</h2>
+            </div>
+            <div class="playerSetupContent">
+                <div class="playerInputGroup">
+                    <label for="playerXName">Player X Name: </label>
+                    <input type="text" id="playerXName" maxlength="15" placeholder="Player X" aria-label="Enter Player X name" />
+                </div>
+                <div class="playerInputGroup">
+                    <label for="playerOName">Player O Name: </label>
+                    <input type="text" id="playerOName" maxlength="15" placeholder="Player O" aria-label="Enter Player O name" />
+                </div>
+                <button type="button" class="startGameBtn">Start Game</button>
+            </div>
+        </div>
+      </div>
      <!-- Settings Button -->
       <button type="button" class="settingsBtn" aria-label="Open accessibility settings">
         <span aria-hidden="true"></span> Settings
