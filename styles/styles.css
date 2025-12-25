@@ -93,7 +93,7 @@ a, a:active {
 
 .cell:hover {
     background-color: #7189FF;
-    border: 2px solid #A0DDFF;
+    border: 3px solid #758ECD;
     transform: scale(1.1);
     transition: 0.3s;
 }
@@ -417,7 +417,7 @@ a, a:active {
     color: #624CAB;
 }
 
-.settingItem > input[type="checkbox"] {
+.settingItem input[type="checkbox"] {
     width: 20px;
     height: 20px;
     cursor: pointer;
@@ -435,5 +435,27 @@ a, a:active {
     color: #758ECD;
     font-family: Arial, Helvetica, sans-serif;
     letter-spacing: normal;
+}
+
+/* Reduced Motion */
+.reduce-motion .winner {
+    animation: none;
+}
+
+.reduce-motion .settingsModal {
+    animation: none;
+}
+
+.reduce-motion .cell:hover,
+.reduce-motion .resetBtn > button:hover,
+.reduce-motion .settingsBtn:hover,
+.reduce-motion .palette:hover {
+    transition: none;
+}
+
+.reduce-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
 }
 /* #endregion */

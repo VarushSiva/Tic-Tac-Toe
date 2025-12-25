@@ -170,6 +170,35 @@ function ScreenController() {
             closeSettings();
         }
     }
+    // Animation Settings
+    let animationsEnabled = true;
+    function toggleAnimations() {
+        animationsEnabled = reduceMotionCheckbox.checked ? false : true;
+        // Apply or remove no-animation class to body
+        if (animationsEnabled) {
+            document.body.classList.remove('reduce-motion');
+        }
+        else {
+            document.body.classList.add('reduce-motion');
+        }
+        console.log(`Animations enabled: ${animationsEnabled}`);
+    }
+    // Load Saved Preference from localStorage if available
+    const savedMotionPref = localStorage.getItem('reduceMotion');
+    if (savedMotionPref === 'true') {
+        reduceMotionCheckbox.checked = true;
+        toggleAnimations();
+    }
+    // Check for System Preference 
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && !savedMotionPref) {
+        reduceMotionCheckbox.checked = true;
+        toggleAnimations();
+    }
+    // Set State to localStorage
+    reduceMotionCheckbox.addEventListener("change", () => {
+        toggleAnimations();
+        localStorage.setItem('reduceMotion', reduceMotionCheckbox.checked.toString());
+    });
     let focusedCellIndex = 0;
     // Keyboard Navigation Handler
     function handleKeyboardNavigation(e) {
