@@ -468,7 +468,7 @@ a, a:active {
     border-radius: 10px;
     position: relative;
     overflow: hidden;
-    /* display: none; */
+    display: none;
     margin-bottom: 10px;
 }
 
