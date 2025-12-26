@@ -596,6 +596,7 @@ function ScreenController() {
         focusedCellIndex = 0;
         moveHistory = [];
         stopTimer();
+        timerContainer.classList.remove('active');
         game.resetWins();
         updateScoreBoard();
         // Clear board
