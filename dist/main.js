@@ -161,7 +161,7 @@ function ScreenController() {
     let focusedCellIndex = 0;
     // Timer Variables
     let timerEnabled = false;
-    let timerDuration = 30;
+    let timerDuration = 10;
     let timerInterval = null;
     let currentTime = timerDuration;
     let isAutoMove = false;
@@ -335,11 +335,11 @@ function ScreenController() {
         if (timerEnabled)
             stopTimer();
         updateScreen();
-        // Update Undo Btn state
-        updateUndoButton();
+        undoBtn.disabled = true;
         console.log(`Undid move at position ${lastMove.cellIndex}`);
     }
     function updateUndoButton() {
+        // Allow undo if there is atleast one move and the last move wasnt auto placed
         if (moveHistory.length === 0) {
             undoBtn.disabled = true;
         }
@@ -545,6 +545,7 @@ function ScreenController() {
         const availableCells = board.filter((cells) => cells.getValue() === "");
         if (availableCells.length === 0) {
             stopTimer();
+            moveHistory = [];
             undoBtn.disabled = true;
             playerTurnDiv.textContent = `Its a Draw!`;
             return;
