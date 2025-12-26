@@ -146,6 +146,9 @@ function ScreenController() {
     let game;
     let board;
     let isGameInitialized = false;
+    // Store player names
+    let playerXName = "Player X";
+    let playerOName = "Player O";
     // Target HTML Div
     const playerTurnDiv = mustFind(document.querySelector(".turn"), ".turn");
     const boardDiv = mustFind(document.querySelector(".board"), ".board");
@@ -207,7 +210,9 @@ function ScreenController() {
         localStorage.setItem('reduceMotion', reduceMotionCheckbox.checked.toString());
     });
     // Player Setup Functions
-    function initializeGame(playerXName, playerOName) {
+    function initializeGame(xName, oName) {
+        playerXName = xName;
+        playerOName = oName;
         game = GameController(playerXName, playerOName);
         board = game.getBoard();
         isGameInitialized = true;
@@ -224,8 +229,12 @@ function ScreenController() {
         firstCell?.focus();
     }
     function handlePlayerSetupKeydown(e) {
-        if (e.key === "Enter")
+        if (e.key === "Enter") {
+            e.preventDefault();
+            // Prevent event from bubbling
+            e.stopPropagation();
             startGame();
+        }
     }
     let focusedCellIndex = 0;
     // Keyboard Navigation Handler
@@ -282,9 +291,15 @@ function ScreenController() {
     const updateScoreBoard = () => {
         if (!isGameInitialized)
             return;
-        // Remove and Readd Active player class
-        const activePlayer = game.getActivePlayer().name;
-        if (activePlayer === "Player X") {
+        // Get new version of number of wins per player
+        const playerXWins = game.getPlayerXWins();
+        const playerOWins = game.getPlayerOWins();
+        // Update Scoreboard with player names
+        playerXScore.textContent = `${playerXName}: ${playerXWins}`;
+        playerOScore.textContent = `${playerOName}: ${playerOWins}`;
+        // Remove and Read Active player class
+        const activePlayer = game.getActivePlayer();
+        if (activePlayer.token === "X") {
             playerOScore.classList.remove('activePlayer');
             playerXScore.classList.add('activePlayer');
         }
@@ -292,12 +307,6 @@ function ScreenController() {
             playerXScore.classList.remove('activePlayer');
             playerOScore.classList.add('activePlayer');
         }
-        // Get new version of number of wins per player
-        const playerXWins = game.getPlayerXWins();
-        const playerOWins = game.getPlayerOWins();
-        // Update Scoreboard
-        playerXScore.textContent = `Player X: ${playerXWins}`;
-        playerOScore.textContent = `Player O: ${playerOWins}`;
     };
     // Add eventListeners for the board
     function clickHandlerBoard(e) {
@@ -395,9 +404,19 @@ function ScreenController() {
     function resetScore() {
         if (!isGameInitialized)
             return;
+        // Reset Everything
+        isGameInitialized = false;
+        focusedCellIndex = 0;
         game.resetWins();
         updateScoreBoard();
-        playerTurnDiv.textContent = "Scoreboard reset.";
+        // Clear board
+        playerTurnDiv.textContent = "";
+        boardDiv.textContent = "";
+        // Show player name customization modal
+        playerSetupOverlay.setAttribute("aria-hidden", "false");
+        playerXNameInput.value = "";
+        playerONameInput.value = "";
+        playerXNameInput.focus();
     }
     // Board Event Listeners
     boardDiv.addEventListener("click", clickHandlerBoard);
