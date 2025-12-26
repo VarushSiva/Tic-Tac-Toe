@@ -28,12 +28,12 @@ body {
 
 .title {
     font-size: 3rem;
-    margin: 0;
+    margin: 10px;
     letter-spacing: 0.3rem;
 }
 
 .author {
-    padding: 20px;
+    margin-bottom: 10px;
     font-size: 1.5rem;
     letter-spacing: 0.3rem;
 }
@@ -108,14 +108,14 @@ a, a:active {
     outline: none;
 }
 
-.resetBtn {
+.resetBtn, .undoContainer {
     display: flex;
     flex-direction: column;
     gap: 5px;
     padding-top: 10px;
 }
 
-.resetBtn > button {
+.resetBtn > button, .undoBtn {
     width: 300px;
     height: 40px;
     background-color: #758ECD;
@@ -126,7 +126,7 @@ a, a:active {
     cursor: pointer;
 }
 
-.resetBtn > button:hover {
+.resetBtn > button:hover, .undoBtn:hover:not(:disabled) {
     background-color: #7189FF;
     color: #624CAB;
     border: 2px solid #A0DDFF;
@@ -134,9 +134,16 @@ a, a:active {
     transition: 0.3s ease;
 }
 
-.resetBtn > button:focus-visible {
+.resetBtn > button:focus-visible, .undoBtn:focus-visible {
     outline: 3px solid #624CAB;
     outline-offset: 2px;
+}
+
+.undoBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #A0DDFF;
+    color: #758ECD;
 }
 
 .winner {
@@ -250,7 +257,7 @@ a, a:active {
     justify-content: space-evenly;
     align-items: center;
     height: 120px;
-    width: 300px;
+    width: 350px;
     border-radius: 15px;
     background: #C1CEFE;
     border: 2px solid #758ECD;

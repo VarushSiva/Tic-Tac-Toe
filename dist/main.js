@@ -138,7 +138,16 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
     printNewRound();
     // Return Methods:
     // Console playRound | UI Version = getActivePlayer + getBoard
-    return { playRound, getActivePlayer, addWin, getPlayerXWins, resetWins, getPlayerOWins, resetPlayer, getBoard: board.getBoard };
+    return {
+        playRound, getActivePlayer, addWin, getPlayerXWins, resetWins, getPlayerOWins, resetPlayer, getBoard: board.getBoard,
+        undoMove: (cellIndex) => {
+            // Reset the cell
+            board.getBoard()[cellIndex]?.resetValue();
+            // Switch Player back
+            switchPlayerTurn();
+            printNewRound();
+        }
+    };
 }
 // Add Screen Controller
 function ScreenController() {
@@ -156,6 +165,8 @@ function ScreenController() {
     let timerInterval = null;
     let currentTime = timerDuration;
     let isAutoMove = false;
+    // Move History for Undo
+    let moveHistory = [];
     // Target HTML Div
     const playerTurnDiv = mustFind(document.querySelector(".turn"), ".turn");
     const boardDiv = mustFind(document.querySelector(".board"), ".board");
@@ -163,6 +174,7 @@ function ScreenController() {
     const playerOScore = mustFind(document.querySelector("#playerOScore"), "#playerOScore");
     const resetGameBtn = mustFind(document.querySelector(".resetGame"), ".resetGame");
     const resetScoreBtn = mustFind(document.querySelector(".resetScore"), ".resetScore");
+    const undoBtn = mustFind(document.querySelector(".undoBtn"), ".undoBtn");
     // Settings Elements
     const settingsBtn = mustFind(document.querySelector(".settingsBtn"), ".settingsBtn");
     const settingsOverlay = mustFind(document.querySelector("#settingsOverlay"), "#settingsOverlay");
@@ -268,6 +280,12 @@ function ScreenController() {
             // Pick Random Available Cell
             const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
             console.log(`Time's up! Auto placing ${game.getActivePlayer().name}'s token at position ${randomCell.index}`);
+            // Record auto move in history
+            moveHistory.push({
+                cellIndex: randomCell.index,
+                player: game.getActivePlayer().token,
+                wasAutoMove: true
+            });
             // Highlight the auto selected cell
             const cells = Array.from(document.querySelectorAll(".cell"));
             const autoCell = cells[randomCell.index];
@@ -276,6 +294,7 @@ function ScreenController() {
                 setTimeout(() => {
                     autoCell.style.backgroundColor = "";
                     updateScreen(game.playRound(randomCell.index));
+                    updateUndoButton();
                 }, 500);
             }
         }
@@ -296,6 +315,38 @@ function ScreenController() {
     if (savedTimerPref === 'true') {
         enableTimerCheckbox.checked = true;
         timerEnabled = true;
+    }
+    // Undo Function
+    function undoMove() {
+        if (moveHistory.length === 0)
+            return;
+        const lastMove = moveHistory[moveHistory.length - 1];
+        // Prevent undo if last move was auto placed
+        if (lastMove.wasAutoMove) {
+            playerTurnDiv.textContent = "Cannot Undo Automatic Moves!";
+            setTimeout(() => {
+                playerTurnDiv.textContent = `${game.getActivePlayer().name}'s Turn`;
+            }, 2000);
+            return;
+        }
+        // Remove last move from history + undo move in game
+        moveHistory.pop();
+        game.undoMove(lastMove.cellIndex);
+        if (timerEnabled)
+            stopTimer();
+        updateScreen();
+        // Update Undo Btn state
+        updateUndoButton();
+        console.log(`Undid move at position ${lastMove.cellIndex}`);
+    }
+    function updateUndoButton() {
+        if (moveHistory.length === 0) {
+            undoBtn.disabled = true;
+        }
+        else {
+            const lastMove = moveHistory[moveHistory.length - 1];
+            undoBtn.disabled = lastMove.wasAutoMove;
+        }
     }
     function startGame() {
         const playerXName = playerXNameInput.value.trim() || "Player X";
@@ -398,9 +449,19 @@ function ScreenController() {
         // Make sure a column was clicked and not the gaps
         if (Number.isNaN(selectedCell))
             return;
-        // Play round and after every round --> Update Screen
+        // Check if move is valid before recording
+        if (board[selectedCell]?.getValue() !== "")
+            return;
+        // Record move in history
         isAutoMove = false;
+        moveHistory.push({
+            cellIndex: selectedCell,
+            player: game.getActivePlayer().token,
+            wasAutoMove: false
+        });
+        // Play round and after every round --> Update Screen
         updateScreen(game.playRound(selectedCell));
+        updateUndoButton();
     }
     // Function to Reset Game
     function resetGame() {
@@ -408,6 +469,7 @@ function ScreenController() {
             return;
         console.clear();
         stopTimer();
+        moveHistory = [];
         renderBoard(board, "new");
         game.resetPlayer();
         const activePlayer = game.getActivePlayer().name;
@@ -416,6 +478,7 @@ function ScreenController() {
         // Re-enable buttons after game reset
         const cells = Array.from(boardDiv.querySelectorAll(".cell"));
         cells.forEach((btn) => (btn.disabled = false));
+        updateUndoButton();
         // Restart Timer if Enabled
         if (timerEnabled)
             startTimer();
@@ -464,6 +527,8 @@ function ScreenController() {
         if (isWinner) {
             // Stop Timer on Win
             stopTimer();
+            moveHistory = [];
+            undoBtn.disabled = true;
             // Set variables for isWinner Values
             const [a, b, c] = isWinner;
             const cells = Array.from(boardDiv.querySelectorAll(".cell"));
@@ -480,6 +545,7 @@ function ScreenController() {
         const availableCells = board.filter((cells) => cells.getValue() === "");
         if (availableCells.length === 0) {
             stopTimer();
+            undoBtn.disabled = true;
             playerTurnDiv.textContent = `Its a Draw!`;
             return;
         }
@@ -495,11 +561,14 @@ function ScreenController() {
         // Reset Everything
         isGameInitialized = false;
         focusedCellIndex = 0;
+        moveHistory = [];
+        stopTimer();
         game.resetWins();
         updateScoreBoard();
         // Clear board
         playerTurnDiv.textContent = "";
         boardDiv.textContent = "";
+        updateUndoButton();
         // Show player name customization modal
         playerSetupOverlay.setAttribute("aria-hidden", "false");
         playerXNameInput.value = "";
@@ -511,6 +580,7 @@ function ScreenController() {
     boardDiv.addEventListener("keydown", handleKeyboardNavigation);
     resetGameBtn.addEventListener("click", resetGame);
     resetScoreBtn.addEventListener("click", resetScore);
+    undoBtn.addEventListener("click", undoMove);
     // Settings Event Listeners
     settingsBtn.addEventListener("click", openSettings);
     closeSettingsBtn.addEventListener("click", closeSettings);
