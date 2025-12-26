@@ -311,8 +311,17 @@ function ScreenController() {
         localStorage.setItem('timerEnabled', timerEnabled.toString());
         const availableCells = board.filter((cell) => cell.getValue() === "");
         const isGameOver = availableCells.length === 0 || playerTurnDiv.textContent.includes("Wins!");
-        if (timerEnabled && isGameInitialized && !isGameOver) {
-            startTimer();
+        if (timerEnabled && isGameInitialized) {
+            if (isGameOver) {
+                // Show timer container but dont start countdown
+                timerContainer.classList.add('active');
+                timerBar.style.width = '100%';
+                timerText.textContent = 'Waiting For Next Round';
+                timerBar.classList.remove('warning');
+            }
+            else {
+                startTimer();
+            }
         }
         else {
             stopTimer();
@@ -538,6 +547,13 @@ function ScreenController() {
             stopTimer();
             moveHistory = [];
             undoBtn.disabled = true;
+            // Show Next Round message if timer is enabled
+            if (timerEnabled) {
+                timerContainer.classList.add('active');
+                timerBar.style.width = '100%';
+                timerText.textContent = 'Waiting For Next Round';
+                timerBar.classList.remove('warning');
+            }
             // Set variables for isWinner Values
             const [a, b, c] = isWinner;
             const cells = Array.from(boardDiv.querySelectorAll(".cell"));
@@ -556,6 +572,13 @@ function ScreenController() {
             stopTimer();
             moveHistory = [];
             undoBtn.disabled = true;
+            // Show Next Round message if timer is enabled
+            if (timerEnabled) {
+                timerContainer.classList.add('active');
+                timerBar.style.width = '100%';
+                timerText.textContent = 'Waiting For Next Round';
+                timerBar.classList.remove('warning');
+            }
             playerTurnDiv.textContent = `Its a Draw!`;
             return;
         }

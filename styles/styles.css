@@ -115,6 +115,10 @@ a, a:active {
     padding-top: 10px;
 }
 
+.resetBtn {
+    margin-bottom: 10px;
+}
+
 .resetBtn > button, .undoBtn {
     width: 300px;
     height: 40px;
@@ -411,6 +415,26 @@ a, a:active {
     padding: 25px;
 }
 
+.settingsSection {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #758ECD;
+}
+
+.settingsSection:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    color: #624CAB;
+    margin: 0 0 15px 0;
+    font-family: "Chicle", sans-serif;
+    letter-spacing: 2px;
+}
+
 .settingItem {
     margin-bottom: 25px;
 }
@@ -429,6 +453,29 @@ a, a:active {
     height: 20px;
     cursor: pointer;
     accent-color: #7189FF;
+    border-radius: 6px;
+    appearance: none;
+    border: 2px solid #758ECD;
+    background-color: #A0DDFF;
+    position: relative;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.settingItem input[type="checkbox"]:checked {
+    background-color: #7189FF;
+    border-color: #624CAB;
+}
+
+.settingItem input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #C1CEFE;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .settingItem input[type="checkbox"]:focus-visible {
@@ -493,6 +540,7 @@ a, a:active {
 
 .timerText {
     position: absolute;
+    width: 100%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

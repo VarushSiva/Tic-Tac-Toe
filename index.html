@@ -70,26 +70,33 @@
      <div class="settingsOverlay" id="settingsOverlay" aria-hidden="true">
         <div class="settingsModal" role="dialog" aria-labelledby="settingsTitle" aria-modal="true">
             <div class="settingsHeader">
-                <h2 id="settingsTitle">Accessibility Settings</h2>
+                <h2 id="settingsTitle">Settings</h2>
                 <button type="button" class="closeSettings" aria-label="Close settings">×</button>
             </div>
             <div class="settingsContent">
-                <!-- ReduceMotion -->
-                <div class="settingItem">
-                    <label for="reduceMotion">
-                        <input type="checkbox" id="reduceMotion" />
-                        <span>Reduce Motion</span>
-                    </label>
-                    <p class="settingDescription">Disables Animations</p>
-                </div>
-                <!-- Move Timer -->
-                 <div class="settingItem">
-                    <label for="enableTimer">
-                        <input type="checkbox" id="enableTimer" />
-                        <span>Enable Move Timer</span>
-                    </label>
-                    <p class="settingDescription" id="enableTimerDescription"></p>
-                </div>
+                <!-- Game Settings Section -->
+                 <div class="settingsSection">
+                    <h3 class="sectionTitle">Game Settings</h3>
+                    <!-- Move Timer -->
+                    <div class="settingItem">
+                        <label for="enableTimer">
+                            <input type="checkbox" id="enableTimer" />
+                            <span>Enable Move Timer</span>
+                        </label>
+                        <p class="settingDescription" id="enableTimerDescription"></p>
+                    </div>
+                 </div>
+                 <div class="settingsSection">
+                    <h3 class="sectionTitle">Accessibility</h3>
+                    <!-- ReduceMotion -->
+                    <div class="settingItem">
+                        <label for="reduceMotion">
+                            <input type="checkbox" id="reduceMotion" />
+                            <span>Reduce Motion</span>
+                        </label>
+                        <p class="settingDescription">Disables animations and transitions</p>
+                    </div>
+                 </div>
             </div>
         </div>
      </div>
