@@ -178,6 +178,7 @@ function ScreenController() {
     // Settings Elements
     const settingsBtn = mustFind(document.querySelector(".settingsBtn"), ".settingsBtn");
     const settingsOverlay = mustFind(document.querySelector("#settingsOverlay"), "#settingsOverlay");
+    const enableTimerDescription = mustFind(document.querySelector("#enableTimerDescription"), "#enableTimerDescription");
     const closeSettingsBtn = mustFind(document.querySelector(".closeSettings"), ".closeSettings");
     const reduceMotionCheckbox = mustFind(document.querySelector("#reduceMotion"), "#reduceMotion");
     // Player Setup Elements
@@ -238,9 +239,15 @@ function ScreenController() {
         updateScreen();
         updateScoreBoard();
     }
+    // Set Dynamic Description for Enable Timer
+    enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;
     // Timer Functions
     function startTimer() {
         if (!timerEnabled || !isGameInitialized)
+            return;
+        const availableCells = board.filter((cell) => cell.getValue() === "");
+        const isGameOver = availableCells.length === 0 || playerTurnDiv.textContent.includes("Wins!");
+        if (isGameOver)
             return;
         // Clear any existing timer
         stopTimer();
@@ -302,7 +309,9 @@ function ScreenController() {
     function toggleTimer() {
         timerEnabled = enableTimerCheckbox.checked;
         localStorage.setItem('timerEnabled', timerEnabled.toString());
-        if (timerEnabled && isGameInitialized) {
+        const availableCells = board.filter((cell) => cell.getValue() === "");
+        const isGameOver = availableCells.length === 0 || playerTurnDiv.textContent.includes("Wins!");
+        if (timerEnabled && isGameInitialized && !isGameOver) {
             startTimer();
         }
         else {
