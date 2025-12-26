@@ -458,6 +458,62 @@ a, a:active {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
 }
+
+/* Timer */
+.timerContainer {
+    width: 300px;
+    height: 30px;
+    background-color: #A0DDFF;
+    border: 2px solid #758ECD;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    /* display: none; */
+    margin-bottom: 10px;
+}
+
+.timerContainer.active {
+    display: block;
+}
+
+.timerBar {
+    height: 100%;
+    background: linear-gradient(90deg, #758ECD, #7189FF);
+    width: 100%;
+    transition: width 0.1s linear;
+    border-radius: 8px;
+}
+
+.timerText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #624CAB;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.timerBar.warning {
+    background: linear-gradient(90deg, #758ECD, #7189FF);
+    animation: pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.reduce-motion .timerBar {
+    transition: none;
+}
+
+.reduce-motion .timerBar.warning {
+    animation: none;
+    background: #7189FF;
+}
 /* #endregion */
 
 /* #region MARK: Player Setup Modal */

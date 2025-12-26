@@ -18,6 +18,10 @@
         <div class="container">
             <!-- aria-atomic makes sure entire message is read -->
             <h2 id="game-status" class="turn" role="status" aria-live="polite" aria-atomic="true"></h2>
+            <div class="timerContainer">
+                <div class="timerBar" id="timerBar"></div>
+                <span class="timerText" id="timerText">30s</span>
+            </div>
             <div class="board" tabindex="0" role="group" aria-label="tic-tac-toe board" aria-describedby="game-instructions game-status"></div>
             <p id="game-instructions">Use arrow keys to move between cells. Press Enter or space to place your mark.</p>
             <div class="resetBtn">
@@ -66,12 +70,21 @@
                 <button type="button" class="closeSettings" aria-label="Close settings">×</button>
             </div>
             <div class="settingsContent">
+                <!-- ReduceMotion -->
                 <div class="settingItem">
                     <label for="reduceMotion">
                         <input type="checkbox" id="reduceMotion" />
                         <span>Reduce Motion</span>
                     </label>
                     <p class="settingDescription">Disables Animations</p>
+                </div>
+                <!-- Move Timer -->
+                 <div class="settingItem">
+                    <label for="enableTimer">
+                        <input type="checkbox" id="enableTimer" />
+                        <span>Enable Move Timer</span>
+                    </label>
+                    <p class="settingDescription">Automatically place a random move after 30 seconds</p>
                 </div>
             </div>
         </div>

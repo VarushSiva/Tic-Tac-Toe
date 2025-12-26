@@ -210,9 +210,17 @@ function ScreenController() {
     let board: Cell[];
     let isGameInitialized = false;
 
-    // Store player names
+    // Store Player Names
     let playerXName = "Player X";
     let playerOName = "Player O";
+    let focusedCellIndex = 0;
+
+    // Timer Variables
+    let timerEnabled = false;
+    let timerDuration = 30;
+    let timerInterval: number | null = null;
+    let currentTime = timerDuration;
+    let isAutoMove = false;
 
     // Target HTML Div
     const playerTurnDiv = mustFind(document.querySelector<HTMLElement>(".turn"), ".turn");
@@ -231,6 +239,11 @@ function ScreenController() {
     const playerXNameInput = mustFind(document.querySelector<HTMLInputElement>("#playerXName"), "#playerXName");
     const playerONameInput = mustFind(document.querySelector<HTMLInputElement>("#playerOName"), "#playerOName");
     const startGameBtn = mustFind(document.querySelector<HTMLButtonElement>(".startGameBtn"), ".startGameBtn");
+    // Timer Elements
+    const timerContainer = mustFind(document.querySelector<HTMLElement>(".timerContainer"), ".timerContainer");
+    const timerBar = mustFind(document.querySelector<HTMLElement>("#timerBar"), "#timerBar");
+    const timerText = mustFind(document.querySelector<HTMLElement>("#timerText"), "#timerText");
+    const enableTimerCheckbox = mustFind(document.querySelector<HTMLInputElement>("#enableTimer"), "#enableTimer");
 
     // Settings Panel Functions
     function openSettings() {
@@ -276,12 +289,6 @@ function ScreenController() {
         toggleAnimations();
     }
 
-    // Set State to localStorage
-    reduceMotionCheckbox.addEventListener("change", () => {
-        toggleAnimations();
-        localStorage.setItem('reduceMotion', reduceMotionCheckbox.checked.toString());
-    })
-
     // Player Setup Functions
     function initializeGame(xName: string, oName: string) {
         playerXName = xName;
@@ -292,6 +299,91 @@ function ScreenController() {
 
         updateScreen();
         updateScoreBoard();
+    }
+
+    // Timer Functions
+    function startTimer() {
+        if (!timerEnabled || !isGameInitialized) return;
+
+        // Clear any existing timer
+        stopTimer();
+        currentTime = timerDuration;
+        isAutoMove = false;
+        updateTimerDisplay();
+
+        timerContainer.classList.add('active');
+
+        timerInterval = window.setInterval(() => {
+            currentTime--;
+            updateTimerDisplay();
+
+            if (currentTime <= 5) {
+                timerBar.classList.add('warning');
+            }
+
+            if (currentTime <= 0) {
+                makeAutoMove();
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        timerBar.classList.remove('warning');
+    }
+
+    function updateTimerDisplay() {
+        const percentage = (currentTime / timerDuration) * 100;
+        timerBar.style.width = `${percentage}%`;
+        timerText.textContent = `${currentTime}s`
+    }
+
+    function makeAutoMove() {
+        stopTimer();
+        isAutoMove = true;
+
+        // Find available cells
+        const availableCells = board.map((cell, index) => ({ cell, index })).filter(({ cell }) => cell.getValue() === "");
+
+        if (availableCells.length > 0) {
+            // Pick Random Available Cell
+            const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
+            console.log(`Time's up! Auto placing ${game.getActivePlayer().name}'s token at position ${randomCell.index}`);
+
+            // Highlight the auto selected cell
+            const cells = Array.from(document.querySelectorAll<HTMLButtonElement>(".cell"));
+            const autoCell = cells[randomCell.index];
+            if (autoCell) {
+                autoCell.style.backgroundColor = "#C1CEFE";
+                setTimeout(() => {
+                    autoCell.style.backgroundColor = "";
+                    updateScreen(game.playRound(randomCell.index));
+                }, 500)
+            }
+        }
+    }
+
+    function toggleTimer() {
+        timerEnabled = enableTimerCheckbox.checked;
+        localStorage.setItem('timerEnabled', timerEnabled.toString());
+
+        if (timerEnabled && isGameInitialized) {
+            startTimer();
+        } else {
+            stopTimer();
+            timerContainer.classList.remove('active');
+        }
+
+        console.log(`Timer enabled: ${timerEnabled}`);
+    }
+
+    const savedTimerPref = localStorage.getItem('timerEnabled');
+    if (savedTimerPref === 'true') {
+        enableTimerCheckbox.checked = true;
+        timerEnabled = true;
     }
 
     function startGame() {
@@ -314,8 +406,6 @@ function ScreenController() {
             startGame();
         }
     }
-
-    let focusedCellIndex = 0;
 
     // Keyboard Navigation Handler
     function handleKeyboardNavigation(e: KeyboardEvent) {
@@ -410,6 +500,7 @@ function ScreenController() {
         if (Number.isNaN(selectedCell)) return;
 
         // Play round and after every round --> Update Screen
+        isAutoMove = false;
         updateScreen(game.playRound(selectedCell));
     }
 
@@ -418,6 +509,7 @@ function ScreenController() {
         if (!isGameInitialized) return;
 
         console.clear();
+        stopTimer();
         renderBoard(board, "new");
         game.resetPlayer()
 
@@ -428,6 +520,9 @@ function ScreenController() {
         // Re-enable buttons after game reset
         const cells = Array.from(boardDiv.querySelectorAll<HTMLButtonElement>(".cell"));
         cells.forEach((btn) => (btn.disabled = false));
+
+        // Restart Timer if Enabled
+        if (timerEnabled) startTimer();
     }
 
     // Function to Render Board
@@ -479,6 +574,8 @@ function ScreenController() {
         renderBoard(board);
 
         if (isWinner) {
+            // Stop Timer on Win
+            stopTimer();
             // Set variables for isWinner Values
             const [a, b, c] = isWinner;
             const cells = Array.from(boardDiv.querySelectorAll<HTMLButtonElement>(".cell"));
@@ -497,11 +594,15 @@ function ScreenController() {
 
         const availableCells = board.filter((cells) => cells.getValue() === "")
         if (availableCells.length === 0) {
+            stopTimer();
             playerTurnDiv.textContent = `Its a Draw!`;
             return;
         }
 
         playerTurnDiv.textContent = `${activePlayer}'s Turn`;
+
+        // Start/Restart timer for next move
+        if (timerEnabled) startTimer();
     }
 
     // Function to Reset Scoreboard
@@ -544,6 +645,13 @@ function ScreenController() {
     startGameBtn.addEventListener("click", startGame);
     playerSetupOverlay.addEventListener("keydown", handlePlayerSetupKeydown);
     playerXNameInput.focus();
+
+    // Accessibility Event Listener
+    reduceMotionCheckbox.addEventListener("change", () => {
+        toggleAnimations();
+        localStorage.setItem('reduceMotion', reduceMotionCheckbox.checked.toString());
+    })
+    enableTimerCheckbox.addEventListener("change", toggleTimer);
 }
 
 
