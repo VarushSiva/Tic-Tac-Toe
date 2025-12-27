@@ -18,7 +18,9 @@
     />
   </head>
   <body>
+    <!-- Container for Grid -->
     <div class="empty"></div>
+    <!-- Main Container -->
     <div class="mainContainer">
       <h1 class="title">Tic-Tac-Toe</h1>
       <!-- GameBoard -->
@@ -68,26 +70,39 @@
     </div>
     <!-- Colour Palette -->
     <div class="colourPalette">
-      <div class="uranianBlue palette">
-        <div class="colour"><p class="colourID">#A0DDFF</p></div>
-        <div class="colourText">Uranian Blue</div>
-      </div>
-      <div class="vistaBlue palette">
-        <div class="colour"><p class="colourID">#758ECD</p></div>
-        <div class="colourText">Vista Blue</div>
-      </div>
-      <div class="periwinkle palette">
-        <div class="colour"><p class="colourID">#C1CEFE</p></div>
-        <div class="colourText">Periwinkle</div>
-      </div>
-      <div class="cornflowerBlue palette">
-        <div class="colour"><p class="colourID">#7189FF</p></div>
-        <div class="colourText">Cornflower Blue</div>
-      </div>
-      <div class="royalPurple palette">
-        <div class="colour"><p class="colourID">#624CAB</p></div>
-        <div class="colourText">Royal Purple</div>
-      </div>
+      <h3 class="paletteTitle">Themes</h3>
+<!-- Default -->
+      <button
+        type="button"
+        class="themeBtn"
+        data-theme="default"
+        aria-label="Default theme"
+      >
+        <span class="themeName">Default</span>
+        <div class="themePreview">
+          <span style="background: #a0ddff"></span>
+          <span style="background: #758ecd"></span>
+          <span style="background: #c1cefe"></span>
+          <span style="background: #7189ff"></span>
+          <span style="background: #624cab"></span>
+        </div>
+      </button>
+      <!-- Halloween -->
+       <button
+        type="button"
+        class="themeBtn"
+        data-theme="halloween"
+        aria-label="Halloween theme"
+      >
+        <span class="themeName">Halloween</span>
+        <div class="themePreview">
+          <span style="background: #FF6B35"></span>
+          <span style="background: #4A4A4A"></span>
+          <span style="background: #2D2D2D"></span>
+          <span style="background: #F4A259"></span>
+          <span style="background: #8B4513"></span>
+        </div>
+      </button>
     </div>
     <!-- Settings Panel -->
     <div class="settingsOverlay" id="settingsOverlay" aria-hidden="true">

@@ -254,6 +254,24 @@ function ScreenController() {
   let isAIEnabled = false;
   let aiDifficulty: AIDifficulty = "medium";
 
+  // Theme Data
+  const themes = {
+    default: {
+      backgroundLight: "#A0DDFF",
+      backgroundMedium: "#758ECD",
+      backgroundContainer: "#C1CEFE",
+      highlight: "#7189FF",
+      text: "#624CAB",
+    },
+    halloween: {
+      backgroundLight: "#FF6B35",
+      backgroundMedium: "#4A4A4A",
+      backgroundContainer: "#2D2D2D",
+      highlight: "#F4A259",
+      text: "#8B4513",
+    },
+  };
+
   // Timer Variables
   let timerEnabled = false;
   let timerDuration = 10;
@@ -293,6 +311,7 @@ function ScreenController() {
     document.querySelector<HTMLButtonElement>(".undoBtn"),
     ".undoBtn"
   );
+
   // Settings Elements
   const settingsBtn = mustFind(
     document.querySelector<HTMLButtonElement>(".settingsBtn"),
@@ -314,6 +333,7 @@ function ScreenController() {
     document.querySelector<HTMLInputElement>("#reduceMotion"),
     "#reduceMotion"
   );
+
   // Player Setup Elements
   const playerSetupOverlay = mustFind(
     document.querySelector<HTMLElement>("#playerSetupOverlay"),
@@ -331,6 +351,7 @@ function ScreenController() {
     document.querySelector<HTMLButtonElement>(".startGameBtn"),
     ".startGameBtn"
   );
+
   // AI Toggle Elements
   const aiToggle = mustFind(
     document.querySelector<HTMLInputElement>("#aiToggle"),
@@ -348,6 +369,7 @@ function ScreenController() {
     document.querySelector<HTMLElement>("#playerOGroup"),
     "#playerOGroup"
   );
+
   // Timer Elements
   const timerContainer = mustFind(
     document.querySelector<HTMLElement>(".timerContainer"),
@@ -563,6 +585,59 @@ function ScreenController() {
 
     return null;
   }
+
+  // Theme Functions
+  let currentTheme = "default";
+
+  function applyTheme(themeName: keyof typeof themes) {
+    const theme = themes[themeName];
+    const root = document.documentElement;
+
+    // Set Colours from theme data to css variables
+    root.style.setProperty("--color-background-light", theme.backgroundLight);
+    root.style.setProperty("--color-background-medium", theme.backgroundMedium);
+    root.style.setProperty(
+      "--color-background-container",
+      theme.backgroundContainer
+    );
+    root.style.setProperty("--color-highlight", theme.highlight);
+    root.style.setProperty("--color-text", theme.text);
+
+    currentTheme = themeName;
+    localStorage.setItem("theme", themeName);
+
+    // Update active state on theme buttons
+    document.querySelectorAll(".themeBtn").forEach((button) => {
+      button.classList.remove("active");
+    });
+    const activeBtn = document.querySelectorAll(`[data-theme="${themeName}"]`);
+    activeBtn?.classList.add("active");
+
+    console.log(`Applied ${themeName} theme`);
+  }
+
+  function setupThemeButtons() {
+    const themeButtons =
+      document.querySelectorAll<HTMLButtonElement>(".themeBtn");
+    themeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const theme = btn.dataset.theme as keyof typeof themes;
+        applyTheme(theme);
+      });
+    });
+  }
+
+  // Load Saved Theme
+  const savedTheme = localStorage.getItem("theme") as
+    | keyof typeof themes
+    | null;
+  if (savedTheme && themes[savedTheme]) {
+    applyTheme(savedTheme);
+  } else {
+    applyTheme("default");
+  }
+
+  setupThemeButtons();
 
   // Set Dynamic Description for Enable Timer
   enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;

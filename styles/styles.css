@@ -3,6 +3,15 @@
     outline: 1px solid black;
 } */
 
+/* Variables for Theme */
+:root {
+  --color-background-light: #a0ddff; /* Cells, Inputs */
+  --color-background-medium: #758ecd; /* Buttons */
+  --color-background-container: #c1cefe; /* Containers, Modals */
+  --color-highlight: #7189ff; /* Hover, Active, Highlights */
+  --color-text: #624cab; /* Text, Dark UI Elements */
+}
+
 :root,
 button {
   font-family: "Chicle", sans-serif;
@@ -182,76 +191,77 @@ a:active {
 
 /* #endregion */
 
-/* #region MARK: Colour Palette */
+/* #region MARK: Theme Palette */
 .colourPalette {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 15px;
-  padding: 20px 20px;
+  padding: 20px;
   gap: 15px;
+  overflow-y: auto;
+  max-height: 100vh;
 }
 
-.palette {
+.paletteTitle {
+  font-size: 2rem;
+  color: #624cab;
+  margin: 0 0 10px 0;
+  letter-spacing: 0.2rem;
+}
+
+.themeBtn {
+  width: 200px;
+  padding: 15px;
+  background-color: #c1cefe;
+  border: 2px solid #758ecd;
+  border-radius: 15px;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 10px;
-}
-
-.palette:hover {
-  filter: brightness(0.7);
-  transform: translateY(-10px);
   transition: 0.3s;
-  cursor: pointer;
+  font-family: "Chicle", sans-serif;
+  letter-spacing: 2px;
 }
 
-.palette:hover > .colour > .colourID {
-  visibility: visible;
-  opacity: 1;
-  transition: 0.9s;
+.themeBtn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-color: #624cab;
 }
 
-.colour {
-  width: 75px;
-  height: 75px;
-  border: 2px solid black;
-  border-radius: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.themeBtn:focus-visible {
+  outline: 3px solid #624cab;
+  outline-offset: 2px;
 }
 
-.colourID {
-  visibility: hidden;
-}
-
-.colourID,
-.colourText {
-  color: black;
-  text-align: center;
-}
-
-.uranianBlue > .colour {
-  background-color: #a0ddff;
-}
-
-.vistaBlue > .colour {
-  background-color: #758ecd;
-}
-
-.periwinkle > .colour {
-  background-color: #c1cefe;
-}
-
-.cornflowerBlue > .colour {
+.themeBtn.active {
+  border: 3px solid #624cab;
   background-color: #7189ff;
 }
 
-.royalPurple > .colour {
-  background-color: #624cab;
+.themeName {
+  font-size: 1.3rem;
+  color: #624cab;
+  text-align: center;
+}
+
+.themeBtn.active .themeName {
+  color: #c1cefe;
+}
+
+.themePreview {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.themePreview span {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 /* #endregion */
 
