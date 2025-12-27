@@ -158,7 +158,8 @@
               aria-label="Enter Player X name"
             />
           </div>
-          <div class="playerInputGroup">
+
+          <div class="playerInputGroup" id="playerOGroup">
             <label for="playerOName">Player O Name: </label>
             <input
               type="text"
@@ -168,6 +169,28 @@
               aria-label="Enter Player O name"
             />
           </div>
+
+          <div class="playerInputGroup">
+            <label for="aiToggle" class="aiToggleLabel"
+              ><input type="checkbox" id="aiToggle" /><span
+                >Play Against AI</span
+              >
+            </label>
+          </div>
+
+          <div
+            class="playerInputGroup aiDifficultyGroup"
+            id="aiDifficultyGroup"
+            style="display: none"
+          >
+            <label for="aiDifficulty">AI Difficulty: </label>
+            <select id="aiDifficulty" aria-label="Select AI Difficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
           <button type="button" class="startGameBtn">Start Game</button>
         </div>
       </div>

@@ -2,6 +2,7 @@
 type Token = "X" | "O";
 type CellValue = "" | Token;
 type WinnerLine = [number, number, number] | null;
+type AIDifficulty = "easy" | "medium" | "hard";
 
 interface Cell {
   addToken: (player: Token) => void;
@@ -249,6 +250,10 @@ function ScreenController() {
   let playerOName = "Player O";
   let focusedCellIndex = 0;
 
+  // AI Variables
+  let isAIEnabled = false;
+  let aiDifficulty: AIDifficulty = "medium";
+
   // Timer Variables
   let timerEnabled = false;
   let timerDuration = 10;
@@ -326,6 +331,23 @@ function ScreenController() {
     document.querySelector<HTMLButtonElement>(".startGameBtn"),
     ".startGameBtn"
   );
+  // AI Toggle Elements
+  const aiToggle = mustFind(
+    document.querySelector<HTMLInputElement>("#aiToggle"),
+    "#aiToggle"
+  );
+  const aiDifficultySelect = mustFind(
+    document.querySelector<HTMLSelectElement>("#aiDifficulty"),
+    "#aiDifficulty"
+  );
+  const aiDifficultyGroup = mustFind(
+    document.querySelector<HTMLElement>("#aiDifficultyGroup"),
+    "#aiDifficultyGroup"
+  );
+  const playerOGroup = mustFind(
+    document.querySelector<HTMLElement>("#playerOGroup"),
+    "#playerOGroup"
+  );
   // Timer Elements
   const timerContainer = mustFind(
     document.querySelector<HTMLElement>(".timerContainer"),
@@ -401,6 +423,145 @@ function ScreenController() {
 
     updateScreen();
     updateScoreBoard();
+  }
+
+  // AI Toggle + Functions
+  function toggleAISetup() {
+    if (aiToggle.checked) {
+      playerOGroup.style.display = "none";
+      aiDifficultyGroup.style.display = "block";
+      isAIEnabled = true;
+    } else {
+      playerOGroup.style.display = "flex";
+      aiDifficultyGroup.style.display = "none";
+      isAIEnabled = false;
+    }
+  }
+
+  function makeAIMove() {
+    if (!isAIEnabled || game.getActivePlayer().token !== "O") return;
+
+    // Set Delayed AI move
+    setTimeout(() => {
+      const availableCells = board
+        .map((cell, index) => ({ cell, index }))
+        .filter(({ cell }) => cell.getValue() === "");
+
+      if (availableCells.length === 0) return;
+
+      let selectedCell: number;
+
+      switch (aiDifficulty) {
+        case "easy":
+          selectedCell = makeEasyMove(availableCells);
+          break;
+        case "medium":
+          selectedCell = makeMediumMove(availableCells);
+          break;
+        case "hard":
+          selectedCell = makeHardMove(availableCells);
+          break;
+        default:
+          selectedCell = makeMediumMove(availableCells);
+      }
+
+      console.log(
+        `AI (${aiDifficulty}) placing token at position ${selectedCell}`
+      );
+
+      updateScreen(game.playRound(selectedCell));
+      updateUndoButton();
+    }, 500);
+  }
+
+  // Easy AI - Random Moves
+  function makeEasyMove(
+    availableCells: { cell: Cell; index: number }[]
+  ): number {
+    const randomIndex = Math.floor(Math.random() * availableCells.length);
+    return availableCells[randomIndex].index;
+  }
+
+  // Medium AI - Block wins, if nothing to block --> random
+  function makeMediumMove(
+    availableCells: { cell: Cell; index: number }[]
+  ): number {
+    // Check if AI can win
+    const winningMove = findWinningMove("O");
+    if (winningMove !== null) return winningMove;
+
+    // Check if Player needs to be blocked
+    const blockingMove = findWinningMove("X");
+    if (blockingMove !== null) return blockingMove;
+
+    // If neither --> Random
+    return makeEasyMove(availableCells);
+  }
+
+  // Hard AI - Medium AI + Take Center / Corners before random
+  function makeHardMove(
+    availableCells: { cell: Cell; index: number }[]
+  ): number {
+    // Check if AI can win
+    const winningMove = findWinningMove("O");
+    if (winningMove !== null) return winningMove;
+
+    // Check if Player needs to be blocked
+    const blockingMove = findWinningMove("X");
+    if (blockingMove !== null) return blockingMove;
+
+    // Take center if available
+    if (board[4].getValue() === "") return 4;
+
+    // Take corners if available
+    const corners = [0, 2, 6, 8];
+    const availableCorners = corners.filter(
+      (corner) => board[corner].getValue() === ""
+    );
+    if (availableCorners.length > 0) {
+      return availableCorners[
+        Math.floor(Math.random() * availableCorners.length)
+      ];
+    }
+
+    // If neither --> Random
+    return makeEasyMove(availableCells);
+  }
+
+  // Find Winning Move
+  function findWinningMove(player: Token): number | null {
+    const winCondition: [number, number, number][] = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8], // Rows
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8], // Columns
+      [0, 4, 8],
+      [2, 4, 6], // Diagonals
+    ];
+
+    for (const [a, b, c] of winCondition) {
+      const values = [
+        board[a].getValue(),
+        board[b].getValue(),
+        board[c].getValue(),
+      ];
+      const emptyIndex = values.indexOf("");
+
+      if (emptyIndex !== -1) {
+        const otherTwo = values.filter((value) => value !== "");
+        if (
+          otherTwo.length === 2 &&
+          otherTwo[0] === player &&
+          otherTwo[1] === player
+        ) {
+          return [a, b, c][emptyIndex];
+        }
+      }
+    }
+
+    return null;
   }
 
   // Set Dynamic Description for Enable Timer
@@ -564,14 +725,27 @@ function ScreenController() {
 
   function startGame() {
     const playerXName = playerXNameInput.value.trim() || "Player X";
-    const playerOName = playerONameInput.value.trim() || "Player O";
+    let playerOName: string;
+
+    if (aiToggle.checked) {
+      isAIEnabled = true;
+      aiDifficulty = aiDifficultySelect.value as AIDifficulty;
+      playerOName = `Varush AI (${
+        aiDifficulty.charAt(0).toUpperCase() + aiDifficulty.slice(1)
+      })`;
+    } else {
+      isAIEnabled = false;
+      playerOName = playerONameInput.value.trim() || "Player O";
+    }
 
     initializeGame(playerXName, playerOName);
     playerSetupOverlay.setAttribute("aria-hidden", "true");
 
     // Focus first cell after starting
-    const firstCell = document.querySelector<HTMLButtonElement>(".cell");
-    firstCell?.focus();
+    setTimeout(() => {
+      const firstCell = document.querySelector<HTMLButtonElement>(".cell");
+      firstCell?.focus();
+    }, 100);
   }
 
   function handlePlayerSetupKeydown(e: KeyboardEvent) {
@@ -830,6 +1004,11 @@ function ScreenController() {
 
     // Start/Restart timer for next move
     if (timerEnabled) startTimer();
+
+    // Trigger AI move if its AI's turn
+    if (isAIEnabled && game.getActivePlayer().token === "O") {
+      makeAIMove();
+    }
   };
 
   // Function to Reset Scoreboard
@@ -842,6 +1021,7 @@ function ScreenController() {
     moveHistory = [];
     stopTimer();
     timerContainer.classList.remove("active");
+    isAIEnabled = false;
 
     game.resetWins();
     updateScoreBoard();
@@ -856,6 +1036,8 @@ function ScreenController() {
     playerSetupOverlay.setAttribute("aria-hidden", "false");
     playerXNameInput.value = "";
     playerONameInput.value = "";
+    aiToggle.checked = false;
+    toggleAISetup();
     playerXNameInput.focus();
   }
 
@@ -888,6 +1070,9 @@ function ScreenController() {
     );
   });
   enableTimerCheckbox.addEventListener("change", toggleTimer);
+
+  // AI Event Listeners
+  aiToggle.addEventListener("change", toggleAISetup);
 }
 
 ScreenController();
