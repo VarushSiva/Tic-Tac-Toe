@@ -261,6 +261,7 @@ function ScreenController() {
       backgroundMedium: "#758ECD",
       backgroundContainer: "#C1CEFE",
       highlight: "#7189FF",
+      highlightRgb: "113, 137, 255",
       text: "#624CAB",
     },
     halloween: {
@@ -268,6 +269,7 @@ function ScreenController() {
       backgroundMedium: "#4A4A4A",
       backgroundContainer: "#2D2D2D",
       highlight: "#F4A259",
+      highlightRgb: "244, 162, 89",
       text: "#8B4513",
     },
   };
@@ -601,6 +603,7 @@ function ScreenController() {
       theme.backgroundContainer
     );
     root.style.setProperty("--color-highlight", theme.highlight);
+    root.style.setProperty("--color-highlight-rgb", theme.highlightRgb);
     root.style.setProperty("--color-text", theme.text);
 
     currentTheme = themeName;
@@ -610,7 +613,9 @@ function ScreenController() {
     document.querySelectorAll(".themeBtn").forEach((button) => {
       button.classList.remove("active");
     });
-    const activeBtn = document.querySelectorAll(`[data-theme="${themeName}"]`);
+    const activeBtn = document.querySelector<HTMLButtonElement>(
+      `[data-theme="${themeName}"]`
+    );
     activeBtn?.classList.add("active");
 
     console.log(`Applied ${themeName} theme`);

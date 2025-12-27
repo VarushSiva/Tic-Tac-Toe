@@ -9,6 +9,7 @@
   --color-background-medium: #758ecd; /* Buttons */
   --color-background-container: #c1cefe; /* Containers, Modals */
   --color-highlight: #7189ff; /* Hover, Active, Highlights */
+  --color-highlight-rgb: 113, 137, 255; /* RGB values for animation highlight */
   --color-text: #624cab; /* Text, Dark UI Elements */
 }
 
@@ -22,10 +23,14 @@ button {
 body {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  background: radial-gradient(circle farthest-side, #a0ddff, #7189ff);
+  background: radial-gradient(
+    circle farthest-side,
+    var(--color-background-light),
+    var(--color-highlight)
+  );
   height: 100vh;
   width: 100vw;
-  color: #624cab;
+  color: var(--color-text);
 }
 
 .mainContainer {
@@ -50,7 +55,7 @@ body {
 
 a,
 a:active {
-  color: #624cab;
+  color: var(--color-text);
 }
 
 /* #endregion */
@@ -63,9 +68,9 @@ a:active {
   justify-content: space-evenly;
   height: 600px;
   width: 350px;
-  background-color: #c1cefe;
+  background-color: var(--color-background-container);
   border-radius: 15px;
-  border: 2px solid #758ecd;
+  border: 2px solid var(--color-background-medium);
 }
 
 .container,
@@ -95,26 +100,26 @@ a:active {
   align-items: center;
   text-align: center;
   font-size: 3rem;
-  border: 2px solid #7189ff;
-  background: #a0ddff;
+  border: 2px solid var(--color-highlight);
+  background: var(--color-background-light);
   cursor: pointer;
   font-weight: 700;
   border-radius: 15px;
-  color: #624cab;
+  color: var(--color-text);
 }
 
 .cell:hover {
-  background-color: #7189ff;
-  border: 3px solid #758ecd;
+  background-color: var(--color-highlight);
+  border: 3px solid var(--color-background-medium);
   transform: scale(1.1);
   transition: 0.3s;
 }
 
 .cell:focus,
 .cell:focus-visible {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
-  background-color: #c1cefe;
+  background-color: var(--color-background-container);
 }
 
 .cell:focus:not(:focus-visible) {
@@ -137,34 +142,34 @@ a:active {
 .undoBtn {
   width: 300px;
   height: 40px;
-  background-color: #758ecd;
-  color: #a0ddff;
+  background-color: var(--color-background-medium);
+  color: var(--color-background-light);
   font-size: 1.6rem;
-  border: 2px solid #624cab;
+  border: 2px solid var(--color-text);
   border-radius: 10px;
   cursor: pointer;
 }
 
 .resetBtn > button:hover,
 .undoBtn:hover:not(:disabled) {
-  background-color: #7189ff;
-  color: #624cab;
-  border: 2px solid #a0ddff;
+  background-color: var(--color-highlight);
+  color: var(--color-text);
+  border: 2px solid var(--color-background-light);
   transform: scale(1.05);
   transition: 0.3s ease;
 }
 
 .resetBtn > button:focus-visible,
 .undoBtn:focus-visible {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
 .undoBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: #a0ddff;
-  color: #758ecd;
+  background-color: var(--color-background-light);
+  color: var(--color-background-medium);
 }
 
 .winner {
@@ -172,20 +177,20 @@ a:active {
   animation-duration: 0.5s;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
-  color: #624cab;
-  background-color: #7189ff;
-  border: 3px solid #a0ddff;
+  color: var(--color-text);
+  background-color: var(--color-highlight);
+  border: 3px solid var(--color-background-light);
 }
 
 @keyframes scaleText {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(113, 137, 255, 0.5);
+    box-shadow: 0 0 10px rgba(var(--color-highlight-rgb), 0.5);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(113, 137, 255, 0.8);
+    box-shadow: 0 0 20px rgba(var(--color-highlight-rgb), 0.8);
   }
 }
 
@@ -205,7 +210,7 @@ a:active {
 
 .paletteTitle {
   font-size: 2rem;
-  color: #624cab;
+  color: var(--color-text);
   margin: 0 0 10px 0;
   letter-spacing: 0.2rem;
 }
@@ -213,8 +218,8 @@ a:active {
 .themeBtn {
   width: 200px;
   padding: 15px;
-  background-color: #c1cefe;
-  border: 2px solid #758ecd;
+  background-color: var(--color-background-container);
+  border: 2px solid var(--color-background-medium);
   border-radius: 15px;
   cursor: pointer;
   display: flex;
@@ -228,27 +233,27 @@ a:active {
 .themeBtn:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  border-color: #624cab;
+  border-color: var(--color-text);
 }
 
 .themeBtn:focus-visible {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
 .themeBtn.active {
-  border: 3px solid #624cab;
-  background-color: #7189ff;
+  border: 3px solid var(--color-text);
+  background-color: var(--color-highlight);
 }
 
 .themeName {
   font-size: 1.3rem;
-  color: #624cab;
+  color: var(--color-text);
   text-align: center;
 }
 
 .themeBtn.active .themeName {
-  color: #c1cefe;
+  color: var(--color-background-container);
 }
 
 .themePreview {
@@ -281,8 +286,8 @@ a:active {
   height: 120px;
   width: 350px;
   border-radius: 15px;
-  background: #c1cefe;
-  border: 2px solid #758ecd;
+  background: var(--color-background-container);
+  border: 2px solid var(--color-background-medium);
   padding: 5px 0;
   text-align: center;
 }
@@ -309,7 +314,7 @@ a:active {
 }
 
 .activePlayer {
-  border: 2px solid #7189ff;
+  border: 2px solid var(--color-highlight);
   border-radius: 15px;
   padding: 0 10px;
   transform: scale(1.1);
@@ -324,10 +329,10 @@ a:active {
   right: 20px;
   width: 120px;
   height: 45px;
-  background-color: #758ecd;
-  color: #a0ddff;
+  background-color: var(--color-background-medium);
+  color: var(--color-background-light);
   font-size: 1.2rem;
-  border: 2px solid #624cab;
+  border: 2px solid var(--color-text);
   border-radius: 10px;
   cursor: pointer;
   display: flex;
@@ -340,15 +345,15 @@ a:active {
 }
 
 .settingsBtn:hover {
-  background-color: #7189ff;
-  color: #624cab;
-  border: 2px solid #a0ddff;
+  background-color: var(--color-highlight);
+  color: var(--color-text);
+  border: 2px solid var(--color-background-light);
   transform: scale(1.05);
   transition: 0.3s ease;
 }
 
 .settingsBtn:focus-visible {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
@@ -371,8 +376,8 @@ a:active {
 }
 
 .settingsModal {
-  background-color: #c1cefe;
-  border: 2px solid #758ecd;
+  background-color: var(--color-background-container);
+  border: 2px solid var(--color-background-medium);
   border-radius: 15px;
   width: 90%;
   max-width: 500px;
@@ -398,20 +403,20 @@ a:active {
   justify-content: space-between;
   align-items: center;
   padding: 20px 25px;
-  border-bottom: 2px solid #758ecd;
+  border-bottom: 2px solid var(--color-background-medium);
 }
 
 .settingsHeader > h2 {
   font-size: 1.8rem;
   margin: 0;
-  color: #624cab;
+  color: var(--color-text);
 }
 
 .closeSettings {
   background: none;
   border: none;
   font-size: 2.5rem;
-  color: #624cab;
+  color: var(--color-text);
   cursor: pointer;
   width: 40px;
   height: 40px;
@@ -423,12 +428,12 @@ a:active {
 }
 
 .closeSettings:hover {
-  background-color: #7189ff;
-  color: #a0ddff;
+  background-color: var(--color-highlight);
+  color: var(--color-background-light);
 }
 
 .closeSettings:focus-visible {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
@@ -439,7 +444,7 @@ a:active {
 .settingsSection {
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #758ecd;
+  border-bottom: 1px solid var(--color-background-medium);
 }
 
 .settingsSection:last-child {
@@ -450,7 +455,7 @@ a:active {
 
 .sectionTitle {
   font-size: 1.5rem;
-  color: #624cab;
+  color: var(--color-text);
   margin: 0 0 15px 0;
   font-family: "Chicle", sans-serif;
   letter-spacing: 2px;
@@ -466,26 +471,26 @@ a:active {
   gap: 12px;
   cursor: pointer;
   font-size: 1.3rem;
-  color: #624cab;
+  color: var(--color-text);
 }
 
 .settingItem input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #7189ff;
+  accent-color: var(--color-highlight);
   border-radius: 6px;
   appearance: none;
-  border: 2px solid #758ecd;
-  background-color: #a0ddff;
+  border: 2px solid var(--color-background-medium);
+  background-color: var(--color-background-light);
   position: relative;
   flex-shrink: 0;
   margin: 0;
 }
 
 .settingItem input[type="checkbox"]:checked {
-  background-color: #7189ff;
-  border-color: #624cab;
+  background-color: var(--color-highlight);
+  border-color: var(--color-text);
 }
 
 .settingItem input[type="checkbox"]:checked::after {
@@ -494,20 +499,20 @@ a:active {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #c1cefe;
+  color: var(--color-background-container);
   font-size: 16px;
   font-weight: bold;
 }
 
 .settingItem input[type="checkbox"]:focus-visible {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
 .settingDescription {
   margin: 8px 0 0 32px;
   font-size: 1rem;
-  color: #758ecd;
+  color: var(--color-background-medium);
   font-family: Arial, Helvetica, sans-serif;
   letter-spacing: normal;
 }
@@ -538,8 +543,8 @@ a:active {
 .timerContainer {
   width: 300px;
   height: 30px;
-  background-color: #a0ddff;
-  border: 2px solid #758ecd;
+  background-color: var(--color-background-light);
+  border: 2px solid var(--color-background-medium);
   border-radius: 10px;
   position: relative;
   overflow: hidden;
@@ -553,7 +558,11 @@ a:active {
 
 .timerBar {
   height: 100%;
-  background: linear-gradient(90deg, #758ecd, #7189ff);
+  background: linear-gradient(
+    90deg,
+    var(--color-background-medium),
+    var(--color-highlight)
+  );
   width: 100%;
   transition: width 0.1s linear;
   border-radius: 8px;
@@ -567,13 +576,17 @@ a:active {
   transform: translate(-50%, -50%);
   font-size: 1.2rem;
   font-weight: bold;
-  color: #624cab;
+  color: var(--color-text);
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
 .timerBar.warning {
-  background: linear-gradient(90deg, #758ecd, #7189ff);
+  background: linear-gradient(
+    90deg,
+    var(--color-background-medium),
+    var(--color-highlight)
+  );
   animation: pulse 0.5s ease-in-out infinite;
 }
 
@@ -593,7 +606,7 @@ a:active {
 
 .reduce-motion .timerBar.warning {
   animation: none;
-  background: #7189ff;
+  background: var(--color-highlight);
 }
 /* #endregion */
 
@@ -617,8 +630,8 @@ a:active {
 }
 
 .playerSetupModal {
-  background-color: #c1cefe;
-  border: 2px solid #758ecd;
+  background-color: var(--color-background-container);
+  border: 2px solid var(--color-background-medium);
   border-radius: 15px;
   width: 90%;
   max-width: 450px;
@@ -628,14 +641,14 @@ a:active {
 
 .playerSetupHeader {
   padding: 25px;
-  border-bottom: 2px solid #758ecd;
+  border-bottom: 2px solid var(--color-background-medium);
   text-align: center;
 }
 
 .playerSetupHeader > h2 {
   font-size: 1.8rem;
   margin: 0;
-  color: #624cab;
+  color: var(--color-text);
 }
 
 .playerSetupContent {
@@ -653,7 +666,7 @@ a:active {
 
 .playerInputGroup > label {
   font-size: 1.3rem;
-  color: #624cab;
+  color: var(--color-text);
   font-family: "Chicle", sans-serif;
   letter-spacing: 2px;
 }
@@ -661,31 +674,31 @@ a:active {
 .playerInputGroup > input {
   padding: 12px 15px;
   font-size: 1.1rem;
-  border: 2px solid #758ecd;
+  border: 2px solid var(--color-background-medium);
   border-radius: 8px;
-  background-color: #a0ddff;
-  color: #624cab;
+  background-color: var(--color-background-light);
+  color: var(--color-text);
   font-family: Arial, Helvetica, sans-serif;
   letter-spacing: 1px;
 }
 
 .playerInputGroup > input:focus {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
-  background-color: #c1cefe;
+  background-color: var(--color-background-container);
 }
 
 .playerInputGroup > input::placeholder {
-  color: #758ecd;
+  color: var(--color-background-medium);
 }
 
 .startGameBtn {
   width: 100%;
   height: 50px;
-  background-color: #758ecd;
-  color: #a0ddff;
+  background-color: var(--color-background-medium);
+  color: var(--color-background-light);
   font-size: 1.6rem;
-  border: 2px solid #624cab;
+  border: 2px solid var(--color-text);
   border-radius: 10px;
   cursor: pointer;
   font-family: "Chicle", sans-serif;
@@ -694,15 +707,15 @@ a:active {
 }
 
 .startGameBtn:hover {
-  background-color: #7189ff;
-  color: #624cab;
-  border: 2px solid #a0ddff;
+  background-color: var(--color-highlight);
+  color: var(--color-text);
+  border: 2px solid var(--color-background-light);
   transform: scale(1.02);
   transition: 0.3s ease;
 }
 
 .startGameBtn:focus-visible {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
@@ -712,7 +725,7 @@ a:active {
   gap: 12px;
   cursor: pointer;
   font-size: 1.3rem;
-  color: #624cab;
+  color: var(--color-text);
   font-family: "Chicle", sans-serif;
   letter-spacing: 2px;
 }
@@ -721,19 +734,19 @@ a:active {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #7189ff;
+  accent-color: var(--color-highlight);
   border-radius: 6px;
   appearance: none;
-  border: 2px solid #758ecd;
-  background-color: #a0ddff;
+  border: 2px solid var(--color-background-medium);
+  background-color: var(--color-background-light);
   position: relative;
   flex-shrink: 0;
   margin: 0;
 }
 
 .aiToggleLabel input[type="checkbox"]:checked {
-  background-color: #7189ff;
-  border-color: #624cab;
+  background-color: var(--color-highlight);
+  border-color: var(--color-text);
 }
 
 .aiToggleLabel input[type="checkbox"]:checked::after {
@@ -742,36 +755,36 @@ a:active {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #c1cefe;
+  color: var(--color-background-container);
   font-size: 16px;
   font-weight: bold;
 }
 
 .aiToggleLabel input[type="checkbox"]:focus-visible {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
 .playerInputGroup select {
   padding: 12px 15px;
   font-size: 1.1rem;
-  border: 2px solid #758ecd;
+  border: 2px solid var(--color-background-medium);
   border-radius: 8px;
-  background-color: #a0ddff;
-  color: #624cab;
+  background-color: var(--color-background-light);
+  color: var(--color-text);
   font-family: Arial, Helvetica, sans-serif;
   letter-spacing: 1px;
   cursor: pointer;
 }
 
 .playerInputGroup select:focus {
-  outline: 3px solid #624cab;
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
-  background-color: #c1cefe;
+  background-color: var(--color-background-container);
 }
 
 .playerInputGroup select option {
-  background-color: #c1cefe;
-  color: #624cab;
+  background-color: var(--color-background-container);
+  color: var(--color-text);
 }
 /* #endregion */

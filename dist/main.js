@@ -176,6 +176,25 @@ function ScreenController() {
     // AI Variables
     let isAIEnabled = false;
     let aiDifficulty = "medium";
+    // Theme Data
+    const themes = {
+        default: {
+            backgroundLight: "#A0DDFF",
+            backgroundMedium: "#758ECD",
+            backgroundContainer: "#C1CEFE",
+            highlight: "#7189FF",
+            highlightRgb: "113, 137, 255",
+            text: "#624CAB",
+        },
+        halloween: {
+            backgroundLight: "#FF6B35",
+            backgroundMedium: "#4A4A4A",
+            backgroundContainer: "#2D2D2D",
+            highlight: "#F4A259",
+            highlightRgb: "244, 162, 89",
+            text: "#8B4513",
+        },
+    };
     // Timer Variables
     let timerEnabled = false;
     let timerDuration = 10;
@@ -374,6 +393,46 @@ function ScreenController() {
         }
         return null;
     }
+    // Theme Functions
+    let currentTheme = "default";
+    function applyTheme(themeName) {
+        const theme = themes[themeName];
+        const root = document.documentElement;
+        // Set Colours from theme data to css variables
+        root.style.setProperty("--color-background-light", theme.backgroundLight);
+        root.style.setProperty("--color-background-medium", theme.backgroundMedium);
+        root.style.setProperty("--color-background-container", theme.backgroundContainer);
+        root.style.setProperty("--color-highlight", theme.highlight);
+        root.style.setProperty("--color-highlight-rgb", theme.highlightRgb);
+        root.style.setProperty("--color-text", theme.text);
+        currentTheme = themeName;
+        localStorage.setItem("theme", themeName);
+        // Update active state on theme buttons
+        document.querySelectorAll(".themeBtn").forEach((button) => {
+            button.classList.remove("active");
+        });
+        const activeBtn = document.querySelector(`[data-theme="${themeName}"]`);
+        activeBtn?.classList.add("active");
+        console.log(`Applied ${themeName} theme`);
+    }
+    function setupThemeButtons() {
+        const themeButtons = document.querySelectorAll(".themeBtn");
+        themeButtons.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const theme = btn.dataset.theme;
+                applyTheme(theme);
+            });
+        });
+    }
+    // Load Saved Theme
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme && themes[savedTheme]) {
+        applyTheme(savedTheme);
+    }
+    else {
+        applyTheme("default");
+    }
+    setupThemeButtons();
     // Set Dynamic Description for Enable Timer
     enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;
     // Timer Functions
