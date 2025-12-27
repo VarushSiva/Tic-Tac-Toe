@@ -63,13 +63,13 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
         {
             name: playerOneName,
             token: "X",
-            wins: 0
+            wins: 0,
         },
         {
             name: playerTwoName,
             token: "O",
-            wins: 0
-        }
+            wins: 0,
+        },
     ];
     // Set active player
     let activePlayer = players[0];
@@ -90,9 +90,9 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
         players[1].wins = 0;
     };
     const resetPlayer = () => (activePlayer = players[0]);
-    // Print new round 
+    // Print new round
     const printNewRound = () => {
-        // Print board using method + Print/Log Players turn using method getActivePlayer 
+        // Print board using method + Print/Log Players turn using method getActivePlayer
         board.printBoard();
         console.log(`${getActivePlayer().name}'s Turn`);
     };
@@ -101,14 +101,21 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
         const boardState = board.getBoard();
         // Win Condition combos
         const winCondition = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-            [0, 4, 8], [2, 4, 6] // Diagonals
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8], // Rows
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8], // Columns
+            [0, 4, 8],
+            [2, 4, 6], // Diagonals
         ];
         // Check with each combo if there is a match
         for (const [a, b, c] of winCondition) {
             // Check if board[a] has a value (Not '') and then compare to board[b] and board[c]
-            if (boardState[a].getValue() && boardState[a].getValue() === boardState[b].getValue() && boardState[a].getValue() === boardState[c].getValue()) {
+            if (boardState[a].getValue() &&
+                boardState[a].getValue() === boardState[b].getValue() &&
+                boardState[a].getValue() === boardState[c].getValue()) {
                 // Return index to add winner class later
                 return [a, b, c];
             }
@@ -117,7 +124,7 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
     };
     // Play Round Logic
     const playRound = (cellIndex) => {
-        // If token is already present, return 
+        // If token is already present, return
         const gameBoard = board.getBoard();
         const validPosition = gameBoard[cellIndex]?.getValue() === "";
         if (!validPosition)
@@ -139,14 +146,21 @@ function GameController(playerOneName = "Player X", playerTwoName = "Player O") 
     // Return Methods:
     // Console playRound | UI Version = getActivePlayer + getBoard
     return {
-        playRound, getActivePlayer, addWin, getPlayerXWins, resetWins, getPlayerOWins, resetPlayer, getBoard: board.getBoard,
+        playRound,
+        getActivePlayer,
+        addWin,
+        getPlayerXWins,
+        resetWins,
+        getPlayerOWins,
+        resetPlayer,
+        getBoard: board.getBoard,
         undoMove: (cellIndex) => {
             // Reset the cell
             board.getBoard()[cellIndex]?.resetValue();
             // Switch Player back
             switchPlayerTurn();
             printNewRound();
-        }
+        },
     };
 }
 // Add Screen Controller
@@ -211,21 +225,22 @@ function ScreenController() {
         animationsEnabled = reduceMotionCheckbox.checked ? false : true;
         // Apply or remove no-animation class to body
         if (animationsEnabled) {
-            document.body.classList.remove('reduce-motion');
+            document.body.classList.remove("reduce-motion");
         }
         else {
-            document.body.classList.add('reduce-motion');
+            document.body.classList.add("reduce-motion");
         }
         console.log(`Animations enabled: ${animationsEnabled}`);
     }
     // Load Saved Preference from localStorage if available
-    const savedMotionPref = localStorage.getItem('reduceMotion');
-    if (savedMotionPref === 'true') {
+    const savedMotionPref = localStorage.getItem("reduceMotion");
+    if (savedMotionPref === "true") {
         reduceMotionCheckbox.checked = true;
         toggleAnimations();
     }
-    // Check for System Preference 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && !savedMotionPref) {
+    // Check for System Preference
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+        !savedMotionPref) {
         reduceMotionCheckbox.checked = true;
         toggleAnimations();
     }
@@ -246,7 +261,8 @@ function ScreenController() {
         if (!timerEnabled || !isGameInitialized)
             return;
         const availableCells = board.filter((cell) => cell.getValue() === "");
-        const isGameOver = availableCells.length === 0 || playerTurnDiv.textContent.includes("Wins!");
+        const isGameOver = availableCells.length === 0 ||
+            playerTurnDiv.textContent.includes("Wins!");
         if (isGameOver)
             return;
         // Clear any existing timer
@@ -254,12 +270,12 @@ function ScreenController() {
         currentTime = timerDuration;
         isAutoMove = false;
         updateTimerDisplay();
-        timerContainer.classList.add('active');
+        timerContainer.classList.add("active");
         timerInterval = window.setInterval(() => {
             currentTime--;
             updateTimerDisplay();
             if (currentTime <= 5) {
-                timerBar.classList.add('warning');
+                timerBar.classList.add("warning");
             }
             if (currentTime <= 0) {
                 makeAutoMove();
@@ -271,7 +287,7 @@ function ScreenController() {
             clearInterval(timerInterval);
             timerInterval = null;
         }
-        timerBar.classList.remove('warning');
+        timerBar.classList.remove("warning");
     }
     function updateTimerDisplay() {
         const percentage = (currentTime / timerDuration) * 100;
@@ -282,7 +298,9 @@ function ScreenController() {
         stopTimer();
         isAutoMove = true;
         // Find available cells
-        const availableCells = board.map((cell, index) => ({ cell, index })).filter(({ cell }) => cell.getValue() === "");
+        const availableCells = board
+            .map((cell, index) => ({ cell, index }))
+            .filter(({ cell }) => cell.getValue() === "");
         if (availableCells.length > 0) {
             // Pick Random Available Cell
             const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
@@ -291,7 +309,7 @@ function ScreenController() {
             moveHistory.push({
                 cellIndex: randomCell.index,
                 player: game.getActivePlayer().token,
-                wasAutoMove: true
+                wasAutoMove: true,
             });
             // Highlight the auto selected cell
             const cells = Array.from(document.querySelectorAll(".cell"));
@@ -308,16 +326,17 @@ function ScreenController() {
     }
     function toggleTimer() {
         timerEnabled = enableTimerCheckbox.checked;
-        localStorage.setItem('timerEnabled', timerEnabled.toString());
+        localStorage.setItem("timerEnabled", timerEnabled.toString());
         const availableCells = board.filter((cell) => cell.getValue() === "");
-        const isGameOver = availableCells.length === 0 || playerTurnDiv.textContent.includes("Wins!");
+        const isGameOver = availableCells.length === 0 ||
+            playerTurnDiv.textContent.includes("Wins!");
         if (timerEnabled && isGameInitialized) {
             if (isGameOver) {
                 // Show timer container but dont start countdown
-                timerContainer.classList.add('active');
-                timerBar.style.width = '100%';
-                timerText.textContent = 'Waiting For Next Round';
-                timerBar.classList.remove('warning');
+                timerContainer.classList.add("active");
+                timerBar.style.width = "100%";
+                timerText.textContent = "Waiting For Next Round";
+                timerBar.classList.remove("warning");
             }
             else {
                 startTimer();
@@ -325,12 +344,12 @@ function ScreenController() {
         }
         else {
             stopTimer();
-            timerContainer.classList.remove('active');
+            timerContainer.classList.remove("active");
         }
         console.log(`Timer enabled: ${timerEnabled}`);
     }
-    const savedTimerPref = localStorage.getItem('timerEnabled');
-    if (savedTimerPref === 'true') {
+    const savedTimerPref = localStorage.getItem("timerEnabled");
+    if (savedTimerPref === "true") {
         enableTimerCheckbox.checked = true;
         timerEnabled = true;
     }
@@ -388,7 +407,8 @@ function ScreenController() {
         const cells = Array.from(boardDiv.querySelectorAll(".cell"));
         // Only handle if Focus is on a Cell
         const activeElement = document.activeElement;
-        if (!(activeElement instanceof HTMLElement) || !activeElement.classList.contains('cell'))
+        if (!(activeElement instanceof HTMLElement) ||
+            !activeElement.classList.contains("cell"))
             return;
         // Handle Arrow Keys
         if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
@@ -446,12 +466,12 @@ function ScreenController() {
         // Remove and Read Active player class
         const activePlayer = game.getActivePlayer();
         if (activePlayer.token === "X") {
-            playerOScore.classList.remove('activePlayer');
-            playerXScore.classList.add('activePlayer');
+            playerOScore.classList.remove("activePlayer");
+            playerXScore.classList.add("activePlayer");
         }
         else {
-            playerXScore.classList.remove('activePlayer');
-            playerOScore.classList.add('activePlayer');
+            playerXScore.classList.remove("activePlayer");
+            playerOScore.classList.add("activePlayer");
         }
     };
     // Add eventListeners for the board
@@ -475,7 +495,7 @@ function ScreenController() {
         moveHistory.push({
             cellIndex: selectedCell,
             player: game.getActivePlayer().token,
-            wasAutoMove: false
+            wasAutoMove: false,
         });
         // Play round and after every round --> Update Screen
         updateScreen(game.playRound(selectedCell));
@@ -509,7 +529,7 @@ function ScreenController() {
             // Create Buttons
             const cellButton = document.createElement("button");
             cellButton.type = "button";
-            cellButton.classList.add('cell');
+            cellButton.classList.add("cell");
             // Create a data attribute to identify the column + set textContent to cell value
             cellButton.dataset.index = String(index);
             // Make Keyboard Focusable
@@ -534,7 +554,7 @@ function ScreenController() {
         const cells = Array.from(boardDiv.querySelectorAll(".cell"));
         cells[focusedCellIndex]?.focus();
     }
-    // Update Screen method 
+    // Update Screen method
     const updateScreen = (isWinner = null) => {
         if (!isGameInitialized)
             return;
@@ -549,15 +569,15 @@ function ScreenController() {
             undoBtn.disabled = true;
             // Show Next Round message if timer is enabled
             if (timerEnabled) {
-                timerContainer.classList.add('active');
-                timerBar.style.width = '100%';
-                timerText.textContent = 'Waiting For Next Round';
-                timerBar.classList.remove('warning');
+                timerContainer.classList.add("active");
+                timerBar.style.width = "100%";
+                timerText.textContent = "Waiting For Next Round";
+                timerBar.classList.remove("warning");
             }
             // Set variables for isWinner Values
             const [a, b, c] = isWinner;
             const cells = Array.from(boardDiv.querySelectorAll(".cell"));
-            [a, b, c].forEach(index => cells[index]?.classList.add("winner"));
+            [a, b, c].forEach((index) => cells[index]?.classList.add("winner"));
             cells.forEach((cellBtn) => (cellBtn.disabled = true));
             // Print Winner
             playerTurnDiv.textContent = `${activePlayer} Wins!`;
@@ -574,10 +594,10 @@ function ScreenController() {
             undoBtn.disabled = true;
             // Show Next Round message if timer is enabled
             if (timerEnabled) {
-                timerContainer.classList.add('active');
-                timerBar.style.width = '100%';
-                timerText.textContent = 'Waiting For Next Round';
-                timerBar.classList.remove('warning');
+                timerContainer.classList.add("active");
+                timerBar.style.width = "100%";
+                timerText.textContent = "Waiting For Next Round";
+                timerBar.classList.remove("warning");
             }
             playerTurnDiv.textContent = `Its a Draw!`;
             return;
@@ -596,7 +616,7 @@ function ScreenController() {
         focusedCellIndex = 0;
         moveHistory = [];
         stopTimer();
-        timerContainer.classList.remove('active');
+        timerContainer.classList.remove("active");
         game.resetWins();
         updateScoreBoard();
         // Clear board
@@ -630,7 +650,7 @@ function ScreenController() {
     // Accessibility Event Listener
     reduceMotionCheckbox.addEventListener("change", () => {
         toggleAnimations();
-        localStorage.setItem('reduceMotion', reduceMotionCheckbox.checked.toString());
+        localStorage.setItem("reduceMotion", reduceMotionCheckbox.checked.toString());
     });
     enableTimerCheckbox.addEventListener("change", toggleTimer);
 }

@@ -1,128 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="./styles/styles.css">
-    <link rel="stylesheet" href="./styles/reset.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Chicle&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link rel="stylesheet" href="./styles/styles.css" />
+    <link rel="stylesheet" href="./styles/reset.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chicle&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <div class="empty"></div>
     <div class="mainContainer">
-        <h1 class="title">Tic-Tac-Toe</h1>
-        <!-- GameBoard -->
-        <div class="container">
-            <!-- aria-atomic makes sure entire message is read -->
-            <h2 id="game-status" class="turn" role="status" aria-live="polite" aria-atomic="true"></h2>
-            <div class="timerContainer">
-                <div class="timerBar" id="timerBar"></div>
-                <span class="timerText" id="timerText"></span>
-            </div>
-            <div class="board" tabindex="0" role="group" aria-label="tic-tac-toe board" aria-describedby="game-instructions game-status"></div>
-            <p id="game-instructions">Use arrow keys to move between cells. Press Enter or space to place your mark.</p>
-            <div class="undoContainer">
-                <button type="button" class="undoBtn" disabled>Undo Move</button>
-            </div>
-            <div class="resetBtn">
-                <button type="button" class="resetGame">New Round</button>
-                <button type="button" class="resetScore">New Game</button>
-            </div>
+      <h1 class="title">Tic-Tac-Toe</h1>
+      <!-- GameBoard -->
+      <div class="container">
+        <!-- aria-atomic makes sure entire message is read -->
+        <h2
+          id="game-status"
+          class="turn"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></h2>
+        <div class="timerContainer">
+          <div class="timerBar" id="timerBar"></div>
+          <span class="timerText" id="timerText"></span>
         </div>
-        <!-- ScoreBoard -->
-        <div class="scoreBoardContainer">
-            <div class="scoreBoard">
-                <h4 class="scoreBoardLabel">SCOREBOARD</h4>
-                <div class="playerXScore"><p id="playerXScore"></p></div>
-                <div class="playerOScore"><p id="playerOScore"></p></div>
-            </div>
+        <div
+          class="board"
+          tabindex="0"
+          role="group"
+          aria-label="tic-tac-toe board"
+          aria-describedby="game-instructions game-status"
+        ></div>
+        <p id="game-instructions">
+          Use arrow keys to move between cells. Press Enter or space to place
+          your mark.
+        </p>
+        <div class="undoContainer">
+          <button type="button" class="undoBtn" disabled>Undo Move</button>
         </div>
-        <h4 class="author">Created By: <a href="https://github.com/VarushSiva">@VarushSiva</a></h4>
+        <div class="resetBtn">
+          <button type="button" class="resetGame">New Round</button>
+          <button type="button" class="resetScore">New Game</button>
+        </div>
+      </div>
+      <!-- ScoreBoard -->
+      <div class="scoreBoardContainer">
+        <div class="scoreBoard">
+          <h4 class="scoreBoardLabel">SCOREBOARD</h4>
+          <div class="playerXScore"><p id="playerXScore"></p></div>
+          <div class="playerOScore"><p id="playerOScore"></p></div>
+        </div>
+      </div>
+      <h4 class="author">
+        Created By: <a href="https://github.com/VarushSiva">@VarushSiva</a>
+      </h4>
     </div>
     <!-- Colour Palette -->
     <div class="colourPalette">
-        <div class="uranianBlue palette">
-            <div class="colour"><p class="colourID">#A0DDFF</p></div>
-            <div class="colourText">Uranian Blue</div>
-        </div>
-        <div class="vistaBlue palette">
-            <div class="colour"><p class="colourID">#758ECD</p></div>
-            <div class="colourText">Vista Blue</div>
-        </div>
-        <div class="periwinkle palette">
-            <div class="colour"><p class="colourID">#C1CEFE</p></div>
-            <div class="colourText">Periwinkle</div>
-        </div>
-        <div class="cornflowerBlue palette">
-            <div class="colour"><p class="colourID">#7189FF</p></div>
-            <div class="colourText">Cornflower Blue</div>
-        </div>
-        <div class="royalPurple palette">
-            <div class="colour"><p class="colourID">#624CAB</p></div>
-            <div class="colourText">Royal Purple</div>
-        </div>
+      <div class="uranianBlue palette">
+        <div class="colour"><p class="colourID">#A0DDFF</p></div>
+        <div class="colourText">Uranian Blue</div>
+      </div>
+      <div class="vistaBlue palette">
+        <div class="colour"><p class="colourID">#758ECD</p></div>
+        <div class="colourText">Vista Blue</div>
+      </div>
+      <div class="periwinkle palette">
+        <div class="colour"><p class="colourID">#C1CEFE</p></div>
+        <div class="colourText">Periwinkle</div>
+      </div>
+      <div class="cornflowerBlue palette">
+        <div class="colour"><p class="colourID">#7189FF</p></div>
+        <div class="colourText">Cornflower Blue</div>
+      </div>
+      <div class="royalPurple palette">
+        <div class="colour"><p class="colourID">#624CAB</p></div>
+        <div class="colourText">Royal Purple</div>
+      </div>
     </div>
     <!-- Settings Panel -->
-     <div class="settingsOverlay" id="settingsOverlay" aria-hidden="true">
-        <div class="settingsModal" role="dialog" aria-labelledby="settingsTitle" aria-modal="true">
-            <div class="settingsHeader">
-                <h2 id="settingsTitle">Settings</h2>
-                <button type="button" class="closeSettings" aria-label="Close settings">×</button>
-            </div>
-            <div class="settingsContent">
-                <!-- Game Settings Section -->
-                 <div class="settingsSection">
-                    <h3 class="sectionTitle">Game Settings</h3>
-                    <!-- Move Timer -->
-                    <div class="settingItem">
-                        <label for="enableTimer">
-                            <input type="checkbox" id="enableTimer" />
-                            <span>Enable Move Timer</span>
-                        </label>
-                        <p class="settingDescription" id="enableTimerDescription"></p>
-                    </div>
-                 </div>
-                 <div class="settingsSection">
-                    <h3 class="sectionTitle">Accessibility</h3>
-                    <!-- ReduceMotion -->
-                    <div class="settingItem">
-                        <label for="reduceMotion">
-                            <input type="checkbox" id="reduceMotion" />
-                            <span>Reduce Motion</span>
-                        </label>
-                        <p class="settingDescription">Disables animations and transitions</p>
-                    </div>
-                 </div>
-            </div>
+    <div class="settingsOverlay" id="settingsOverlay" aria-hidden="true">
+      <div
+        class="settingsModal"
+        role="dialog"
+        aria-labelledby="settingsTitle"
+        aria-modal="true"
+      >
+        <div class="settingsHeader">
+          <h2 id="settingsTitle">Settings</h2>
+          <button
+            type="button"
+            class="closeSettings"
+            aria-label="Close settings"
+          >
+            ×
+          </button>
         </div>
-     </div>
-     <!-- Player Setup Modal -->
-      <div class="playerSetupOverlay" id="playerSetupOverlay" aria-hidden="false">
-        <div class="playerSetupModal" role="dialog" aria-labelledby="playerSetupTitle" aria-modal="true">
-            <div class="playerSetupHeader">
-                <h2 id="playerSetupTitle">Player Setup</h2>
+        <div class="settingsContent">
+          <!-- Game Settings Section -->
+          <div class="settingsSection">
+            <h3 class="sectionTitle">Game Settings</h3>
+            <!-- Move Timer -->
+            <div class="settingItem">
+              <label for="enableTimer">
+                <input type="checkbox" id="enableTimer" />
+                <span>Enable Move Timer</span>
+              </label>
+              <p class="settingDescription" id="enableTimerDescription"></p>
             </div>
-            <div class="playerSetupContent">
-                <div class="playerInputGroup">
-                    <label for="playerXName">Player X Name: </label>
-                    <input type="text" id="playerXName" maxlength="15" placeholder="Player X" aria-label="Enter Player X name" />
-                </div>
-                <div class="playerInputGroup">
-                    <label for="playerOName">Player O Name: </label>
-                    <input type="text" id="playerOName" maxlength="15" placeholder="Player O" aria-label="Enter Player O name" />
-                </div>
-                <button type="button" class="startGameBtn">Start Game</button>
+          </div>
+          <div class="settingsSection">
+            <h3 class="sectionTitle">Accessibility</h3>
+            <!-- ReduceMotion -->
+            <div class="settingItem">
+              <label for="reduceMotion">
+                <input type="checkbox" id="reduceMotion" />
+                <span>Reduce Motion</span>
+              </label>
+              <p class="settingDescription">
+                Disables animations and transitions
+              </p>
             </div>
+          </div>
         </div>
       </div>
-     <!-- Settings Button -->
-      <button type="button" class="settingsBtn" aria-label="Open accessibility settings">
-        <span aria-hidden="true"><i class="fa-solid fa-gear"></i></span> Settings
-      </button>
+    </div>
+    <!-- Player Setup Modal -->
+    <div class="playerSetupOverlay" id="playerSetupOverlay" aria-hidden="false">
+      <div
+        class="playerSetupModal"
+        role="dialog"
+        aria-labelledby="playerSetupTitle"
+        aria-modal="true"
+      >
+        <div class="playerSetupHeader">
+          <h2 id="playerSetupTitle">Player Setup</h2>
+        </div>
+        <div class="playerSetupContent">
+          <div class="playerInputGroup">
+            <label for="playerXName">Player X Name: </label>
+            <input
+              type="text"
+              id="playerXName"
+              maxlength="15"
+              placeholder="Player X"
+              aria-label="Enter Player X name"
+            />
+          </div>
+          <div class="playerInputGroup">
+            <label for="playerOName">Player O Name: </label>
+            <input
+              type="text"
+              id="playerOName"
+              maxlength="15"
+              placeholder="Player O"
+              aria-label="Enter Player O name"
+            />
+          </div>
+          <button type="button" class="startGameBtn">Start Game</button>
+        </div>
+      </div>
+    </div>
+    <!-- Settings Button -->
+    <button
+      type="button"
+      class="settingsBtn"
+      aria-label="Open accessibility settings"
+    >
+      <span aria-hidden="true"><i class="fa-solid fa-gear"></i></span> Settings
+    </button>
     <script src="./dist/main.js" defer></script>
-</body>
+  </body>
 </html>
