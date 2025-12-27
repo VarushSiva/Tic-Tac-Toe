@@ -272,6 +272,22 @@ function ScreenController() {
       highlightRgb: "244, 162, 89",
       text: "#8B4513",
     },
+    christmas: {
+      backgroundLight: "#FFE5B4",
+      backgroundMedium: "#C41E3A",
+      backgroundContainer: "#0F8A5F",
+      highlight: "#FFD700",
+      highlightRgb: "255, 215, 0",
+      text: "#FFFFFF",
+    },
+    valentine: {
+      backgroundLight: "#FFB3BA",
+      backgroundMedium: "#FF6B9D",
+      backgroundContainer: "#FFC9DE",
+      highlight: "#C9184A",
+      highlightRgb: "201, 24, 74",
+      text: "#A4133C",
+    },
   };
 
   // Timer Variables
