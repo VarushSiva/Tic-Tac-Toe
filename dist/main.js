@@ -187,28 +187,28 @@ function ScreenController() {
             text: "#624CAB",
         },
         halloween: {
-            backgroundLight: "#FF6B35",
+            backgroundLight: "#F4A259",
             backgroundMedium: "#4A4A4A",
             backgroundContainer: "#2D2D2D",
-            highlight: "#F4A259",
-            highlightRgb: "244, 162, 89",
-            text: "#8B4513",
+            highlight: "#8B4513",
+            highlightRgb: "139, 69, 19",
+            text: "#FF6B35",
         },
         christmas: {
-            backgroundLight: "#FFE5B4",
-            backgroundMedium: "#C41E3A",
+            backgroundLight: "#C41E3A",
+            backgroundMedium: "#B97B3A",
             backgroundContainer: "#0F8A5F",
-            highlight: "#FFD700",
-            highlightRgb: "255, 215, 0",
-            text: "#FFFFFF",
+            highlight: "#50C952",
+            highlightRgb: "80, 201, 82",
+            text: "#FFE5B4",
         },
         valentine: {
-            backgroundLight: "#FFB3BA",
-            backgroundMedium: "#FF6B9D",
-            backgroundContainer: "#FFC9DE",
-            highlight: "#C9184A",
-            highlightRgb: "201, 24, 74",
-            text: "#A4133C",
+            backgroundLight: "#FF6B9D",
+            backgroundMedium: "#A4133C",
+            backgroundContainer: "#FFB3BA",
+            highlight: "#FFC9DE",
+            highlightRgb: "255, 201, 222",
+            text: "#C9184A",
         },
     };
     // Timer Variables
@@ -421,6 +421,8 @@ function ScreenController() {
         root.style.setProperty("--color-highlight", theme.highlight);
         root.style.setProperty("--color-highlight-rgb", theme.highlightRgb);
         root.style.setProperty("--color-text", theme.text);
+        // Set data-theme attribute for background pattern
+        document.body.setAttribute("data-theme", themeName);
         currentTheme = themeName;
         localStorage.setItem("theme", themeName);
         // Update active state on theme buttons

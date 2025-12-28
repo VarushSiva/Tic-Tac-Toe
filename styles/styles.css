@@ -11,6 +11,14 @@
   --color-highlight: #7189ff; /* Hover, Active, Highlights */
   --color-highlight-rgb: 113, 137, 255; /* RGB values for animation highlight */
   --color-text: #624cab; /* Text, Dark UI Elements */
+
+  --bg-fallback: radial-gradient(
+    circle farthest-side,
+    var(--color-background-light),
+    var(--color-highlight)
+  );
+  --bg-pattern: none;
+  --bg-pattern-size: 200px 160px;
 }
 
 :root,
@@ -23,14 +31,14 @@ button {
 body {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  background: radial-gradient(
-    circle farthest-side,
-    var(--color-background-light),
-    var(--color-highlight)
-  );
   height: 100vh;
   width: 100vw;
   color: var(--color-text);
+  background-color: var(--color-highlight);
+  background-image: var(--bg-pattern);
+  background-repeat: repeat, no-repeat;
+  background-size: var(--bg-pattern-size), cover;
+  background-attachment: fixed;
 }
 
 .mainContainer {
@@ -268,6 +276,20 @@ a:active {
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
+
+/* Theme-specific patterns */
+body[data-theme="halloween"] {
+  --bg-pattern: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" opacity="0.25"><text x="10" y="30" font-size="30">🎃</text><text x="60" y="30" font-size="26">🦇</text><text x="110" y="30" font-size="28">🍬</text><text x="160" y="30" font-size="28">🧙‍♀️</text><text x="10" y="70" font-size="28">🧙‍♀️</text><text x="60" y="70" font-size="30">🎃</text><text x="110" y="70" font-size="26">🦇</text><text x="160" y="70" font-size="28">🍬</text><text x="10" y="110" font-size="28">🍬</text><text x="60" y="110" font-size="28">🧙‍♀️</text><text x="110" y="110" font-size="30">🎃</text><text x="160" y="110" font-size="26">🦇</text><text x="10" y="150" font-size="26">🦇</text><text x="60" y="150" font-size="28">🍬</text><text x="110" y="150" font-size="28">🧙‍♀️</text><text x="160" y="150" font-size="30">🎃</text></svg>');
+}
+
+body[data-theme="christmas"] {
+  --bg-pattern: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" opacity="0.25"><text x="10" y="30" font-size="30">🎄</text><text x="60" y="30" font-size="28">🎅</text><text x="110" y="30" font-size="28">🎁</text><text x="160" y="30" font-size="26">🔔</text><text x="10" y="70" font-size="26">🔔</text><text x="60" y="70" font-size="30">🎄</text><text x="110" y="70" font-size="28">🎅</text><text x="160" y="70" font-size="28">🎁</text><text x="10" y="110" font-size="28">🎁</text><text x="60" y="110" font-size="26">🔔</text><text x="110" y="110" font-size="30">🎄</text><text x="160" y="110" font-size="28">🎅</text><text x="10" y="150" font-size="28">🎅</text><text x="60" y="150" font-size="28">🎁</text><text x="110" y="150" font-size="26">🔔</text><text x="160" y="150" font-size="30">🎄</text></svg>');
+}
+
+body[data-theme="valentine"] {
+  --bg-pattern: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" opacity="0.25"><text x="10" y="30" font-size="30">💕</text><text x="60" y="30" font-size="28">🏹</text><text x="110" y="30" font-size="28">💌</text><text x="160" y="30" font-size="28">🌹</text><text x="10" y="70" font-size="28">🌹</text><text x="60" y="70" font-size="30">💕</text><text x="110" y="70" font-size="28">🏹</text><text x="160" y="70" font-size="28">💌</text><text x="10" y="110" font-size="28">💌</text><text x="60" y="110" font-size="28">🌹</text><text x="110" y="110" font-size="30">💕</text><text x="160" y="110" font-size="28">🏹</text><text x="10" y="150" font-size="28">🏹</text><text x="60" y="150" font-size="28">💌</text><text x="110" y="150" font-size="28">🌹</text><text x="160" y="150" font-size="30">💕</text></svg>');
+}
+
 /* #endregion */
 
 /* #region MARK: Scoreboard */
@@ -499,8 +521,8 @@ a:active {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: var(--color-background-container);
-  font-size: 16px;
+  color: var(--color-background-light);
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -512,7 +534,7 @@ a:active {
 .settingDescription {
   margin: 8px 0 0 32px;
   font-size: 1rem;
-  color: var(--color-background-medium);
+  color: var(--color-text);
   font-family: Arial, Helvetica, sans-serif;
   letter-spacing: normal;
 }
@@ -558,11 +580,7 @@ a:active {
 
 .timerBar {
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--color-background-medium),
-    var(--color-highlight)
-  );
+  background: var(--color-highlight);
   width: 100%;
   transition: width 0.1s linear;
   border-radius: 8px;
@@ -582,11 +600,7 @@ a:active {
 }
 
 .timerBar.warning {
-  background: linear-gradient(
-    90deg,
-    var(--color-background-medium),
-    var(--color-highlight)
-  );
+  background: var(--color-highlight);
   animation: pulse 0.5s ease-in-out infinite;
 }
 
@@ -607,6 +621,10 @@ a:active {
 .reduce-motion .timerBar.warning {
   animation: none;
   background: var(--color-highlight);
+}
+
+.reduce-motion body {
+  --bg-pattern: none;
 }
 /* #endregion */
 
