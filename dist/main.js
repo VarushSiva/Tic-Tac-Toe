@@ -469,6 +469,92 @@ function ScreenController() {
         applyTheme("default");
     }
     setupThemeButtons();
+    // Global Keyboard Shortcuts
+    function handleGlobalShortcuts(e) {
+        // B: Focus random available cell
+        if (e.key === "b" || e.key === "B") {
+            e.preventDefault();
+            if (isGameInitialized) {
+                const availableCells = board
+                    .map((cell, index) => ({ cell, index }))
+                    .filter(({ cell }) => cell.getValue() === "");
+                if (availableCells.length > 0) {
+                    const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
+                    focusedCellIndex = randomCell.index;
+                    const cells = Array.from(document.querySelectorAll(".cell"));
+                    cells.forEach((btn, i) => (btn.tabIndex = i === focusedCellIndex ? 0 : -1));
+                    cells[focusedCellIndex]?.focus();
+                }
+            }
+            return;
+        }
+        // Z: Undo last move
+        if (e.key === "z" || e.key === "Z") {
+            e.preventDefault();
+            if (!undoBtn.disabled)
+                undoMove();
+            return;
+        }
+        // N: New Round
+        if (e.key === "n" || e.key === "N") {
+            e.preventDefault();
+            resetGame();
+            return;
+        }
+        // R: New Game (Reset All)
+        if (e.key === "r" || e.key === "R") {
+            e.preventDefault();
+            resetScore();
+            return;
+        }
+        // S: Open Settings
+        if (e.key === "s" || e.key === "S") {
+            e.preventDefault();
+            openSettings();
+            return;
+        }
+        // ?: Toggle Shortcuts Panel
+        if (e.key === "?") {
+            e.preventDefault();
+            if (shortcutsOverlay.getAttribute("aria-hidden") === "true") {
+                openShortcuts();
+            }
+            else {
+                closeShortcuts();
+            }
+            return;
+        }
+        // T: Cycle Through Themes
+        if (e.key === "t" || e.key === "T") {
+            e.preventDefault();
+            const themeOrder = [
+                "default",
+                "halloween",
+                "christmas",
+                "valentine",
+            ];
+            const currentIndex = themeOrder.indexOf(currentTheme);
+            const nextIndex = (currentIndex + 1) % themeOrder.length;
+            applyTheme(themeOrder[nextIndex]);
+            // Refocus last focused cell if game is active
+            if (isGameInitialized) {
+                setTimeout(() => {
+                    const cells = Array.from(document.querySelectorAll(".cell"));
+                    cells[focusedCellIndex]?.focus();
+                }, 50);
+            }
+            return;
+        }
+        // Escape: Close Any Modal
+        if (e.key === "Escape") {
+            if (settingsOverlay.getAttribute("aria-hidden") === "false") {
+                closeSettings();
+            }
+            else if (shortcutsOverlay.getAttribute("aria-hidden") === "false") {
+                closeShortcuts();
+            }
+        }
+    }
     // Set Dynamic Description for Enable Timer
     enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;
     // Timer Functions
@@ -896,5 +982,6 @@ function ScreenController() {
             closeShortcuts();
     });
     shortcutsOverlay.addEventListener("keydown", handleShortcutsKeydown);
+    document.addEventListener("keydown", handleGlobalShortcuts);
 }
 ScreenController();
