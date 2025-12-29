@@ -296,6 +296,7 @@ function ScreenController() {
   let timerInterval: number | null = null;
   let currentTime = timerDuration;
   let isAutoMove = false;
+  let pausedTime: number | null = null;
 
   // Move History for Undo
   let moveHistory: MoveHistory[] = [];
@@ -437,7 +438,7 @@ function ScreenController() {
     settingsOverlay.setAttribute("aria-hidden", "false");
 
     // Pause Timer when open
-    if (timerEnabled && isGameInitialized) stopTimer();
+    if (timerEnabled && isGameInitialized) pauseTimer();
 
     // Setup focus
     const cleanup = focusContainer(settingsModal);
@@ -460,7 +461,7 @@ function ScreenController() {
         availableCells.length === 0 ||
         playerTurnDiv.textContent.includes("Wins!");
 
-      if (!isGameOver) startTimer();
+      if (!isGameOver) resumeTimer();
     }
 
     // Focus last focused cell if gaem is active, otherwise focus shortcuts button
@@ -527,7 +528,7 @@ function ScreenController() {
   function openShortcuts() {
     shortcutsOverlay.setAttribute("aria-hidden", "false");
 
-    if (timerEnabled && isGameInitialized) stopTimer();
+    if (timerEnabled && isGameInitialized) pauseTimer();
 
     const cleanup = focusContainer(shortcutsModal);
     if (cleanup) activeFocus.push(cleanup);
@@ -548,7 +549,7 @@ function ScreenController() {
         availableCells.length === 0 ||
         playerTurnDiv.textContent.includes("Wins!");
 
-      if (!isGameOver) startTimer();
+      if (!isGameOver) resumeTimer();
     }
 
     // Focus last focused cell if gaem is active, otherwise focus shortcuts button
@@ -1014,6 +1015,36 @@ function ScreenController() {
     timerBar.classList.remove("warning");
   }
 
+  function pauseTimer() {
+    if (timerInterval) {
+      pausedTime = currentTime;
+      stopTimer();
+    }
+  }
+
+  function resumeTimer() {
+    if (pausedTime !== null && isGameInitialized) {
+      currentTime = pausedTime;
+      pausedTime = null;
+      updateTimerDisplay();
+
+      timerContainer.classList.add("active");
+
+      timerInterval = window.setInterval(() => {
+        currentTime--;
+        updateTimerDisplay();
+
+        if (currentTime <= 5) {
+          timerBar.classList.add("warning");
+        }
+
+        if (currentTime <= 0) {
+          makeAutoMove();
+        }
+      }, 1000);
+    }
+  }
+
   function updateTimerDisplay() {
     const percentage = (currentTime / timerDuration) * 100;
     timerBar.style.width = `${percentage}%`;
@@ -1071,6 +1102,12 @@ function ScreenController() {
       availableCells.length === 0 ||
       playerTurnDiv.textContent.includes("Wins!");
 
+    // Check if any modal is open
+    const isModalOpen =
+      playerSetupOverlay.getAttribute("aria-hidden") === "false" ||
+      shortcutsOverlay.getAttribute("aria-hidden") === "false" ||
+      settingsOverlay.getAttribute("aria-hidden") === "false";
+
     if (timerEnabled && isGameInitialized) {
       if (isGameOver) {
         // Show timer container but dont start countdown
@@ -1078,11 +1115,18 @@ function ScreenController() {
         timerBar.style.width = "100%";
         timerText.textContent = "Waiting For Next Round";
         timerBar.classList.remove("warning");
+      } else if (isModalOpen) {
+        // If modal is open, reset timer but dont start
+        pausedTime = null;
+        currentTime = timerDuration;
+        updateTimerDisplay();
+        timerContainer.classList.add("active");
       } else {
         startTimer();
       }
     } else {
       stopTimer();
+      pausedTime = null;
       timerContainer.classList.remove("active");
     }
 

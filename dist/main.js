@@ -217,6 +217,7 @@ function ScreenController() {
     let timerInterval = null;
     let currentTime = timerDuration;
     let isAutoMove = false;
+    let pausedTime = null;
     // Move History for Undo
     let moveHistory = [];
     // Target HTML Div
@@ -260,7 +261,7 @@ function ScreenController() {
         settingsOverlay.setAttribute("aria-hidden", "false");
         // Pause Timer when open
         if (timerEnabled && isGameInitialized)
-            stopTimer();
+            pauseTimer();
         // Setup focus
         const cleanup = focusContainer(settingsModal);
         if (cleanup)
@@ -278,7 +279,7 @@ function ScreenController() {
             const isGameOver = availableCells.length === 0 ||
                 playerTurnDiv.textContent.includes("Wins!");
             if (!isGameOver)
-                startTimer();
+                resumeTimer();
         }
         // Focus last focused cell if gaem is active, otherwise focus shortcuts button
         if (isGameInitialized) {
@@ -328,7 +329,7 @@ function ScreenController() {
     function openShortcuts() {
         shortcutsOverlay.setAttribute("aria-hidden", "false");
         if (timerEnabled && isGameInitialized)
-            stopTimer();
+            pauseTimer();
         const cleanup = focusContainer(shortcutsModal);
         if (cleanup)
             activeFocus.push(cleanup);
@@ -344,7 +345,7 @@ function ScreenController() {
             const isGameOver = availableCells.length === 0 ||
                 playerTurnDiv.textContent.includes("Wins!");
             if (!isGameOver)
-                startTimer();
+                resumeTimer();
         }
         // Focus last focused cell if gaem is active, otherwise focus shortcuts button
         if (isGameInitialized) {
@@ -718,6 +719,30 @@ function ScreenController() {
         }
         timerBar.classList.remove("warning");
     }
+    function pauseTimer() {
+        if (timerInterval) {
+            pausedTime = currentTime;
+            stopTimer();
+        }
+    }
+    function resumeTimer() {
+        if (pausedTime !== null && isGameInitialized) {
+            currentTime = pausedTime;
+            pausedTime = null;
+            updateTimerDisplay();
+            timerContainer.classList.add("active");
+            timerInterval = window.setInterval(() => {
+                currentTime--;
+                updateTimerDisplay();
+                if (currentTime <= 5) {
+                    timerBar.classList.add("warning");
+                }
+                if (currentTime <= 0) {
+                    makeAutoMove();
+                }
+            }, 1000);
+        }
+    }
     function updateTimerDisplay() {
         const percentage = (currentTime / timerDuration) * 100;
         timerBar.style.width = `${percentage}%`;
@@ -759,6 +784,10 @@ function ScreenController() {
         const availableCells = board.filter((cell) => cell.getValue() === "");
         const isGameOver = availableCells.length === 0 ||
             playerTurnDiv.textContent.includes("Wins!");
+        // Check if any modal is open
+        const isModalOpen = playerSetupOverlay.getAttribute("aria-hidden") === "false" ||
+            shortcutsOverlay.getAttribute("aria-hidden") === "false" ||
+            settingsOverlay.getAttribute("aria-hidden") === "false";
         if (timerEnabled && isGameInitialized) {
             if (isGameOver) {
                 // Show timer container but dont start countdown
@@ -767,12 +796,20 @@ function ScreenController() {
                 timerText.textContent = "Waiting For Next Round";
                 timerBar.classList.remove("warning");
             }
+            else if (isModalOpen) {
+                // If modal is open, reset timer but dont start
+                pausedTime = null;
+                currentTime = timerDuration;
+                updateTimerDisplay();
+                timerContainer.classList.add("active");
+            }
             else {
                 startTimer();
             }
         }
         else {
             stopTimer();
+            pausedTime = null;
             timerContainer.classList.remove("active");
         }
         console.log(`Timer enabled: ${timerEnabled}`);
