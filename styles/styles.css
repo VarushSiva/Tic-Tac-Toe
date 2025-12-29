@@ -65,6 +65,26 @@ a,
 a:active {
   color: var(--color-text);
 }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background-container);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-background-medium);
+  border-radius: 10px;
+  border: 2px solid var(--color-background-container);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-highlight);
+}
 /* #endregion */
 
 /* #region MARK: GameBoard */
