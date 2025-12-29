@@ -259,7 +259,16 @@ function ScreenController() {
     }
     function closeSettings() {
         settingsOverlay.setAttribute("aria-hidden", "true");
-        settingsBtn.focus();
+        // Focus last focused cell if gaem is active, otherwise focus shortcuts button
+        if (isGameInitialized) {
+            setTimeout(() => {
+                const cells = Array.from(document.querySelectorAll(".cell"));
+                cells[focusedCellIndex]?.focus();
+            }, 50);
+        }
+        else {
+            settingsBtn.focus();
+        }
     }
     function handleSettingsKeydown(e) {
         if (e.key === "Escape") {
@@ -273,7 +282,16 @@ function ScreenController() {
     }
     function closeShortcuts() {
         shortcutsOverlay.setAttribute("aria-hidden", "true");
-        shortcutsBtn.focus();
+        // Focus last focused cell if gaem is active, otherwise focus shortcuts button
+        if (isGameInitialized) {
+            setTimeout(() => {
+                const cells = Array.from(document.querySelectorAll(".cell"));
+                cells[focusedCellIndex]?.focus();
+            }, 50);
+        }
+        else {
+            shortcutsBtn.focus();
+        }
     }
     function handleShortcutsKeydown(e) {
         if (e.key === "Escape") {
@@ -471,6 +489,28 @@ function ScreenController() {
     setupThemeButtons();
     // Global Keyboard Shortcuts
     function handleGlobalShortcuts(e) {
+        // Disable shortcuts when player setup modal is open or when typing in inputs
+        const isPlayerSetupOpen = playerSetupOverlay.getAttribute("aria-hidden") === "false";
+        const isTypingInInput = e.target instanceof HTMLInputElement ||
+            e.target instanceof HTMLTextAreaElement ||
+            e.target instanceof HTMLSelectElement;
+        if (isPlayerSetupOpen || isTypingInInput) {
+            // Only allow Escape in modals
+            if (e.key === "Escape") {
+                if (settingsOverlay.getAttribute("aria-hidden") === "false") {
+                    closeSettings();
+                }
+                else if (shortcutsOverlay.getAttribute("aria-hidden") === "false") {
+                    closeShortcuts();
+                }
+            }
+            return;
+        }
+        // Restrict shortcuts if settings or shortcuts modal is open
+        const isModalOpen = settingsOverlay.getAttribute("aria-hidden") === "false" ||
+            shortcutsOverlay.getAttribute("aria-hidden") === "false";
+        if (isModalOpen && e.key !== "Escape")
+            return;
         // B: Focus random available cell
         if (e.key === "b" || e.key === "B") {
             e.preventDefault();
@@ -544,15 +584,6 @@ function ScreenController() {
                 }, 50);
             }
             return;
-        }
-        // Escape: Close Any Modal
-        if (e.key === "Escape") {
-            if (settingsOverlay.getAttribute("aria-hidden") === "false") {
-                closeSettings();
-            }
-            else if (shortcutsOverlay.getAttribute("aria-hidden") === "false") {
-                closeShortcuts();
-            }
         }
     }
     // Set Dynamic Description for Enable Timer
