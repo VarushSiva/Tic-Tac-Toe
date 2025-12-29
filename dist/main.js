@@ -230,11 +230,13 @@ function ScreenController() {
     // Settings Elements
     const settingsBtn = mustFind(document.querySelector(".settingsBtn"), ".settingsBtn");
     const settingsOverlay = mustFind(document.querySelector("#settingsOverlay"), "#settingsOverlay");
+    const settingsModal = mustFind(document.querySelector(".settingsModal"), ".settingsModal");
     const enableTimerDescription = mustFind(document.querySelector("#enableTimerDescription"), "#enableTimerDescription");
     const closeSettingsBtn = mustFind(document.querySelector(".closeSettings"), ".closeSettings");
     const reduceMotionCheckbox = mustFind(document.querySelector("#reduceMotion"), "#reduceMotion");
     // Player Setup Elements
     const playerSetupOverlay = mustFind(document.querySelector("#playerSetupOverlay"), "#playerSetupOverlay");
+    const playerSetupModal = mustFind(document.querySelector(".playerSetupModal"), ".playerSetupModal");
     const playerXNameInput = mustFind(document.querySelector("#playerXName"), "#playerXName");
     const playerONameInput = mustFind(document.querySelector("#playerOName"), "#playerOName");
     const startGameBtn = mustFind(document.querySelector(".startGameBtn"), ".startGameBtn");
@@ -251,14 +253,33 @@ function ScreenController() {
     // Shortcut Elements
     const shortcutsBtn = mustFind(document.querySelector(".shortcutsBtn"), ".shortcutsBtn");
     const shortcutsOverlay = mustFind(document.querySelector("#shortcutsOverlay"), "#shortcutsOverlay");
+    const shortcutsModal = mustFind(document.querySelector(".shortcutsModal"), ".shortcutsModal");
     const closeShortcutsBtn = mustFind(document.querySelector(".closeShortcuts"), ".closeShortcuts");
     // Settings Panel Functions
     function openSettings() {
         settingsOverlay.setAttribute("aria-hidden", "false");
+        // Pause Timer when open
+        if (timerEnabled && isGameInitialized)
+            stopTimer();
+        // Setup focus
+        const cleanup = focusContainer(settingsModal);
+        if (cleanup)
+            activeFocus.push(cleanup);
         closeSettingsBtn.focus();
     }
     function closeSettings() {
         settingsOverlay.setAttribute("aria-hidden", "true");
+        // Cleanup focus
+        activeFocus.forEach((cleanup) => cleanup());
+        activeFocus = [];
+        // Resume timer if enabled
+        if (isGameInitialized && timerEnabled) {
+            const availableCells = board.filter((cell) => cell.getValue() === "");
+            const isGameOver = availableCells.length === 0 ||
+                playerTurnDiv.textContent.includes("Wins!");
+            if (!isGameOver)
+                startTimer();
+        }
         // Focus last focused cell if gaem is active, otherwise focus shortcuts button
         if (isGameInitialized) {
             setTimeout(() => {
@@ -273,15 +294,58 @@ function ScreenController() {
     function handleSettingsKeydown(e) {
         if (e.key === "Escape") {
             closeSettings();
+            return;
+        }
+        // Handle Enter on checkboxes
+        if (e.key === "Enter" &&
+            e.target instanceof HTMLInputElement &&
+            e.target.type === "checkbox") {
+            e.preventDefault();
+            e.target.checked = !e.target.checked;
+            e.target.dispatchEvent(new Event("change", { bubbles: true }));
+            return;
+        }
+        // Arrow keys to navigate between settings
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            const focusableElements = Array.from(settingsModal.querySelectorAll('input[type="checkbox"], button'));
+            const currentIndex = focusableElements.indexOf(document.activeElement);
+            if (currentIndex !== -1) {
+                e.preventDefault();
+                let nextIndex;
+                if (e.key === "ArrowDown") {
+                    nextIndex = (currentIndex + 1) % focusableElements.length;
+                }
+                else {
+                    nextIndex =
+                        (currentIndex - 1 + focusableElements.length) %
+                            focusableElements.length;
+                }
+                focusableElements[nextIndex].focus();
+            }
         }
     }
     // Shortcuts Panel Functions
     function openShortcuts() {
         shortcutsOverlay.setAttribute("aria-hidden", "false");
+        if (timerEnabled && isGameInitialized)
+            stopTimer();
+        const cleanup = focusContainer(shortcutsModal);
+        if (cleanup)
+            activeFocus.push(cleanup);
         closeShortcutsBtn.focus();
     }
     function closeShortcuts() {
         shortcutsOverlay.setAttribute("aria-hidden", "true");
+        activeFocus.forEach((cleanup) => cleanup());
+        activeFocus = [];
+        // Resume Timer if running
+        if (timerEnabled && isGameInitialized) {
+            const availableCells = board.filter((cell) => cell.getValue() === "");
+            const isGameOver = availableCells.length === 0 ||
+                playerTurnDiv.textContent.includes("Wins!");
+            if (!isGameOver)
+                startTimer();
+        }
         // Focus last focused cell if gaem is active, otherwise focus shortcuts button
         if (isGameInitialized) {
             setTimeout(() => {
@@ -330,6 +394,9 @@ function ScreenController() {
         game = GameController(playerXName, playerOName);
         board = game.getBoard();
         isGameInitialized = true;
+        // Cleanup focus
+        activeFocus.forEach((cleanup) => cleanup());
+        activeFocus = [];
         updateScreen();
         updateScoreBoard();
     }
@@ -487,6 +554,36 @@ function ScreenController() {
         applyTheme("default");
     }
     setupThemeButtons();
+    // Focus Utility
+    function focusContainer(container) {
+        const focusableElements = container.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])');
+        if (focusableElements.length === 0)
+            return;
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        function handleTabKey(e) {
+            if (e.key !== "Tab")
+                return;
+            if (e.shiftKey) {
+                // Shift + Tab
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement.focus();
+                }
+            }
+            else {
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        }
+        container.addEventListener("keydown", handleTabKey);
+        // Return cleanup function
+        return () => container.removeEventListener("keydown", handleTabKey);
+    }
+    // Track Active Focus
+    let activeFocus = [];
     // Global Keyboard Shortcuts
     function handleGlobalShortcuts(e) {
         // Disable shortcuts when player setup modal is open or when typing in inputs
@@ -738,11 +835,19 @@ function ScreenController() {
         }, 100);
     }
     function handlePlayerSetupKeydown(e) {
-        if (e.key === "Enter") {
+        // Only start if enter is pressed on the StartGameBtn
+        if (e.key === "Enter" && e.target === startGameBtn) {
             e.preventDefault();
             // Prevent event from bubbling
             e.stopPropagation();
             startGame();
+            return;
+        }
+        // Handle Enter on checkbox
+        if (e.key === "Enter" && e.target === aiToggle) {
+            e.preventDefault();
+            aiToggle.checked = !aiToggle.checked;
+            toggleAISetup();
         }
     }
     // Keyboard Navigation Handler
@@ -977,6 +1082,9 @@ function ScreenController() {
         playerONameInput.value = "";
         aiToggle.checked = false;
         toggleAISetup();
+        const cleanup = focusContainer(playerSetupModal);
+        if (cleanup)
+            activeFocus.push(cleanup);
         playerXNameInput.focus();
     }
     // Board Event Listeners
@@ -996,6 +1104,10 @@ function ScreenController() {
     // Player Setup Event Listeners
     startGameBtn.addEventListener("click", startGame);
     playerSetupOverlay.addEventListener("keydown", handlePlayerSetupKeydown);
+    // Setup initial focus container for player setup
+    const initialCleanup = focusContainer(playerSetupModal);
+    if (initialCleanup)
+        activeFocus.push(initialCleanup);
     playerXNameInput.focus();
     // Accessibility Event Listener
     reduceMotionCheckbox.addEventListener("change", () => {
