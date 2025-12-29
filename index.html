@@ -44,9 +44,8 @@
           aria-label="tic-tac-toe board"
           aria-describedby="game-instructions game-status"
         ></div>
-        <p id="game-instructions">
-          Use arrow keys to move between cells. Press Enter or space to place
-          your mark.
+        <p id="game-instructions" class="game-instructions">
+          Need help? Press <kbd>?</kbd> to view keyboard shortcuts!
         </p>
         <div class="undoContainer">
           <button type="button" class="undoBtn" disabled>Undo Move</button>
@@ -253,6 +252,87 @@
     >
       <span aria-hidden="true"><i class="fa-solid fa-gear"></i></span> Settings
     </button>
+    <!-- Keyboard Shortcuts Button -->
+    <button
+      type="button"
+      class="shortcutsBtn"
+      aria-label="View keyboard shortcuts"
+    >
+      <span aria-hidden="true"><i class="fa-solid fa-keyboard"></i></span>
+      Shortcuts
+    </button>
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="shortcutsOverlay" id="shortcutsOverlay" aria-hidden="true">
+      <div
+        class="shortcutsModal"
+        role="dialog"
+        aria-labelledby="shortcutsTitle"
+        aria-modal="true"
+      >
+        <div class="shortcutsHeader">
+          <h2 id="shortcutsTitle">Shortcuts</h2>
+          <button
+            type="button"
+            class="closeShortcuts"
+            aria-label="Close shortcuts"
+          >
+            ×
+          </button>
+        </div>
+        <div class="shortcutsContent">
+          <!-- Game Shortcuts -->
+          <div class="shortcutSection">
+            <h3>Game Controls</h3>
+            <div class="shortcutItem">
+              <kbd>Arrow Keys</kbd>
+              <span>Navigate betweem cells when focused</span>
+            </div>
+            <div class="shortcutItem">
+              <kbd>Enter</kbd>
+              <p id="divider">/</p>
+              <kbd>Space</kbd>
+              <span>Click / Place Token</span>
+            </div>
+            <div class="shortcutItem">
+              <kbd>B</kbd>
+              <span>Focus the board</span>
+            </div>
+            <div class="shortcutItem">
+              <kbd>Z</kbd>
+              <span>Undo last move</span>
+            </div>
+            <div class="shortcutItem">
+              <kbd>N</kbd>
+              <span>New Round</span>
+            </div>
+            <div class="shortcutItem">
+              <kbd>R</kbd>
+              <span>New Game (Reset All)</span>
+            </div>
+          </div>
+          <!-- Interface Shortcuts -->
+          <div class="shortcutSection">
+            <h3>Interface</h3>
+            <div class="shortcutItem">
+              <kbd>S</kbd>
+              <span>Open Settings</span>
+            </div>
+            <div class="shortcutItem">
+              <kbd>?</kbd>
+              <span>Toggle shortcuts panel</span>
+            </div>
+            <div class="shortcutItem">
+              <kbd>T</kbd>
+              <span>Cycle through themes</span>
+            </div>
+            <div class="shortcutItem">
+              <kbd>Esc</kbd>
+              <span>Close any modal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="./dist/main.js" defer></script>
   </body>
 </html>

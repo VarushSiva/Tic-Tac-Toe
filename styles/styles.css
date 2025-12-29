@@ -65,7 +65,6 @@ a,
 a:active {
   color: var(--color-text);
 }
-
 /* #endregion */
 
 /* #region MARK: GameBoard */
@@ -202,6 +201,23 @@ a:active {
   }
 }
 
+.game-instructions {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.game-instructions kbd {
+  background-color: var(--color-background-light);
+  color: var(--color-highlight);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--color-background-medium);
+  font-size: 1rem;
+  font-weight: bolder;
+  font-family: "Courier New", Courier, monospace;
+}
 /* #endregion */
 
 /* #region MARK: Theme Palette */
@@ -289,7 +305,6 @@ body[data-theme="christmas"] {
 body[data-theme="valentine"] {
   --bg-pattern: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" opacity="0.25"><text x="10" y="30" font-size="30">💕</text><text x="60" y="30" font-size="28">🏹</text><text x="110" y="30" font-size="28">💌</text><text x="160" y="30" font-size="28">🌹</text><text x="10" y="70" font-size="28">🌹</text><text x="60" y="70" font-size="30">💕</text><text x="110" y="70" font-size="28">🏹</text><text x="160" y="70" font-size="28">💌</text><text x="10" y="110" font-size="28">💌</text><text x="60" y="110" font-size="28">🌹</text><text x="110" y="110" font-size="30">💕</text><text x="160" y="110" font-size="28">🏹</text><text x="10" y="150" font-size="28">🏹</text><text x="60" y="150" font-size="28">💌</text><text x="110" y="150" font-size="28">🌹</text><text x="160" y="150" font-size="30">💕</text></svg>');
 }
-
 /* #endregion */
 
 /* #region MARK: Scoreboard */
@@ -336,129 +351,15 @@ body[data-theme="valentine"] {
 }
 
 .activePlayer {
-  border: 2px solid var(--color-highlight);
+  border: 2px solid var(--color-text);
   border-radius: 15px;
-  padding: 0 10px;
-  transform: scale(1.1);
+  padding: 3px 10px;
+  transform: scale(1.2);
   transition: 0.3s ease;
 }
 /* #endregion */
 
 /* #region MARK: Settings Panel */
-.settingsBtn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 120px;
-  height: 45px;
-  background-color: var(--color-background-medium);
-  color: var(--color-background-light);
-  font-size: 1.2rem;
-  border: 2px solid var(--color-text);
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  z-index: 100;
-  font-family: "Chicle", sans-serif;
-  letter-spacing: 2px;
-}
-
-.settingsBtn:hover {
-  background-color: var(--color-highlight);
-  color: var(--color-text);
-  border: 2px solid var(--color-background-light);
-  transform: scale(1.05);
-  transition: 0.3s ease;
-}
-
-.settingsBtn:focus-visible {
-  outline: 3px solid var(--color-text);
-  outline-offset: 2px;
-}
-
-.settingsOverlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);
-  z-index: 1000;
-  justify-content: center;
-  align-items: center;
-}
-
-.settingsOverlay[aria-hidden="false"] {
-  display: flex;
-}
-
-.settingsModal {
-  background-color: var(--color-background-container);
-  border: 2px solid var(--color-background-medium);
-  border-radius: 15px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 0 100px rgba(0, 0, 0, 0.3);
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.settingsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 25px;
-  border-bottom: 2px solid var(--color-background-medium);
-}
-
-.settingsHeader > h2 {
-  font-size: 1.8rem;
-  margin: 0;
-  color: var(--color-text);
-}
-
-.closeSettings {
-  background: none;
-  border: none;
-  font-size: 2.5rem;
-  color: var(--color-text);
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  transition: 0.2s;
-}
-
-.closeSettings:hover {
-  background-color: var(--color-highlight);
-  color: var(--color-background-light);
-}
-
-.closeSettings:focus-visible {
-  outline: 3px solid var(--color-text);
-  outline-offset: 2px;
-}
-
 .settingsContent {
   padding: 25px;
 }
@@ -805,5 +706,192 @@ body[data-theme="valentine"] {
 .playerInputGroup select option {
   background-color: var(--color-background-container);
   color: var(--color-text);
+}
+/* #endregion */
+
+/* #region MARK: Settings + Shortcuts Commons */
+.settingsBtn,
+.shortcutsBtn {
+  position: fixed;
+  right: 20px;
+  width: 140px;
+  height: 45px;
+  background-color: var(--color-background-medium);
+  color: var(--color-background-light);
+  font-size: 1.2rem;
+  border: 2px solid var(--color-text);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 100;
+  font-family: "Chicle", sans-serif;
+  letter-spacing: 2px;
+}
+
+.settingsBtn {
+  bottom: 20px;
+}
+
+.shortcutsBtn {
+  bottom: 75px;
+}
+
+.settingsBtn:hover,
+.shortcutsBtn:hover {
+  background-color: var(--color-highlight);
+  color: var(--color-text);
+  border: 2px solid var(--color-background-light);
+  transform: scale(1.05);
+  transition: 0.3s ease;
+}
+
+.settingsBtn:focus-visible,
+.shortcutsBtn:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.settingsOverlay,
+.shortcutsOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.settingsOverlay[aria-hidden="false"],
+.shortcutsOverlay[aria-hidden="false"] {
+  display: flex;
+}
+
+.settingsModal,
+.shortcutsModal {
+  background-color: var(--color-background-container);
+  border: 2px solid var(--color-background-medium);
+  border-radius: 15px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settingsHeader,
+.shortcutsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 2px solid var(--color-background-medium);
+}
+
+.settingsHeader > h2,
+.shortcutsHeader > h2 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.closeSettings,
+.closeShortcuts {
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  color: var(--color-text);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.closeSettings:hover,
+.closeShortcuts:hover {
+  background-color: var(--color-highlight);
+  color: var(--color-background-light);
+}
+
+.closeSettings:focus-visible,
+.closeShortcuts:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 2px;
+}
+/* #endregion */
+
+/* #region MARK: Shortcuts Modal */
+.shortcutsContent {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shortcutSection > h3 {
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin-bottom: 15px;
+  font-family: "Chicle", sans-serif;
+  letter-spacing: 2px;
+}
+
+.shortcutItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-background-medium);
+}
+
+.shortcutItem:last-child {
+  border-bottom: none;
+}
+
+.shortcutItem kbd {
+  background-color: var(--color-background-light);
+  color: var(--color-highlight);
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 2px solid var(--color-background-medium);
+  font-size: 1rem;
+  font-weight: bolder;
+  font-family: "Courier New", Courier, monospace;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-right: 8px;
+}
+
+.shortcutItem span {
+  flex: 1;
+  text-align: right;
+  color: var(--color-text);
+  font-size: 1.1rem;
+}
+
+#divider {
+  margin-right: 8px;
 }
 /* #endregion */

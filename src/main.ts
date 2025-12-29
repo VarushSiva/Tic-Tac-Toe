@@ -406,6 +406,20 @@ function ScreenController() {
     "#enableTimer"
   );
 
+  // Shortcut Elements
+  const shortcutsBtn = mustFind(
+    document.querySelector<HTMLButtonElement>(".shortcutsBtn"),
+    ".shortcutsBtn"
+  );
+  const shortcutsOverlay = mustFind(
+    document.querySelector<HTMLElement>("#shortcutsOverlay"),
+    "#shortcutsOverlay"
+  );
+  const closeShortcutsBtn = mustFind(
+    document.querySelector<HTMLButtonElement>(".closeShortcuts"),
+    ".closeShortcuts"
+  );
+
   // Settings Panel Functions
   function openSettings() {
     settingsOverlay.setAttribute("aria-hidden", "false");
@@ -420,6 +434,23 @@ function ScreenController() {
   function handleSettingsKeydown(e: KeyboardEvent) {
     if (e.key === "Escape") {
       closeSettings();
+    }
+  }
+
+  // Shortcuts Panel Functions
+  function openShortcuts() {
+    shortcutsOverlay.setAttribute("aria-hidden", "false");
+    closeShortcutsBtn.focus();
+  }
+
+  function closeShortcuts() {
+    shortcutsOverlay.setAttribute("aria-hidden", "true");
+    shortcutsBtn.focus();
+  }
+
+  function handleShortcutsKeydown(e: KeyboardEvent) {
+    if (e.key === "Escape") {
+      closeShortcuts();
     }
   }
 
@@ -1172,6 +1203,14 @@ function ScreenController() {
 
   // AI Event Listeners
   aiToggle.addEventListener("change", toggleAISetup);
+
+  // Shortcuts Event Listeners
+  shortcutsBtn.addEventListener("click", openShortcuts);
+  closeShortcutsBtn.addEventListener("click", closeShortcuts);
+  shortcutsOverlay.addEventListener("click", (e) => {
+    if (e.target === shortcutsOverlay) closeShortcuts();
+  });
+  shortcutsOverlay.addEventListener("keydown", handleShortcutsKeydown);
 }
 
 ScreenController();
