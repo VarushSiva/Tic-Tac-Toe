@@ -237,6 +237,7 @@ function ScreenController() {
     const closeSettingsBtn = mustFind(document.querySelector(".closeSettings"), ".closeSettings");
     const reduceMotionCheckbox = mustFind(document.querySelector("#reduceMotion"), "#reduceMotion");
     const highContrastCheckbox = mustFind(document.querySelector("#highContrast"), "#highContrast");
+    const largeTextCheckbox = mustFind(document.querySelector("#largeText"), "#largeText");
     // Player Setup Elements
     const playerSetupOverlay = mustFind(document.querySelector("#playerSetupOverlay"), "#playerSetupOverlay");
     const playerSetupModal = mustFind(document.querySelector(".playerSetupModal"), ".playerSetupModal");
@@ -417,6 +418,24 @@ function ScreenController() {
         !savedContrastPref) {
         highContrastCheckbox.checked = true;
         toggleHighContrast();
+    }
+    // Large Text Settings
+    let largeTextEnabled = false;
+    function toggleLargeText() {
+        largeTextEnabled = largeTextCheckbox.checked;
+        if (largeTextEnabled) {
+            document.body.classList.add("large-text");
+        }
+        else {
+            document.body.classList.remove("large-text");
+        }
+        console.log(`Large Text enabled: ${largeTextEnabled}`);
+    }
+    // Load saved preference for large text
+    const savedTextPref = localStorage.getItem("largeText");
+    if (savedTextPref === "true") {
+        largeTextCheckbox.checked = true;
+        toggleLargeText();
     }
     // Player Setup Functions
     function initializeGame(xName, oName) {
@@ -1244,6 +1263,10 @@ function ScreenController() {
     highContrastCheckbox.addEventListener("change", () => {
         toggleHighContrast();
         localStorage.setItem("highContrast", highContrastCheckbox.checked.toString());
+    });
+    largeTextCheckbox.addEventListener("change", () => {
+        toggleLargeText();
+        localStorage.setItem("largeText", largeTextCheckbox.checked.toString());
     });
     enableTimerCheckbox.addEventListener("change", toggleTimer);
     // AI Event Listeners

@@ -581,6 +581,154 @@ body.high-contrast .timerText {
   color: #00ff00 !important;
 }
 
+/* Large Text Mode */
+body.large-text {
+  font-size: 150%;
+}
+
+body.large-text .title {
+  font-size: 4.5rem;
+}
+
+body.large-text .turn,
+body.large-text .paletteTitle {
+  font-size: 3rem;
+}
+
+body.large-text .cell {
+  font-size: 4.5rem;
+}
+
+body.large-text .resetBtn > button,
+body.large-text .settingsBtn,
+body.large-text .shortcutsBtn,
+body.large-text .startGameBtn,
+body.large-text .undoBtn {
+  font-size: 2.4rem;
+  height: 60px;
+}
+
+body.large-text .settingsBtn,
+body.large-text .shortcutsBtn {
+  width: 240px;
+  height: 67.5px;
+}
+
+body.large-text .shortcutsBtn {
+  bottom: 100px;
+}
+
+body.large-text .playerXScore,
+body.large-text .playerOScore,
+body.large-text .author,
+body.large-text .sectionTitle,
+body.large-text .shortcutSection h3 {
+  font-size: 2.25rem;
+}
+
+body.large-text .scoreBoardLabel,
+body.large-text .settingsHeader h2,
+body.large-text .playerSetupHeader h2,
+body.large-text .shortcutsHeader h2 {
+  font-size: 2.7rem;
+}
+
+body.large-text .closeSettings,
+body.large-text .closeShortcuts {
+  font-size: 3.75rem;
+  width: 60px;
+  height: 60px;
+}
+
+body.large-text .settingItem label,
+body.large-text .playerInputGroup label,
+body.large-text .aiToggleLabel,
+body.large-text .themeName {
+  font-size: 1.95rem;
+}
+
+body.large-text .settingDescription {
+  font-size: 1.5rem;
+}
+
+body.large-text .playerInputGroup input,
+body.large-text .playerInputGroup select {
+  font-size: 1.65rem;
+  padding: 18px 22.5px;
+}
+
+body.large-text .timerText {
+  font-size: 1.8rem;
+}
+
+body.large-text .game-instructions {
+  font-size: 1.425rem;
+}
+
+body.large-text .shortcutItem {
+  padding: 18px 0;
+}
+
+body.large-text .shortcutItem kbd {
+  font-size: 1.425rem;
+  padding: 9px 18px;
+}
+
+body.large-text .shortcutItem span {
+  font-size: 1.65rem;
+}
+
+body.large-text .themeBtn {
+  width: 300px;
+  padding: 22.5px;
+}
+
+body.large-text .themePreview span {
+  width: 45px;
+  height: 45px;
+}
+
+body.large-text .settingItem input[type="checkbox"],
+body.large-text .aiToggleLabel input[type="checkbox"] {
+  width: 33px;
+  height: 33px;
+}
+
+body.large-text .settingItem input[type="checkbox"]::after,
+body.large-text .aiToggleLabel input[type="checkbox"]::after {
+  font-size: 24px;
+}
+
+body.large-text .container {
+  height: 900px;
+  width: 525px;
+}
+
+body.large-text .board {
+  height: 450px;
+  width: 450px;
+  gap: 15px;
+}
+
+body.large-text .timerContainer {
+  width: 450px;
+  height: 45px;
+}
+
+body.large-text .scoreBoard {
+  height: 180px;
+  width: 525px;
+}
+
+body.large-text .settingsModal,
+body.large-text .shortcutsModal {
+  max-width: 900px;
+}
+
+body.large-text .playerSetupModal {
+  max-width: 675px;
+}
+
 /* Timer */
 .timerContainer {
   width: 300px;

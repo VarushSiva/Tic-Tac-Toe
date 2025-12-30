@@ -361,6 +361,10 @@ function ScreenController() {
     document.querySelector<HTMLInputElement>("#highContrast"),
     "#highContrast"
   );
+  const largeTextCheckbox = mustFind(
+    document.querySelector<HTMLInputElement>("#largeText"),
+    "#largeText"
+  );
 
   // Player Setup Elements
   const playerSetupOverlay = mustFind(
@@ -614,6 +618,7 @@ function ScreenController() {
 
   // High Contrast Settings
   let highContrastEnabled = false;
+
   function toggleHighContrast() {
     highContrastEnabled = highContrastCheckbox.checked;
 
@@ -642,6 +647,28 @@ function ScreenController() {
   ) {
     highContrastCheckbox.checked = true;
     toggleHighContrast();
+  }
+
+  // Large Text Settings
+  let largeTextEnabled = false;
+
+  function toggleLargeText() {
+    largeTextEnabled = largeTextCheckbox.checked;
+
+    if (largeTextEnabled) {
+      document.body.classList.add("large-text");
+    } else {
+      document.body.classList.remove("large-text");
+    }
+
+    console.log(`Large Text enabled: ${largeTextEnabled}`);
+  }
+
+  // Load saved preference for large text
+  const savedTextPref = localStorage.getItem("largeText");
+  if (savedTextPref === "true") {
+    largeTextCheckbox.checked = true;
+    toggleLargeText();
   }
 
   // Player Setup Functions
@@ -1652,6 +1679,10 @@ function ScreenController() {
       "highContrast",
       highContrastCheckbox.checked.toString()
     );
+  });
+  largeTextCheckbox.addEventListener("change", () => {
+    toggleLargeText();
+    localStorage.setItem("largeText", largeTextCheckbox.checked.toString());
   });
   enableTimerCheckbox.addEventListener("change", toggleTimer);
 
