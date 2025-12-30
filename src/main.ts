@@ -253,6 +253,7 @@ function ScreenController() {
   // AI Variables
   let isAIEnabled = false;
   let aiDifficulty: AIDifficulty = "medium";
+  let isAIThinking = false;
 
   // Theme Data
   const themes = {
@@ -633,13 +634,18 @@ function ScreenController() {
   function makeAIMove() {
     if (!isAIEnabled || game.getActivePlayer().token !== "O") return;
 
+    isAIThinking = true;
+
     // Set Delayed AI move
     setTimeout(() => {
       const availableCells = board
         .map((cell, index) => ({ cell, index }))
         .filter(({ cell }) => cell.getValue() === "");
 
-      if (availableCells.length === 0) return;
+      if (availableCells.length === 0) {
+        isAIThinking = false;
+        return;
+      }
 
       let selectedCell: number;
 
@@ -661,8 +667,16 @@ function ScreenController() {
         `AI (${aiDifficulty}) placing token at position ${selectedCell}`
       );
 
+      // Record AI move history
+      moveHistory.push({
+        cellIndex: selectedCell,
+        player: "O",
+        wasAutoMove: false,
+      });
+
       updateScreen(game.playRound(selectedCell));
       updateUndoButton();
+      isAIThinking = false;
     }, 500);
   }
 
@@ -1154,14 +1168,60 @@ function ScreenController() {
       return;
     }
 
-    // Remove last move from history + undo move in game
-    moveHistory.pop();
-    game.undoMove(lastMove.cellIndex);
+    // If playing against AI and last move was AI's, undo AI + player moves
+    if (isAIEnabled) {
+      const movesToUndo: { move: MoveHistory; index: number }[] = [];
 
-    if (timerEnabled) stopTimer();
+      // Check last move
+      if (moveHistory.length > 0) {
+        const lastMoveData = moveHistory[moveHistory.length - 1];
+
+        // If it was AI's move, also get player's move before it
+        if (lastMoveData.player === "O") {
+          // AIs Move
+          movesToUndo.push({
+            move: lastMoveData,
+            index: moveHistory.length - 1,
+          });
+
+          // Players Move
+          if (moveHistory.length > 1) {
+            const playerMoveData = moveHistory[moveHistory.length - 2];
+            movesToUndo.push({
+              move: playerMoveData,
+              index: moveHistory.length - 2,
+            });
+          }
+        }
+        // If last move was player X and AI hasnt moved yet, just undo player move only (race conditions)
+        else if (lastMoveData.player === "X") {
+          movesToUndo.push({
+            move: lastMoveData,
+            index: moveHistory.length - 1,
+          });
+        }
+      }
+      // Undo in order of most recent
+      movesToUndo
+        .sort((a, b) => b.index - a.index)
+        .forEach(() => moveHistory.pop());
+
+      movesToUndo.forEach(({ move }) => {
+        game.undoMove(move.cellIndex);
+      });
+    } else {
+      // Player VS Player
+      moveHistory.pop();
+      game.undoMove(lastMove.cellIndex);
+    }
+
+    if (timerEnabled) {
+      stopTimer();
+      pausedTime = null;
+    }
     updateScreen();
     undoBtn.disabled = true;
-    console.log(`Undid move at position ${lastMove.cellIndex}`);
+    console.log(`Move(s) undone`);
   }
 
   function updateUndoButton() {
@@ -1305,6 +1365,9 @@ function ScreenController() {
   function clickHandlerBoard(e: MouseEvent) {
     if (!isGameInitialized) return;
 
+    // Prevent clicks during AI turn
+    if (isAIEnabled && isAIThinking) return;
+
     const target = e.target;
     if (!(target instanceof HTMLElement)) return;
     // Target the element with the dataset name previously set
@@ -1315,6 +1378,9 @@ function ScreenController() {
 
     // Check if move is valid before recording
     if (board[selectedCell]?.getValue() !== "") return;
+
+    // When playing against AI, only allow X placements by player
+    if (isAIEnabled && game.getActivePlayer().token !== "X") return;
 
     // Record move in history
     isAutoMove = false;
@@ -1336,6 +1402,7 @@ function ScreenController() {
     console.clear();
     stopTimer();
     moveHistory = [];
+    isAIThinking = false;
     renderBoard(board, "new");
     game.resetPlayer();
 
@@ -1482,6 +1549,7 @@ function ScreenController() {
     stopTimer();
     timerContainer.classList.remove("active");
     isAIEnabled = false;
+    isAIThinking = false;
 
     game.resetWins();
     updateScoreBoard();

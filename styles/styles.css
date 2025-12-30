@@ -374,7 +374,7 @@ body[data-theme="valentine"] {
   border: 2px solid var(--color-text);
   border-radius: 15px;
   padding: 3px 10px;
-  transform: scale(1.2);
+  transform: scale(1.1);
   transition: 0.3s ease;
 }
 /* #endregion */
