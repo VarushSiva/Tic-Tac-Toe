@@ -236,12 +236,15 @@ function ScreenController() {
     const enableTimerDescription = mustFind(document.querySelector("#enableTimerDescription"), "#enableTimerDescription");
     const closeSettingsBtn = mustFind(document.querySelector(".closeSettings"), ".closeSettings");
     const reduceMotionCheckbox = mustFind(document.querySelector("#reduceMotion"), "#reduceMotion");
+    const highContrastCheckbox = mustFind(document.querySelector("#highContrast"), "#highContrast");
     // Player Setup Elements
     const playerSetupOverlay = mustFind(document.querySelector("#playerSetupOverlay"), "#playerSetupOverlay");
     const playerSetupModal = mustFind(document.querySelector(".playerSetupModal"), ".playerSetupModal");
     const playerXNameInput = mustFind(document.querySelector("#playerXName"), "#playerXName");
     const playerONameInput = mustFind(document.querySelector("#playerOName"), "#playerOName");
     const startGameBtn = mustFind(document.querySelector(".startGameBtn"), ".startGameBtn");
+    // Theme Container
+    const colourPalette = mustFind(document.querySelector(".colourPalette"), ".colourPalette");
     // AI Toggle Elements
     const aiToggle = mustFind(document.querySelector("#aiToggle"), "#aiToggle");
     const aiDifficultySelect = mustFind(document.querySelector("#aiDifficulty"), "#aiDifficulty");
@@ -388,6 +391,32 @@ function ScreenController() {
         !savedMotionPref) {
         reduceMotionCheckbox.checked = true;
         toggleAnimations();
+    }
+    // High Contrast Settings
+    let highContrastEnabled = false;
+    function toggleHighContrast() {
+        highContrastEnabled = highContrastCheckbox.checked;
+        if (highContrastEnabled) {
+            document.body.classList.add("high-contrast");
+            colourPalette.style.display = "none";
+        }
+        else {
+            document.body.classList.remove("high-contrast");
+            colourPalette.style.display = "flex";
+        }
+        console.log(`High Contrast enabled: ${highContrastEnabled}`);
+    }
+    // Load saved preference for high contrast
+    const savedContrastPref = localStorage.getItem("highContrast");
+    if (savedContrastPref === "true") {
+        highContrastCheckbox.checked = true;
+        toggleHighContrast();
+    }
+    // Check System preference --> Windows High Contrast Mode
+    if (window.matchMedia("(prefers-contrast: high)").matches &&
+        !savedContrastPref) {
+        highContrastCheckbox.checked = true;
+        toggleHighContrast();
     }
     // Player Setup Functions
     function initializeGame(xName, oName) {
@@ -1211,6 +1240,10 @@ function ScreenController() {
     reduceMotionCheckbox.addEventListener("change", () => {
         toggleAnimations();
         localStorage.setItem("reduceMotion", reduceMotionCheckbox.checked.toString());
+    });
+    highContrastCheckbox.addEventListener("change", () => {
+        toggleHighContrast();
+        localStorage.setItem("highContrast", highContrastCheckbox.checked.toString());
     });
     enableTimerCheckbox.addEventListener("change", toggleTimer);
     // AI Event Listeners

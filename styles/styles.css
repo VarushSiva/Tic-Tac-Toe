@@ -482,6 +482,105 @@ body[data-theme="valentine"] {
   transition-duration: 0.01ms !important;
 }
 
+/* High Contrast Mode */
+body.high-contrast {
+  --color-background-light: #ffffff;
+  --color-background-medium: #000000;
+  --color-background-container: #ffffff;
+  --color-highlight: #0000ff;
+  --color-highlight-rgb: 0, 0, 255;
+  --color-text: #000000;
+}
+
+body.high-contrast {
+  background: #ffffff !important;
+  background-image: none !important;
+}
+
+body.high-contrast .container,
+body.high-contrast .scoreBoard,
+body.high-contrast .settingsModal,
+body.high-contrast .playerSetupModal,
+body.high-contrast .shortcutsModal,
+body.high-contrast .themeBtn {
+  border: 3px solid #000000 !important;
+  background-color: #ffffff !important;
+}
+
+body.high-contrast .cell {
+  border: 3px solid #000000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-weight: bold;
+}
+
+body.high-contrast .cell:hover,
+body.high-contrast .cell:focus-visible {
+  background-color: #ffff00 !important;
+  border: 3px solid #0000ff !important;
+}
+
+body.high-contrast .winner {
+  background-color: #00ff00 !important;
+  border: 4px solid #000000 !important;
+  animation: none;
+}
+
+body.high-contrast .resetBtn > button,
+body.high-contrast .settingsBtn,
+body.high-contrast .shortcutsBtn,
+body.high-contrast .startGameBtn,
+body.high-contrast .undoBtn {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #000000 !important;
+  font-weight: bold;
+}
+
+body.high-contrast .settingsBtn *,
+body.high-contrast .shortcutsBtn *,
+body.high-contrast .settingsBtn:hover *,
+body.high-contrast .shortcutsBtn:hover * {
+  color: #ffffff !important;
+}
+
+body.high-contrast .resetBtn > button:hover,
+body.high-contrast .settingsBtn:hover,
+body.high-contrast .shortcutsBtn:hover,
+body.high-contrast .startGameBtn:hover,
+body.high-contrast .undoBtn:hover:not(:disabled) {
+  background-color: #0000ff !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast .timerBar {
+  background: #0000ff !important;
+}
+
+body.high-contrast .timerBar.warning {
+  background: #ff0000 !important;
+}
+
+body.high-contrast * {
+  color: #000000 !important;
+}
+
+body.high-contrast .closeSettings,
+body.high-contrast .closeShortcuts {
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+body.high-contrast .closeSettings:hover,
+body.high-contrast .closeShortcuts:hover {
+  background-color: #0000ff !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast .timerText {
+  color: #00ff00 !important;
+}
+
 /* Timer */
 .timerContainer {
   width: 300px;

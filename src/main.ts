@@ -357,6 +357,10 @@ function ScreenController() {
     document.querySelector<HTMLInputElement>("#reduceMotion"),
     "#reduceMotion"
   );
+  const highContrastCheckbox = mustFind(
+    document.querySelector<HTMLInputElement>("#highContrast"),
+    "#highContrast"
+  );
 
   // Player Setup Elements
   const playerSetupOverlay = mustFind(
@@ -378,6 +382,12 @@ function ScreenController() {
   const startGameBtn = mustFind(
     document.querySelector<HTMLButtonElement>(".startGameBtn"),
     ".startGameBtn"
+  );
+
+  // Theme Container
+  const colourPalette = mustFind(
+    document.querySelector<HTMLElement>(".colourPalette"),
+    ".colourPalette"
   );
 
   // AI Toggle Elements
@@ -600,6 +610,38 @@ function ScreenController() {
   ) {
     reduceMotionCheckbox.checked = true;
     toggleAnimations();
+  }
+
+  // High Contrast Settings
+  let highContrastEnabled = false;
+  function toggleHighContrast() {
+    highContrastEnabled = highContrastCheckbox.checked;
+
+    if (highContrastEnabled) {
+      document.body.classList.add("high-contrast");
+      colourPalette.style.display = "none";
+    } else {
+      document.body.classList.remove("high-contrast");
+      colourPalette.style.display = "flex";
+    }
+
+    console.log(`High Contrast enabled: ${highContrastEnabled}`);
+  }
+
+  // Load saved preference for high contrast
+  const savedContrastPref = localStorage.getItem("highContrast");
+  if (savedContrastPref === "true") {
+    highContrastCheckbox.checked = true;
+    toggleHighContrast();
+  }
+
+  // Check System preference --> Windows High Contrast Mode
+  if (
+    window.matchMedia("(prefers-contrast: high)").matches &&
+    !savedContrastPref
+  ) {
+    highContrastCheckbox.checked = true;
+    toggleHighContrast();
   }
 
   // Player Setup Functions
@@ -1602,6 +1644,13 @@ function ScreenController() {
     localStorage.setItem(
       "reduceMotion",
       reduceMotionCheckbox.checked.toString()
+    );
+  });
+  highContrastCheckbox.addEventListener("change", () => {
+    toggleHighContrast();
+    localStorage.setItem(
+      "highContrast",
+      highContrastCheckbox.checked.toString()
     );
   });
   enableTimerCheckbox.addEventListener("change", toggleTimer);
