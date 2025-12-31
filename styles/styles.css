@@ -772,6 +772,30 @@ body.large-text .playerSetupModal {
   animation: pulse 0.5s ease-in-out infinite;
 }
 
+#timerDurationSetting select {
+  padding: 4px 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 2px solid var(--color-background-medium);
+  border-radius: 8px;
+  background-color: var(--color-background-light);
+  color: var(--color-background-medium);
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+#timerDurationSetting select:focus {
+  outline: 3px solid var(--color-text);
+  outline-offset: 2px;
+  background-color: var(--color-background-container);
+}
+
+#timerDurationSetting select option {
+  background-color: var(--color-background-container);
+  color: var(--color-text);
+}
+
 @keyframes pulse {
   0%,
   100% {

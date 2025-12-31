@@ -293,7 +293,7 @@ function ScreenController() {
 
   // Timer Variables
   let timerEnabled = false;
-  let timerDuration = 10;
+  let timerDuration = 15;
   let timerInterval: number | null = null;
   let currentTime = timerDuration;
   let isAutoMove = false;
@@ -428,6 +428,14 @@ function ScreenController() {
   const enableTimerCheckbox = mustFind(
     document.querySelector<HTMLInputElement>("#enableTimer"),
     "#enableTimer"
+  );
+  const timerDurationSelect = mustFind(
+    document.querySelector<HTMLSelectElement>("#timerDuration"),
+    "#timerDuration"
+  );
+  const timerDurationSetting = mustFind(
+    document.querySelector<HTMLElement>("#timerDurationSetting"),
+    "#timerDurationSetting"
   );
 
   // Shortcut Elements
@@ -1080,7 +1088,9 @@ function ScreenController() {
       currentTime--;
       updateTimerDisplay();
 
-      if (currentTime <= 5) {
+      // Set Warning threshold to 1/3 of duration
+      const warningThreshold = Math.floor(timerDuration / 3);
+      if (currentTime <= warningThreshold) {
         timerBar.classList.add("warning");
       }
 
@@ -1117,7 +1127,9 @@ function ScreenController() {
         currentTime--;
         updateTimerDisplay();
 
-        if (currentTime <= 5) {
+        // Set Warning threshold to 1/3 of duration
+        const warningThreshold = Math.floor(timerDuration / 3);
+        if (currentTime <= warningThreshold) {
           timerBar.classList.add("warning");
         }
 
@@ -1180,6 +1192,13 @@ function ScreenController() {
     timerEnabled = enableTimerCheckbox.checked;
     localStorage.setItem("timerEnabled", timerEnabled.toString());
 
+    // Show/hide timer duration setting
+    if (timerEnabled) {
+      timerDurationSetting.style.display = "block";
+    } else {
+      timerDurationSetting.style.display = "none";
+    }
+
     const availableCells = board.filter((cell) => cell.getValue() === "");
     const isGameOver =
       availableCells.length === 0 ||
@@ -1216,11 +1235,23 @@ function ScreenController() {
     console.log(`Timer enabled: ${timerEnabled}`);
   }
 
+  // Load saved perference for timer duration
+  const savedTimerDuration = localStorage.getItem("timerDuration");
+  if (savedTimerDuration) {
+    timerDuration = parseInt(savedTimerDuration);
+    timerDurationSelect.value = savedTimerDuration;
+  }
+
+  // Load saved preference for timer enable
   const savedTimerPref = localStorage.getItem("timerEnabled");
   if (savedTimerPref === "true") {
     enableTimerCheckbox.checked = true;
     timerEnabled = true;
+    timerDurationSetting.style.display = "block";
   }
+
+  // Update description text with current duration
+  enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;
 
   // Undo Function
   function undoMove() {
@@ -1685,6 +1716,39 @@ function ScreenController() {
     localStorage.setItem("largeText", largeTextCheckbox.checked.toString());
   });
   enableTimerCheckbox.addEventListener("change", toggleTimer);
+  timerDurationSelect.addEventListener("change", () => {
+    const wasTimerRunning = timerInterval !== null;
+
+    // Stop current timer
+    if (wasTimerRunning) stopTimer();
+
+    // Update duration
+    timerDuration = parseInt(timerDurationSelect.value);
+    localStorage.setItem("timerDuration", timerDuration.toString());
+
+    // Update description
+    enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;
+
+    // Check if any modal is open
+    const isModalOpen =
+      playerSetupOverlay.getAttribute("aria-hidden") === "false" ||
+      shortcutsOverlay.getAttribute("aria-hidden") === "false" ||
+      settingsOverlay.getAttribute("aria-hidden") === "false";
+
+    // Restart timer with new duration if it was running and modals are closed
+    if (wasTimerRunning && isGameInitialized && !isModalOpen) {
+      pausedTime = null;
+      currentTime = timerDuration;
+      startTimer();
+    } else if (isModalOpen) {
+      // Reset display but dont start
+      pausedTime = null;
+      currentTime = timerDuration;
+      updateTimerDisplay();
+    }
+
+    console.log(`Timer duration change to: ${timerDuration} seconds`);
+  });
 
   // AI Event Listeners
   aiToggle.addEventListener("change", toggleAISetup);
