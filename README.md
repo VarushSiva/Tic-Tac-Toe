@@ -1,44 +1,82 @@
 ## 🎮 Tic Tac Toe
 
-A classic game of Tic Tac Toe built with **HTML, CSS, and JavaScript** as part of [The Odin Project](https://www.theodinproject.com/) curriculum.
-The goal of this project is to structure JavaScript Code using **factory functions** and the **module pattern**, 
-ensuring a clean separation between game logic and user interface.
+A modern take on the classic **Tic Tac Toe**, rebuilt in **HTML,  CSS, and TypeScript** with a big focus on **keyboard support** and **accessibility-minded UI**.
+
+Originally started as part of [The Odin Project](https://www.theodinproject.com/) curriculum, the project evolved beyond the initial scope to explore better structure, UX polish, and WCAG-inspired improvements.
 
 🎯 **Live Demo:** [Play the Game Here!](https://varushsiva.github.io/Tic-Tac-Toe/)
 
 ---
 
 ## 🛠️ Technologies Used
-- **HTML5** - Defines the game structure
-- **CSS3**  - Styles & layout customization
-- **JavaScript (ES6)** - Handles interactivity & core game logic
+- **HTML5** — App Structure
+- **CSS3**  — Styles & layout customization
+- **TypeScript** — Game logic + UI behavior
 
 ---
 
 ## 🚀 Features
-- 🆚 Two-Player Mode - Player X vs Player O
-- 🔄 Dynamic Board - Updates using DOM manipulation
-- 🏆 Winner & Draw Detection - Displays results automatically
-- ✨ Animations - Winning combinations are animated
-- 🔁 New Game + Reset Scoreboard - Starts a new match or reset all scores
-- 🧮 Scoreboard - Keeps track of each player's wins
-- 🎨 Colour Palette - Displays colours used with their hex codes
-- 💡 Active Player Indicator — Highlights the current player on the scoreboard
-- 📱 Responsive Layout - Adapts to different screen sizes
+
+### Gameplay
+- 🆚 **Two-Player Mode** — Player X vs Player O
+- 🤖 **Optional AI opponent** — Choose difficulty: *Easy / Medium / Hard*
+- 🔄 **Dynamic Board Updates** — DOM-driven UI
+- 🏆 **Winner & Draw Detection** — Displays results automatically
+- 🧮 **Scoreboard** — Keeps track of each player's wins
+- 💡 **Active Player Indicator** — Highlights the current player on the scoreboard
+- ↩️ **Undo** — Revert the last played move
+- 🔁 **New Round + New Game** — Starts a new round or new game
+- ⏱️ **Move timer (optional)** — if time runs out, a move is automatically played
+
+### Modals & UX
+- ⌨️ **Keyboard Shortcuts modal** — Quick reference for all controls
+- ⚙️ **Settings modal** with:
+- &emsp;&emsp; Game settings (Enable Move Timer + Timer Duration)
+- &emsp;&emsp; Accessibility settings (Reduce Motion / High Contrast / Larger Text)
+
+### Themes & Visuals
+- 🎨 **Multiple themes**: *Default / Halloween / Christmas / Valentines*
+- ✨ **Animations (Optional)** — Animation for Winning Combination, Timer etc. (Can be disabled via **Reduce Motion**)
+- 🎨 **Colour Palette** — Displays colours used with their hex codes
+- 📱 **Responsive Layout** — Works on Desktop and Mobile
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+### Game controls
+- **Tab** — Next targetable item
+- **Arrow Keys** — Navigate betweem Cells when focused
+- **Enter / Space** — Click / Place token
+- **B** — Focus the Board
+- **Z** — Undo last move
+- **N** — New Round
+- **R** — New Game (Reset All)
+
+### Interface shortcuts
+- **S** — Open settings
+- **?** — Open shortcuts help
+- **T** — cycle themes
+- **Esc** — Close any Modal
 
 ---
 
 ## 📁 Project Structure
 Tic-Tac-Toe/ 
-- │── components/ 
-- │   &emsp;&ensp;│── src/ 
-- │   &emsp;&ensp;│&emsp;&nbsp; └── main.js &emsp;&emsp;# Game logic & UI handling 
-- │   &emsp;&ensp;└── styles/ 
-- │   &emsp;&emsp;&emsp;&ensp;&nbsp;├── reset.css &emsp;&nbsp;# CSS reset for clean baseline 
-- │   &emsp;&emsp;&emsp;&ensp;&nbsp;└── styles.css &ensp;&ensp;# Game styling
+- │── dist/ 
+- │   &emsp;&ensp;└── main.js &emsp;&emsp;&emsp;&emsp;# Game logic & UI handling
+- │── node_modules/
+- │── src/
+- │   &emsp;&ensp;└── main.ts &emsp;&emsp;&emsp;&emsp;# TypeScript file
+- │── styles/ 
+- │   &emsp;&ensp;├── reset.css &emsp;&emsp;&ensp;&ensp;&ensp;# CSS reset for clean baseline 
+- │   &emsp;&ensp;└── styles.css &ensp;&ensp;&emsp;&emsp;&nbsp;# Game styling
 - │── .gitattributes &emsp;&emsp;&emsp;&emsp;# Git configuration for handling file types  
-- │── index.html &emsp;&emsp;&emsp;&emsp;&emsp;# Main HTML file 
+- │── index.html &emsp;&emsp;&emsp;&emsp;&emsp;# Main HTML file
+- │── package-lock.json
+- │── package.json
 - │── README.md &emsp;&emsp;&emsp;&emsp;# Project documentation
+- │── tsconfig.json
 
 ---
 
@@ -59,7 +97,20 @@ To run this project locally:
 
 ## 🧩 Version
 
-**Current Version: 1.0.0**
+### **Current Version: 2.0.0**
+Major update from the original Odin Project version:
+
+- JavaScript → TypeScript migration
+- Keyboard navigation + shortcuts
+- Keyboard Shortcuts modal (in-game help menu for controls)
+- Settings modal
+- Player Setup modal
+- Move timer + auto-move when time runs out (random valid move)
+- Undo button 
+- Themes: Default / Halloween / Christmas / Valentines
+- LocalStorage support (persists user settings between sessions)
+
+### Version: 1.0.0
 Initial release of the Tic Tac Toe project featuring:
 
 - Two-player Mode
@@ -75,13 +126,12 @@ Initial release of the Tic Tac Toe project featuring:
 
 Planned or possible updates include:
 
-- 🤖 Adding a Single-Player Mode with a Basic AI Opponent
 - 🌙 Implementing a Dark / Light Mode Toggle
 - ✨ Adding Animations for Game ending in a Tie
-- 💾 Persistent Score Storage using LocalStorage
 - 📱 Enhanced Mobile Layout & Accessibility Improvements
-- 🎨 Allow users to change the colour scheme dynamically using the colour palette
-- ⚠️ Adding a confirmation modal when resetting the scoreboard to prevent accidental resets
+- ⚠️ Adding a confirmation modal when resetting the game to prevent accidental resets
+- 🔊 Optional sound effects + sound toggle
+- 🧠 Improve AI performance/strategy and add more difficulty tuning
 
 ---
 
