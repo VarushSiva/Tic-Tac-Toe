@@ -1,6 +1,6 @@
 ## 🎮 Tic Tac Toe
 
-A modern take on the classic **Tic Tac Toe**, rebuilt in **HTML,  CSS, and TypeScript** with a big focus on **keyboard support** and **accessibility-minded UI**.
+A modern take on the classic **Tic Tac Toe**, rebuilt in **HTML, CSS, and TypeScript** with a big focus on **keyboard support** and **accessibility-minded UI**.
 
 Originally started as part of [The Odin Project](https://www.theodinproject.com/) curriculum, the project evolved beyond the initial scope to explore better structure, UX polish, and WCAG-inspired improvements.
 
@@ -26,17 +26,17 @@ Originally started as part of [The Odin Project](https://www.theodinproject.com/
 - 💡 **Active Player Indicator** — Highlights the current player on the scoreboard
 - ↩️ **Undo** — Revert the last played move
 - 🔁 **New Round + New Game** — Starts a new round or new game
-- ⏱️ **Move timer (optional)** — if time runs out, a move is automatically played
+- ⏱️ **Move timer (optional)** — If time runs out, a move is automatically played
 
 ### Modals & UX
 - ⌨️ **Keyboard Shortcuts modal** — Quick reference for all controls
 - ⚙️ **Settings modal** with:
-- &emsp;&emsp; Game settings (Enable Move Timer + Timer Duration)
-- &emsp;&emsp; Accessibility settings (Reduce Motion / High Contrast / Larger Text)
+  - Game settings (Enable Move Timer + Timer Duration)
+  - Accessibility settings (Reduce Motion / High Contrast / Larger Text)
 
 ### Themes & Visuals
 - 🎨 **Multiple themes**: *Default / Halloween / Christmas / Valentines*
-- ✨ **Animations (Optional)** — Animation for Winning Combination, Timer etc. (Can be disabled via **Reduce Motion**)
+- ✨ **Animations (Optional)** — Animation for Winning Combination, Timer and etc. (Can be disabled via **Reduce Motion**)
 - 🎨 **Colour Palette** — Displays colours used with their hex codes
 - 📱 **Responsive Layout** — Works on Desktop and Mobile
 
@@ -46,7 +46,7 @@ Originally started as part of [The Odin Project](https://www.theodinproject.com/
 
 ### Game controls
 - **Tab** — Next targetable item
-- **Arrow Keys** — Navigate betweem Cells when focused
+- **Arrow Keys** — Navigate between Cells when focused
 - **Enter / Space** — Click / Place token
 - **B** — Focus the Board
 - **Z** — Undo last move
@@ -56,7 +56,7 @@ Originally started as part of [The Odin Project](https://www.theodinproject.com/
 ### Interface shortcuts
 - **S** — Open settings
 - **?** — Open shortcuts help
-- **T** — cycle themes
+- **T** — Cycle themes
 - **Esc** — Close any Modal
 
 ---
@@ -64,10 +64,10 @@ Originally started as part of [The Odin Project](https://www.theodinproject.com/
 ## 📁 Project Structure
 Tic-Tac-Toe/ 
 - │── dist/ 
-- │   &emsp;&ensp;└── main.js &emsp;&emsp;&emsp;&emsp;# Game logic & UI handling
+- │   &emsp;&ensp;└── main.js &emsp;&emsp;&emsp;&emsp;# TS Output file
 - │── node_modules/
 - │── src/
-- │   &emsp;&ensp;└── main.ts &emsp;&emsp;&emsp;&emsp;# TypeScript file
+- │   &emsp;&ensp;└── main.ts &emsp;&emsp;&emsp;&emsp;# Game logic & UI handling
 - │── styles/ 
 - │   &emsp;&ensp;├── reset.css &emsp;&emsp;&ensp;&ensp;&ensp;# CSS reset for clean baseline 
 - │   &emsp;&ensp;└── styles.css &ensp;&ensp;&emsp;&emsp;&nbsp;# Game styling
@@ -91,7 +91,12 @@ To run this project locally:
    ```bash
    cd Tic-Tac-Toe/
    ```
-3. Open the index.html file in your browser **or** Right-click and select "**Open with Live Server**" if you have the **Live Server** extension installed for **VS Code**.
+3. Optional - Build TypeScript Locally:
+   ```bash
+   npm install
+   npm run build
+   ```
+4. Open the index.html file in your browser **or** Right-click and select "**Open with Live Server**" if you have the **Live Server** extension installed for **VS Code**.
 
 ---
 
