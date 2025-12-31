@@ -91,12 +91,7 @@ To run this project locally:
    ```bash
    cd Tic-Tac-Toe/
    ```
-3. Optional - Build TypeScript Locally:
-   ```bash
-   npm install
-   npm run build
-   ```
-4. Open the index.html file in your browser **or** Right-click and select "**Open with Live Server**" if you have the **Live Server** extension installed for **VS Code**.
+3. Open the index.html file in your browser **or** Right-click and select "**Open with Live Server**" if you have the **Live Server** extension installed for **VS Code**.
 
 ---
 
