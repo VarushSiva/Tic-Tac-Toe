@@ -3,7 +3,8 @@ export const GRID_SIZE = 3;
 export const CELL_COUNT = 9;
 export const DEFAULT_TIMER_DURATION = 15;
 export const TIMER_WARNING_THRESHOLD_RATIO = 1 / 3;
-export const DELAY = 500;
+export const AI_MOVE_DELAY = 500;
+export const AUTO_MOVE_HIGHLIGHT_DELAY = 500;
 
 export const ARIA = {
     HIDDEN: "aria-hidden",
