@@ -7,20 +7,17 @@ export const AI_MOVE_DELAY = 500;
 export const AUTO_MOVE_HIGHLIGHT_DELAY = 500;
 export const ERROR_MESSAGE_DELAY = 2000;
 export const START_DELAY = 100;
-
 export const ARIA = {
     HIDDEN: "aria-hidden",
     LABEL: "aria-label",
     TRUE: "true",
     FALSE: "false",
-} as const;
-
-export const WIN_CONDITIONS: [number, number, number][] = [
+};
+export const WIN_CONDITIONS = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
     [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-    [0, 4, 8], [2, 4, 6],            // Diagonals
-]
-
+    [0, 4, 8], [2, 4, 6], // Diagonals
+];
 export const STORAGE_KEYS = {
     THEME: "theme",
     REDUCE_MOTION: "reduceMotion",
@@ -28,4 +25,4 @@ export const STORAGE_KEYS = {
     LARGE_TEXT: "largeText",
     TIMER_ENABLED: "timerEnabled",
     TIMER_DURATION: "timerDuration",
-} as const;
+};

@@ -1,6 +1,6 @@
 // KeyboardManager
-import { GRID_SIZE } from "./constants";
-import { getCellPosition, getIndexFromPosition } from "./utils";
+import { GRID_SIZE } from "./constants.js";
+import { getCellPosition, getIndexFromPosition } from "./utils.js";
 
 export type ShortcutCallback = (event: KeyboardEvent) => void;
 

@@ -1,5 +1,5 @@
 // Undo Manager
-import { MoveHistory, Token, Cell } from "./types";
+import { MoveHistory, Token, Cell } from "./types.js";
 
 export class UndoManager {
   private history: MoveHistory[] = [];

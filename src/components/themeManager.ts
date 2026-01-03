@@ -1,6 +1,6 @@
 // Theme Manager
-import { saveToStorage, loadFromStorage } from "./utils";
-import { STORAGE_KEYS } from "./constants";
+import { saveToStorage, loadFromStorage } from "./utils.js";
+import { STORAGE_KEYS } from "./constants.js";
 
 export interface Theme {
   backgroundLight: string;

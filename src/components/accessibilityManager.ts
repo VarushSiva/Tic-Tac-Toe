@@ -1,5 +1,5 @@
 // AccessibilityManager
-import { saveToStorage, loadFromStorage } from "./utils";
+import { saveToStorage, loadFromStorage } from "./utils.js";
 
 type ToggleCallback = (enabled: boolean) => void;
 

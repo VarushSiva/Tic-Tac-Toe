@@ -1,184 +1,88 @@
-"use strict";
-// Enforce DOM elements exist to prevent runtime crashs
-function mustFind(element, name) {
-    if (!element)
-        throw new Error(`Missing required element: ${name}`);
-    return element;
-}
-// Create a gameboard that represents the state of the board
-function gameBoard() {
-    const cellCount = 9;
-    const board = [];
-    for (let i = 0; i < cellCount; i++) {
-        board.push(Cell());
-    }
-    // Create a method to get entire board --> UI needs this to render board
-    const getBoard = () => board;
-    // Display token when clicked on a valid cell
-    const displayToken = (cellIndex, player) => {
-        const selectedCell = board[cellIndex];
-        if (!selectedCell)
-            return;
-        if (selectedCell.getValue() !== "")
-            return;
-        // Else add token to the available cell
-        selectedCell.addToken(player);
-    };
-    // Create a method to print the board to console
-    // Helpful to seeing the board after each turn
-    const printBoard = () => {
-        const boardWithCellValues = board.map((cell) => cell.getValue());
-        console.log(boardWithCellValues);
-    };
-    // Return methods
-    return { getBoard, displayToken, printBoard };
-}
-// A Cell represents one square on the board:
-// "" : Empty
-// "X": Player 1
-// "O": Player 2
-function Cell() {
-    let value = "";
-    // Accept a players move to change the value of the cell
-    const addToken = (player) => {
-        value = player;
-    };
-    // Method to retrieve the current value of the cell through closure
-    const getValue = () => value;
-    // Reset Cell Value
-    const resetValue = () => {
-        value = "";
-        return value;
-    };
-    // Return methods
-    return { addToken, getValue, resetValue };
-}
-// GameController will be responsiblee for conttrolling the flow and state of the games turn
-// Including Win Conditions
-function GameController(playerOneName = "Player X", playerTwoName = "Player O") {
-    // Set up gameboard
-    const board = gameBoard();
-    // Set up players
-    const players = [
-        {
-            name: playerOneName,
-            token: "X",
-            wins: 0,
-        },
-        {
-            name: playerTwoName,
-            token: "O",
-            wins: 0,
-        },
-    ];
-    // Set active player
-    let activePlayer = players[0];
-    // Set up turn control --> if Player 1 --> Next = Player 2
-    const switchPlayerTurn = () => {
-        activePlayer = activePlayer === players[0] ? players[1] : players[0];
-    };
-    // Method to get current active player
-    const getActivePlayer = () => activePlayer;
-    // Method to add Win to current active player
-    const addWin = () => (activePlayer.wins += 1);
-    // Method to get the wins of the players
-    const getPlayerXWins = () => players[0].wins;
-    const getPlayerOWins = () => players[1].wins;
-    // Method to reset wins
-    const resetWins = () => {
-        players[0].wins = 0;
-        players[1].wins = 0;
-    };
-    const resetPlayer = () => (activePlayer = players[0]);
-    // Print new round
-    const printNewRound = () => {
-        // Print board using method + Print/Log Players turn using method getActivePlayer
-        board.printBoard();
-        console.log(`${getActivePlayer().name}'s Turn`);
-    };
-    // Check for Winner
-    const checkForWinner = () => {
-        const boardState = board.getBoard();
-        // Win Condition combos
-        const winCondition = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8], // Rows
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8], // Columns
-            [0, 4, 8],
-            [2, 4, 6], // Diagonals
-        ];
-        // Check with each combo if there is a match
-        for (const [a, b, c] of winCondition) {
-            // Check if board[a] has a value (Not '') and then compare to board[b] and board[c]
-            if (boardState[a].getValue() &&
-                boardState[a].getValue() === boardState[b].getValue() &&
-                boardState[a].getValue() === boardState[c].getValue()) {
-                // Return index to add winner class later
-                return [a, b, c];
-            }
-        }
-        return null;
-    };
-    // Play Round Logic
-    const playRound = (cellIndex) => {
-        // If token is already present, return
-        const gameBoard = board.getBoard();
-        const validPosition = gameBoard[cellIndex]?.getValue() === "";
-        if (!validPosition)
-            return null;
-        // Add token for the current player
-        console.log(`Adding ${getActivePlayer().name}'s Token into Position ${cellIndex}`);
-        // Use displayToken method from gameboard using parameters --> row + column + Player Token Identification
-        board.displayToken(cellIndex, getActivePlayer().token);
-        /* Check for Winner + Win Message Logic */
-        const winner = checkForWinner();
-        if (winner)
-            return winner;
-        switchPlayerTurn();
-        printNewRound();
-        return null;
-    };
-    // Initial play game message --> printNewRound();
-    printNewRound();
-    // Return Methods:
-    // Console playRound | UI Version = getActivePlayer + getBoard
-    return {
-        playRound,
-        getActivePlayer,
-        addWin,
-        getPlayerXWins,
-        resetWins,
-        getPlayerOWins,
-        resetPlayer,
-        getBoard: board.getBoard,
-        undoMove: (cellIndex) => {
-            // Reset the cell
-            board.getBoard()[cellIndex]?.resetValue();
-            // Switch Player back
-            switchPlayerTurn();
-            printNewRound();
-        },
-    };
-}
-// Add Screen Controller
+import { createGameController } from "./components/gameLogic.js";
+import { mustFind, isGameOver, isModalOpen, openModal, closeModal, } from "./components/utils.js";
+import { ModalManager } from "./components/modalManager.js";
+import { AccessibilityManager } from "./components/accessibilityManager.js";
+import { AIStrategyFactory } from "./components/aiStrategy.js";
+import { TimerManager } from "./components/timerManager.js";
+import { ThemeManager } from "./components/themeManager.js";
+import { UndoManager } from "./components/undoManager.js";
+import { KeyboardManager } from "./components/keyboardManager.js";
+import { GameStateManager } from "./components/gameStateManager.js";
+import { EventManager } from "./components/eventManager.js";
+import { ErrorBoundary } from "./components/errorBoundary.js";
+import { logger } from "./components/logger.js";
+import { STORAGE_KEYS, ARIA, AI_MOVE_DELAY, AUTO_MOVE_HIGHLIGHT_DELAY, START_DELAY, ERROR_MESSAGE_DELAY, GRID_SIZE, } from "./components/constants.js";
+// Screen Controller - Visuals
 function ScreenController() {
-    // Initiate Game after Player Names
-    let game;
-    let board;
-    let isGameInitialized = false;
-    // Store Player Names
+    // Initialize Error Boundary
+    ErrorBoundary.setupGlobalErrorHandler();
+    // Initiate State
+    let game = null;
+    let board = [];
     let playerXName = "Player X";
     let playerOName = "Player O";
-    let focusedCellIndex = 0;
-    // AI Variables
     let isAIEnabled = false;
     let aiDifficulty = "medium";
-    let isAIThinking = false;
-    // Theme Data
-    const themes = {
+    // Initialize Managers
+    const gameState = new GameStateManager();
+    const undoManager = new UndoManager();
+    const eventManager = new EventManager();
+    const keyboardManager = new KeyboardManager();
+    // DOM Reference
+    const playerTurnDiv = mustFind(document.querySelector(".turn"), ".turn");
+    const boardDiv = mustFind(document.querySelector(".board"), ".board");
+    const playerXScore = mustFind(document.querySelector("#playerXScore"), "#playerXScore");
+    const playerOScore = mustFind(document.querySelector("#playerOScore"), "#playerOScore");
+    const resetGameBtn = mustFind(document.querySelector(".resetGame"), ".resetGame");
+    const resetScoreBtn = mustFind(document.querySelector(".resetScore"), ".resetScore");
+    const undoBtn = mustFind(document.querySelector(".undoBtn"), ".undoBtn");
+    // Settings Elements
+    const settingsBtn = mustFind(document.querySelector(".settingsBtn"), ".settingsBtn");
+    const settingsOverlay = mustFind(document.querySelector("#settingsOverlay"), "#settingsOverlay");
+    const settingsModal = mustFind(document.querySelector(".settingsModal"), ".settingsModal");
+    const closeSettingsBtn = mustFind(document.querySelector(".closeSettings"), ".closeSettings");
+    // Player Setup Elements
+    const playerSetupOverlay = mustFind(document.querySelector("#playerSetupOverlay"), "#playerSetupOverlay");
+    const playerSetupModal = mustFind(document.querySelector(".playerSetupModal"), ".playerSetupModal");
+    const playerXNameInput = mustFind(document.querySelector("#playerXName"), "#playerXName");
+    const playerONameInput = mustFind(document.querySelector("#playerOName"), "#playerOName");
+    const startGameBtn = mustFind(document.querySelector(".startGameBtn"), ".startGameBtn");
+    const aiToggle = mustFind(document.querySelector("#aiToggle"), "#aiToggle");
+    const aiDifficultySelect = mustFind(document.querySelector("#aiDifficulty"), "#aiDifficulty");
+    const aiDifficultyGroup = mustFind(document.querySelector("#aiDifficultyGroup"), "#aiDifficultyGroup");
+    const playerOGroup = mustFind(document.querySelector("#playerOGroup"), "#playerOGroup");
+    // Timer Elements
+    const timerContainer = mustFind(document.querySelector(".timerContainer"), ".timerContainer");
+    const timerBar = mustFind(document.querySelector("#timerBar"), "#timerBar");
+    const timerText = mustFind(document.querySelector("#timerText"), "#timerText");
+    const enableTimerCheckbox = mustFind(document.querySelector("#enableTimer"), "#enableTimer");
+    const timerDurationSelect = mustFind(document.querySelector("#timerDuration"), "#timerDuration");
+    const timerDurationSetting = mustFind(document.querySelector("#timerDurationSetting"), "#timerDurationSetting");
+    const enableTimerDescription = mustFind(document.querySelector("#enableTimerDescription"), "#enableTimerDescription");
+    // Shortcut Elements
+    const shortcutsBtn = mustFind(document.querySelector(".shortcutsBtn"), ".shortcutsBtn");
+    const shortcutsOverlay = mustFind(document.querySelector("#shortcutsOverlay"), "#shortcutsOverlay");
+    const shortcutsModal = mustFind(document.querySelector(".shortcutsModal"), ".shortcutsModal");
+    const closeShortcutsBtn = mustFind(document.querySelector(".closeShortcuts"), ".closeShortcuts");
+    // Accessibility Elements
+    const reduceMotionCheckbox = mustFind(document.querySelector("#reduceMotion"), "#reduceMotion");
+    const highContrastCheckbox = mustFind(document.querySelector("#highContrast"), "#highContrast");
+    const largeTextCheckbox = mustFind(document.querySelector("#largeText"), "#largeText");
+    // Theme Container
+    const colourPalette = mustFind(document.querySelector(".colourPalette"), ".colourPalette");
+    // Timer Manager
+    const timerManager = new TimerManager(timerBar, timerText, timerContainer, makeAutoMove);
+    // Modal Manager
+    const modalManager = new ModalManager(() => timerManager.pause(), () => {
+        if (gameState.isInitialized() &&
+            !isGameOver(board, playerTurnDiv.textContent || "")) {
+            timerManager.resume();
+        }
+    });
+    // Accessibility Manager
+    const accessibilityManager = new AccessibilityManager();
+    // Theme Manager
+    const themeManager = new ThemeManager({
         default: {
             backgroundLight: "#A0DDFF",
             backgroundMedium: "#758ECD",
@@ -211,860 +115,289 @@ function ScreenController() {
             highlightRgb: "255, 201, 222",
             text: "#C9184A",
         },
-    };
-    // Timer Variables
-    let timerEnabled = false;
-    let timerDuration = 15;
-    let timerInterval = null;
-    let currentTime = timerDuration;
-    let isAutoMove = false;
-    let pausedTime = null;
-    // Move History for Undo
-    let moveHistory = [];
-    // Target HTML Div
-    const playerTurnDiv = mustFind(document.querySelector(".turn"), ".turn");
-    const boardDiv = mustFind(document.querySelector(".board"), ".board");
-    const playerXScore = mustFind(document.querySelector("#playerXScore"), "#playerXScore");
-    const playerOScore = mustFind(document.querySelector("#playerOScore"), "#playerOScore");
-    const resetGameBtn = mustFind(document.querySelector(".resetGame"), ".resetGame");
-    const resetScoreBtn = mustFind(document.querySelector(".resetScore"), ".resetScore");
-    const undoBtn = mustFind(document.querySelector(".undoBtn"), ".undoBtn");
-    // Settings Elements
-    const settingsBtn = mustFind(document.querySelector(".settingsBtn"), ".settingsBtn");
-    const settingsOverlay = mustFind(document.querySelector("#settingsOverlay"), "#settingsOverlay");
-    const settingsModal = mustFind(document.querySelector(".settingsModal"), ".settingsModal");
-    const enableTimerDescription = mustFind(document.querySelector("#enableTimerDescription"), "#enableTimerDescription");
-    const closeSettingsBtn = mustFind(document.querySelector(".closeSettings"), ".closeSettings");
-    const reduceMotionCheckbox = mustFind(document.querySelector("#reduceMotion"), "#reduceMotion");
-    const highContrastCheckbox = mustFind(document.querySelector("#highContrast"), "#highContrast");
-    const largeTextCheckbox = mustFind(document.querySelector("#largeText"), "#largeText");
-    // Player Setup Elements
-    const playerSetupOverlay = mustFind(document.querySelector("#playerSetupOverlay"), "#playerSetupOverlay");
-    const playerSetupModal = mustFind(document.querySelector(".playerSetupModal"), ".playerSetupModal");
-    const playerXNameInput = mustFind(document.querySelector("#playerXName"), "#playerXName");
-    const playerONameInput = mustFind(document.querySelector("#playerOName"), "#playerOName");
-    const startGameBtn = mustFind(document.querySelector(".startGameBtn"), ".startGameBtn");
-    // Theme Container
-    const colourPalette = mustFind(document.querySelector(".colourPalette"), ".colourPalette");
-    // AI Toggle Elements
-    const aiToggle = mustFind(document.querySelector("#aiToggle"), "#aiToggle");
-    const aiDifficultySelect = mustFind(document.querySelector("#aiDifficulty"), "#aiDifficulty");
-    const aiDifficultyGroup = mustFind(document.querySelector("#aiDifficultyGroup"), "#aiDifficultyGroup");
-    const playerOGroup = mustFind(document.querySelector("#playerOGroup"), "#playerOGroup");
-    // Timer Elements
-    const timerContainer = mustFind(document.querySelector(".timerContainer"), ".timerContainer");
-    const timerBar = mustFind(document.querySelector("#timerBar"), "#timerBar");
-    const timerText = mustFind(document.querySelector("#timerText"), "#timerText");
-    const enableTimerCheckbox = mustFind(document.querySelector("#enableTimer"), "#enableTimer");
-    const timerDurationSelect = mustFind(document.querySelector("#timerDuration"), "#timerDuration");
-    const timerDurationSetting = mustFind(document.querySelector("#timerDurationSetting"), "#timerDurationSetting");
-    // Shortcut Elements
-    const shortcutsBtn = mustFind(document.querySelector(".shortcutsBtn"), ".shortcutsBtn");
-    const shortcutsOverlay = mustFind(document.querySelector("#shortcutsOverlay"), "#shortcutsOverlay");
-    const shortcutsModal = mustFind(document.querySelector(".shortcutsModal"), ".shortcutsModal");
-    const closeShortcutsBtn = mustFind(document.querySelector(".closeShortcuts"), ".closeShortcuts");
-    // Settings Panel Functions
+    });
+    // Initialization
+    initializeAccessibility();
+    initializeTimer();
+    initializeThemes();
+    initializeKeyboardShortcuts();
+    setupEventListeners();
+    setupInitialFocus();
+    // Accessibility Setup
+    function initializeAccessibility() {
+        accessibilityManager.setupToggle(reduceMotionCheckbox, STORAGE_KEYS.REDUCE_MOTION, "reduce-motion");
+        accessibilityManager.setupToggle(highContrastCheckbox, STORAGE_KEYS.HIGH_CONTRAST, "high-contrast", (enabled) => {
+            colourPalette.style.display = enabled ? "none" : "flex";
+        });
+        accessibilityManager.setupToggle(largeTextCheckbox, STORAGE_KEYS.LARGE_TEXT, "large-text");
+        // System Preferences
+        accessibilityManager.setupSystemPreference("(prefers-reduced-motion: reduce)", reduceMotionCheckbox, "reduce-motion", STORAGE_KEYS.REDUCE_MOTION);
+        accessibilityManager.setupSystemPreference("(prefers-contrast: high)", highContrastCheckbox, "high-contrast", STORAGE_KEYS.HIGH_CONTRAST);
+    }
+    // Timer Setup
+    function initializeTimer() {
+        enableTimerDescription.textContent = `Automatically place a random move after ${timerManager.getDuration()} seconds`;
+        enableTimerCheckbox.checked = timerManager.isTimerEnabled();
+        if (timerManager.isTimerEnabled()) {
+            timerDurationSetting.style.display = "block";
+        }
+        timerDurationSelect.value = timerManager.getDuration().toString();
+    }
+    // Theme Setup
+    function initializeThemes() {
+        document.querySelectorAll(".themeBtn").forEach((btn) => {
+            eventManager.register(btn, "click", () => {
+                const theme = btn.dataset.theme;
+                if (theme)
+                    themeManager.applyTheme(theme);
+            });
+        });
+    }
+    // Keyboard Shortcuts
+    function initializeKeyboardShortcuts() {
+        keyboardManager.registerShortcut("b", (e) => {
+            e.preventDefault();
+            if (!gameState.isInitialized())
+                return;
+            focusRandomAvailableCell();
+        });
+        keyboardManager.registerShortcut("z", (e) => {
+            e.preventDefault();
+            if (!undoBtn.disabled)
+                performUndo();
+        });
+        keyboardManager.registerShortcut("n", (e) => {
+            e.preventDefault();
+            resetGame();
+        });
+        keyboardManager.registerShortcut("r", (e) => {
+            e.preventDefault();
+            resetScore();
+        });
+        keyboardManager.registerShortcut("s", (e) => {
+            e.preventDefault();
+            if (isModalOpen(settingsOverlay)) {
+                closeSettings();
+            }
+            else {
+                openSettings();
+            }
+        });
+        keyboardManager.registerShortcut("?", (e) => {
+            e.preventDefault();
+            if (isModalOpen(shortcutsOverlay)) {
+                closeShortcuts();
+            }
+            else {
+                openShortcuts();
+            }
+        });
+        keyboardManager.registerShortcut("t", (e) => {
+            e.preventDefault();
+            themeManager.cycleTheme();
+            refocusCell();
+        });
+        keyboardManager.enable();
+    }
+    // Modals
     function openSettings() {
-        settingsOverlay.setAttribute("aria-hidden", "false");
-        // Pause Timer when open
-        if (timerEnabled && isGameInitialized)
-            pauseTimer();
-        // Setup focus
-        const cleanup = focusContainer(settingsModal);
-        if (cleanup)
-            activeFocus.push(cleanup);
-        closeSettingsBtn.focus();
+        modalManager.open(settingsOverlay, settingsModal, closeSettingsBtn);
     }
     function closeSettings() {
-        settingsOverlay.setAttribute("aria-hidden", "true");
-        // Cleanup focus
-        activeFocus.forEach((cleanup) => cleanup());
-        activeFocus = [];
-        // Resume timer if enabled
-        if (isGameInitialized && timerEnabled) {
-            const availableCells = board.filter((cell) => cell.getValue() === "");
-            const isGameOver = availableCells.length === 0 ||
-                playerTurnDiv.textContent.includes("Wins!");
-            if (!isGameOver)
-                resumeTimer();
-        }
-        // Focus last focused cell if gaem is active, otherwise focus shortcuts button
-        if (isGameInitialized) {
-            setTimeout(() => {
-                const cells = Array.from(document.querySelectorAll(".cell"));
-                cells[focusedCellIndex]?.focus();
-            }, 50);
-        }
-        else {
-            settingsBtn.focus();
-        }
+        const returnFocus = gameState.isInitialized()
+            ? document.querySelectorAll(".cell")[gameState.getFocusedCellIndex()]
+            : settingsBtn;
+        modalManager.close(settingsOverlay, returnFocus);
+    }
+    function openShortcuts() {
+        modalManager.open(shortcutsOverlay, shortcutsModal, closeShortcutsBtn);
+    }
+    function closeShortcuts() {
+        const returnFocus = gameState.isInitialized()
+            ? document.querySelectorAll(".cell")[gameState.getFocusedCellIndex()]
+            : shortcutsBtn;
+        modalManager.close(shortcutsOverlay, returnFocus);
     }
     function handleSettingsKeydown(e) {
         if (e.key === "Escape") {
             closeSettings();
             return;
         }
-        // Handle Enter on checkboxes
         if (e.key === "Enter" &&
             e.target instanceof HTMLInputElement &&
             e.target.type === "checkbox") {
             e.preventDefault();
             e.target.checked = !e.target.checked;
             e.target.dispatchEvent(new Event("change", { bubbles: true }));
-            return;
         }
-        // Arrow keys to navigate between settings
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-            const focusableElements = Array.from(settingsModal.querySelectorAll('input[type="checkbox"], button'));
-            const currentIndex = focusableElements.indexOf(document.activeElement);
-            if (currentIndex !== -1) {
-                e.preventDefault();
-                let nextIndex;
-                if (e.key === "ArrowDown") {
-                    nextIndex = (currentIndex + 1) % focusableElements.length;
-                }
-                else {
-                    nextIndex =
-                        (currentIndex - 1 + focusableElements.length) %
-                            focusableElements.length;
-                }
-                focusableElements[nextIndex].focus();
-            }
+            navigateSettings(e);
         }
     }
-    // Shortcuts Panel Functions
-    function openShortcuts() {
-        shortcutsOverlay.setAttribute("aria-hidden", "false");
-        if (timerEnabled && isGameInitialized)
-            pauseTimer();
-        const cleanup = focusContainer(shortcutsModal);
-        if (cleanup)
-            activeFocus.push(cleanup);
-        closeShortcutsBtn.focus();
-    }
-    function closeShortcuts() {
-        shortcutsOverlay.setAttribute("aria-hidden", "true");
-        activeFocus.forEach((cleanup) => cleanup());
-        activeFocus = [];
-        // Resume Timer if running
-        if (timerEnabled && isGameInitialized) {
-            const availableCells = board.filter((cell) => cell.getValue() === "");
-            const isGameOver = availableCells.length === 0 ||
-                playerTurnDiv.textContent.includes("Wins!");
-            if (!isGameOver)
-                resumeTimer();
-        }
-        // Focus last focused cell if gaem is active, otherwise focus shortcuts button
-        if (isGameInitialized) {
-            setTimeout(() => {
-                const cells = Array.from(document.querySelectorAll(".cell"));
-                cells[focusedCellIndex]?.focus();
-            }, 50);
-        }
-        else {
-            shortcutsBtn.focus();
+    function navigateSettings(e) {
+        const focusableElements = Array.from(settingsModal.querySelectorAll('input[type="checkbox"], button'));
+        const currentIndex = focusableElements.indexOf(document.activeElement);
+        if (currentIndex !== -1) {
+            e.preventDefault();
+            const nextIndex = e.key === "ArrowDown"
+                ? (currentIndex + 1) % focusableElements.length
+                : (currentIndex - 1 + focusableElements.length) %
+                    focusableElements.length;
+            focusableElements[nextIndex].focus();
         }
     }
-    function handleShortcutsKeydown(e) {
-        if (e.key === "Escape") {
-            closeShortcuts();
-        }
-    }
-    // Animation Settings
-    let animationsEnabled = true;
-    function toggleAnimations() {
-        animationsEnabled = reduceMotionCheckbox.checked ? false : true;
-        // Apply or remove no-animation class to body
-        if (animationsEnabled) {
-            document.body.classList.remove("reduce-motion");
-        }
-        else {
-            document.body.classList.add("reduce-motion");
-        }
-        console.log(`Animations enabled: ${animationsEnabled}`);
-    }
-    // Load Saved Preference from localStorage if available
-    const savedMotionPref = localStorage.getItem("reduceMotion");
-    if (savedMotionPref === "true") {
-        reduceMotionCheckbox.checked = true;
-        toggleAnimations();
-    }
-    // Check for System Preference
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
-        !savedMotionPref) {
-        reduceMotionCheckbox.checked = true;
-        toggleAnimations();
-    }
-    // High Contrast Settings
-    let highContrastEnabled = false;
-    function toggleHighContrast() {
-        highContrastEnabled = highContrastCheckbox.checked;
-        if (highContrastEnabled) {
-            document.body.classList.add("high-contrast");
-            colourPalette.style.display = "none";
-        }
-        else {
-            document.body.classList.remove("high-contrast");
-            colourPalette.style.display = "flex";
-        }
-        console.log(`High Contrast enabled: ${highContrastEnabled}`);
-    }
-    // Load saved preference for high contrast
-    const savedContrastPref = localStorage.getItem("highContrast");
-    if (savedContrastPref === "true") {
-        highContrastCheckbox.checked = true;
-        toggleHighContrast();
-    }
-    // Check System preference --> Windows High Contrast Mode
-    if (window.matchMedia("(prefers-contrast: high)").matches &&
-        !savedContrastPref) {
-        highContrastCheckbox.checked = true;
-        toggleHighContrast();
-    }
-    // Large Text Settings
-    let largeTextEnabled = false;
-    function toggleLargeText() {
-        largeTextEnabled = largeTextCheckbox.checked;
-        if (largeTextEnabled) {
-            document.body.classList.add("large-text");
-        }
-        else {
-            document.body.classList.remove("large-text");
-        }
-        console.log(`Large Text enabled: ${largeTextEnabled}`);
-    }
-    // Load saved preference for large text
-    const savedTextPref = localStorage.getItem("largeText");
-    if (savedTextPref === "true") {
-        largeTextCheckbox.checked = true;
-        toggleLargeText();
-    }
-    // Player Setup Functions
-    function initializeGame(xName, oName) {
-        playerXName = xName;
-        playerOName = oName;
-        game = GameController(playerXName, playerOName);
-        board = game.getBoard();
-        isGameInitialized = true;
-        // Cleanup focus
-        activeFocus.forEach((cleanup) => cleanup());
-        activeFocus = [];
-        updateScreen();
-        updateScoreBoard();
-    }
-    // AI Toggle + Functions
-    function toggleAISetup() {
-        if (aiToggle.checked) {
-            playerOGroup.style.display = "none";
-            aiDifficultyGroup.style.display = "block";
-            isAIEnabled = true;
-        }
-        else {
-            playerOGroup.style.display = "flex";
-            aiDifficultyGroup.style.display = "none";
-            isAIEnabled = false;
-        }
-    }
+    // AI Logic
     function makeAIMove() {
         if (!isAIEnabled || game.getActivePlayer().token !== "O")
             return;
-        isAIThinking = true;
-        // Set Delayed AI move
+        gameState.setAIThinking(true);
         setTimeout(() => {
-            const availableCells = board
-                .map((cell, index) => ({ cell, index }))
-                .filter(({ cell }) => cell.getValue() === "");
-            if (availableCells.length === 0) {
-                isAIThinking = false;
-                return;
-            }
-            let selectedCell;
-            switch (aiDifficulty) {
-                case "easy":
-                    selectedCell = makeEasyMove(availableCells);
-                    break;
-                case "medium":
-                    selectedCell = makeMediumMove(availableCells);
-                    break;
-                case "hard":
-                    selectedCell = makeHardMove(availableCells);
-                    break;
-                default:
-                    selectedCell = makeMediumMove(availableCells);
-            }
-            console.log(`AI (${aiDifficulty}) placing token at position ${selectedCell}`);
-            // Record AI move history
-            moveHistory.push({
-                cellIndex: selectedCell,
-                player: "O",
-                wasAutoMove: false,
+            ErrorBoundary.wrap(() => {
+                const strategy = AIStrategyFactory.create(aiDifficulty);
+                const selectedCell = strategy.selectMove(board, "O", "X");
+                logger.info(`AI (${aiDifficulty}) placing token at position ${selectedCell}`);
+                undoManager.recordMove(selectedCell, "O", false);
+                updateScreen(game.playRound(selectedCell));
+                updateUndoButton();
+                gameState.setAIThinking(false);
             });
-            updateScreen(game.playRound(selectedCell));
-            updateUndoButton();
-            isAIThinking = false;
-        }, 500);
-    }
-    // Easy AI - Random Moves
-    function makeEasyMove(availableCells) {
-        const randomIndex = Math.floor(Math.random() * availableCells.length);
-        return availableCells[randomIndex].index;
-    }
-    // Medium AI - Block wins, if nothing to block --> random
-    function makeMediumMove(availableCells) {
-        // Check if AI can win
-        const winningMove = findWinningMove("O");
-        if (winningMove !== null)
-            return winningMove;
-        // Check if Player needs to be blocked
-        const blockingMove = findWinningMove("X");
-        if (blockingMove !== null)
-            return blockingMove;
-        // If neither --> Random
-        return makeEasyMove(availableCells);
-    }
-    // Hard AI - Medium AI + Take Center / Corners before random
-    function makeHardMove(availableCells) {
-        // Check if AI can win
-        const winningMove = findWinningMove("O");
-        if (winningMove !== null)
-            return winningMove;
-        // Check if Player needs to be blocked
-        const blockingMove = findWinningMove("X");
-        if (blockingMove !== null)
-            return blockingMove;
-        // Take center if available
-        if (board[4].getValue() === "")
-            return 4;
-        // Take corners if available
-        const corners = [0, 2, 6, 8];
-        const availableCorners = corners.filter((corner) => board[corner].getValue() === "");
-        if (availableCorners.length > 0) {
-            return availableCorners[Math.floor(Math.random() * availableCorners.length)];
-        }
-        // If neither --> Random
-        return makeEasyMove(availableCells);
-    }
-    // Find Winning Move
-    function findWinningMove(player) {
-        const winCondition = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8], // Rows
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8], // Columns
-            [0, 4, 8],
-            [2, 4, 6], // Diagonals
-        ];
-        for (const [a, b, c] of winCondition) {
-            const values = [
-                board[a].getValue(),
-                board[b].getValue(),
-                board[c].getValue(),
-            ];
-            const emptyIndex = values.indexOf("");
-            if (emptyIndex !== -1) {
-                const otherTwo = values.filter((value) => value !== "");
-                if (otherTwo.length === 2 &&
-                    otherTwo[0] === player &&
-                    otherTwo[1] === player) {
-                    return [a, b, c][emptyIndex];
-                }
-            }
-        }
-        return null;
-    }
-    // Theme Functions
-    let currentTheme = "default";
-    function applyTheme(themeName) {
-        const theme = themes[themeName];
-        const root = document.documentElement;
-        // Set Colours from theme data to css variables
-        root.style.setProperty("--color-background-light", theme.backgroundLight);
-        root.style.setProperty("--color-background-medium", theme.backgroundMedium);
-        root.style.setProperty("--color-background-container", theme.backgroundContainer);
-        root.style.setProperty("--color-highlight", theme.highlight);
-        root.style.setProperty("--color-highlight-rgb", theme.highlightRgb);
-        root.style.setProperty("--color-text", theme.text);
-        // Set data-theme attribute for background pattern
-        document.body.setAttribute("data-theme", themeName);
-        currentTheme = themeName;
-        localStorage.setItem("theme", themeName);
-        // Update active state on theme buttons
-        document.querySelectorAll(".themeBtn").forEach((button) => {
-            button.classList.remove("active");
-        });
-        const activeBtn = document.querySelector(`[data-theme="${themeName}"]`);
-        activeBtn?.classList.add("active");
-        console.log(`Applied ${themeName} theme`);
-    }
-    function setupThemeButtons() {
-        const themeButtons = document.querySelectorAll(".themeBtn");
-        themeButtons.forEach((btn) => {
-            btn.addEventListener("click", () => {
-                const theme = btn.dataset.theme;
-                applyTheme(theme);
-            });
-        });
-    }
-    // Load Saved Theme
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme && themes[savedTheme]) {
-        applyTheme(savedTheme);
-    }
-    else {
-        applyTheme("default");
-    }
-    setupThemeButtons();
-    // Focus Utility
-    function focusContainer(container) {
-        const focusableElements = container.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])');
-        if (focusableElements.length === 0)
-            return;
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        function handleTabKey(e) {
-            if (e.key !== "Tab")
-                return;
-            if (e.shiftKey) {
-                // Shift + Tab
-                if (document.activeElement === firstElement) {
-                    e.preventDefault();
-                    lastElement.focus();
-                }
-            }
-            else {
-                if (document.activeElement === lastElement) {
-                    e.preventDefault();
-                    firstElement.focus();
-                }
-            }
-        }
-        container.addEventListener("keydown", handleTabKey);
-        // Return cleanup function
-        return () => container.removeEventListener("keydown", handleTabKey);
-    }
-    // Track Active Focus
-    let activeFocus = [];
-    // Global Keyboard Shortcuts
-    function handleGlobalShortcuts(e) {
-        // Disable shortcuts when player setup modal is open or when typing in inputs
-        const isPlayerSetupOpen = playerSetupOverlay.getAttribute("aria-hidden") === "false";
-        const isTypingInInput = e.target instanceof HTMLInputElement ||
-            e.target instanceof HTMLTextAreaElement ||
-            e.target instanceof HTMLSelectElement;
-        if (isPlayerSetupOpen || isTypingInInput) {
-            // Only allow Escape in modals
-            if (e.key === "Escape") {
-                if (settingsOverlay.getAttribute("aria-hidden") === "false") {
-                    closeSettings();
-                }
-                else if (shortcutsOverlay.getAttribute("aria-hidden") === "false") {
-                    closeShortcuts();
-                }
-            }
-            return;
-        }
-        // Restrict shortcuts if settings or shortcuts modal is open
-        const isModalOpen = settingsOverlay.getAttribute("aria-hidden") === "false" ||
-            shortcutsOverlay.getAttribute("aria-hidden") === "false";
-        if (isModalOpen && e.key !== "Escape")
-            return;
-        // B: Focus random available cell
-        if (e.key === "b" || e.key === "B") {
-            e.preventDefault();
-            if (isGameInitialized) {
-                const availableCells = board
-                    .map((cell, index) => ({ cell, index }))
-                    .filter(({ cell }) => cell.getValue() === "");
-                if (availableCells.length > 0) {
-                    const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
-                    focusedCellIndex = randomCell.index;
-                    const cells = Array.from(document.querySelectorAll(".cell"));
-                    cells.forEach((btn, i) => (btn.tabIndex = i === focusedCellIndex ? 0 : -1));
-                    cells[focusedCellIndex]?.focus();
-                }
-            }
-            return;
-        }
-        // Z: Undo last move
-        if (e.key === "z" || e.key === "Z") {
-            e.preventDefault();
-            if (!undoBtn.disabled)
-                undoMove();
-            return;
-        }
-        // N: New Round
-        if (e.key === "n" || e.key === "N") {
-            e.preventDefault();
-            resetGame();
-            return;
-        }
-        // R: New Game (Reset All)
-        if (e.key === "r" || e.key === "R") {
-            e.preventDefault();
-            resetScore();
-            return;
-        }
-        // S: Open Settings
-        if (e.key === "s" || e.key === "S") {
-            e.preventDefault();
-            openSettings();
-            return;
-        }
-        // ?: Toggle Shortcuts Panel
-        if (e.key === "?") {
-            e.preventDefault();
-            if (shortcutsOverlay.getAttribute("aria-hidden") === "true") {
-                openShortcuts();
-            }
-            else {
-                closeShortcuts();
-            }
-            return;
-        }
-        // T: Cycle Through Themes
-        if (e.key === "t" || e.key === "T") {
-            e.preventDefault();
-            const themeOrder = [
-                "default",
-                "halloween",
-                "christmas",
-                "valentine",
-            ];
-            const currentIndex = themeOrder.indexOf(currentTheme);
-            const nextIndex = (currentIndex + 1) % themeOrder.length;
-            applyTheme(themeOrder[nextIndex]);
-            // Refocus last focused cell if game is active
-            if (isGameInitialized) {
-                setTimeout(() => {
-                    const cells = Array.from(document.querySelectorAll(".cell"));
-                    cells[focusedCellIndex]?.focus();
-                }, 50);
-            }
-            return;
-        }
-    }
-    // Set Dynamic Description for Enable Timer
-    enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;
-    // Timer Functions
-    function startTimer() {
-        if (!timerEnabled || !isGameInitialized)
-            return;
-        const availableCells = board.filter((cell) => cell.getValue() === "");
-        const isGameOver = availableCells.length === 0 ||
-            playerTurnDiv.textContent.includes("Wins!");
-        if (isGameOver)
-            return;
-        // Clear any existing timer
-        stopTimer();
-        currentTime = timerDuration;
-        isAutoMove = false;
-        updateTimerDisplay();
-        timerContainer.classList.add("active");
-        timerInterval = window.setInterval(() => {
-            currentTime--;
-            updateTimerDisplay();
-            // Set Warning threshold to 1/3 of duration
-            const warningThreshold = Math.floor(timerDuration / 3);
-            if (currentTime <= warningThreshold) {
-                timerBar.classList.add("warning");
-            }
-            if (currentTime <= 0) {
-                makeAutoMove();
-            }
-        }, 1000);
-    }
-    function stopTimer() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        timerBar.classList.remove("warning");
-    }
-    function pauseTimer() {
-        if (timerInterval) {
-            pausedTime = currentTime;
-            stopTimer();
-        }
-    }
-    function resumeTimer() {
-        if (pausedTime !== null && isGameInitialized) {
-            currentTime = pausedTime;
-            pausedTime = null;
-            updateTimerDisplay();
-            timerContainer.classList.add("active");
-            timerInterval = window.setInterval(() => {
-                currentTime--;
-                updateTimerDisplay();
-                // Set Warning threshold to 1/3 of duration
-                const warningThreshold = Math.floor(timerDuration / 3);
-                if (currentTime <= warningThreshold) {
-                    timerBar.classList.add("warning");
-                }
-                if (currentTime <= 0) {
-                    makeAutoMove();
-                }
-            }, 1000);
-        }
-    }
-    function updateTimerDisplay() {
-        const percentage = (currentTime / timerDuration) * 100;
-        timerBar.style.width = `${percentage}%`;
-        timerText.textContent = `${currentTime}s`;
+        }, AI_MOVE_DELAY);
     }
     function makeAutoMove() {
-        stopTimer();
-        isAutoMove = true;
-        // Find available cells
-        const availableCells = board
-            .map((cell, index) => ({ cell, index }))
-            .filter(({ cell }) => cell.getValue() === "");
-        if (availableCells.length > 0) {
-            // Pick Random Available Cell
-            const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
-            console.log(`Time's up! Auto placing ${game.getActivePlayer().name}'s token at position ${randomCell.index}`);
-            // Record auto move in history
-            moveHistory.push({
-                cellIndex: randomCell.index,
-                player: game.getActivePlayer().token,
-                wasAutoMove: true,
-            });
-            // Highlight the auto selected cell
-            const cells = Array.from(document.querySelectorAll(".cell"));
-            const autoCell = cells[randomCell.index];
-            if (autoCell) {
-                autoCell.style.backgroundColor = "#C1CEFE";
-                setTimeout(() => {
-                    autoCell.style.backgroundColor = "";
-                    updateScreen(game.playRound(randomCell.index));
-                    updateUndoButton();
-                }, 500);
-            }
-        }
-    }
-    function toggleTimer() {
-        timerEnabled = enableTimerCheckbox.checked;
-        localStorage.setItem("timerEnabled", timerEnabled.toString());
-        // Show/hide timer duration setting
-        if (timerEnabled) {
-            timerDurationSetting.style.display = "block";
-        }
-        else {
-            timerDurationSetting.style.display = "none";
-        }
-        const availableCells = board.filter((cell) => cell.getValue() === "");
-        const isGameOver = availableCells.length === 0 ||
-            playerTurnDiv.textContent.includes("Wins!");
-        // Check if any modal is open
-        const isModalOpen = playerSetupOverlay.getAttribute("aria-hidden") === "false" ||
-            shortcutsOverlay.getAttribute("aria-hidden") === "false" ||
-            settingsOverlay.getAttribute("aria-hidden") === "false";
-        if (timerEnabled && isGameInitialized) {
-            if (isGameOver) {
-                // Show timer container but dont start countdown
-                timerContainer.classList.add("active");
-                timerBar.style.width = "100%";
-                timerText.textContent = "Waiting For Next Round";
-                timerBar.classList.remove("warning");
-            }
-            else if (isModalOpen) {
-                // If modal is open, reset timer but dont start
-                pausedTime = null;
-                currentTime = timerDuration;
-                updateTimerDisplay();
-                timerContainer.classList.add("active");
-            }
-            else {
-                startTimer();
-            }
-        }
-        else {
-            stopTimer();
-            pausedTime = null;
-            timerContainer.classList.remove("active");
-        }
-        console.log(`Timer enabled: ${timerEnabled}`);
-    }
-    // Load saved perference for timer duration
-    const savedTimerDuration = localStorage.getItem("timerDuration");
-    if (savedTimerDuration) {
-        timerDuration = parseInt(savedTimerDuration);
-        timerDurationSelect.value = savedTimerDuration;
-    }
-    // Load saved preference for timer enable
-    const savedTimerPref = localStorage.getItem("timerEnabled");
-    if (savedTimerPref === "true") {
-        enableTimerCheckbox.checked = true;
-        timerEnabled = true;
-        timerDurationSetting.style.display = "block";
-    }
-    // Update description text with current duration
-    enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;
-    // Undo Function
-    function undoMove() {
-        if (moveHistory.length === 0)
-            return;
-        const lastMove = moveHistory[moveHistory.length - 1];
-        // Prevent undo if last move was auto placed
-        if (lastMove.wasAutoMove) {
-            playerTurnDiv.textContent = "Cannot Undo Automatic Moves!";
-            setTimeout(() => {
-                playerTurnDiv.textContent = `${game.getActivePlayer().name}'s Turn`;
-            }, 2000);
-            return;
-        }
-        // If playing against AI and last move was AI's, undo AI + player moves
-        if (isAIEnabled) {
-            const movesToUndo = [];
-            // Check last move
-            if (moveHistory.length > 0) {
-                const lastMoveData = moveHistory[moveHistory.length - 1];
-                // If it was AI's move, also get player's move before it
-                if (lastMoveData.player === "O") {
-                    // AIs Move
-                    movesToUndo.push({
-                        move: lastMoveData,
-                        index: moveHistory.length - 1,
-                    });
-                    // Players Move
-                    if (moveHistory.length > 1) {
-                        const playerMoveData = moveHistory[moveHistory.length - 2];
-                        movesToUndo.push({
-                            move: playerMoveData,
-                            index: moveHistory.length - 2,
-                        });
-                    }
-                }
-                // If last move was player X and AI hasnt moved yet, just undo player move only (race conditions)
-                else if (lastMoveData.player === "X") {
-                    movesToUndo.push({
-                        move: lastMoveData,
-                        index: moveHistory.length - 1,
-                    });
+        ErrorBoundary.wrap(() => {
+            timerManager.stop();
+            const availableCells = board
+                .map((cell, index) => ({ cell, index }))
+                .filter(({ cell }) => cell.getValue() === "")
+                .map(({ index }) => index);
+            if (availableCells.length > 0) {
+                const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
+                logger.info(`Time's up! Auto placing ${game.getActivePlayer().name}'s token at position ${randomCell}`);
+                undoManager.recordMove(randomCell, game.getActivePlayer().token, true);
+                const cells = Array.from(document.querySelectorAll(".cell"));
+                const autoCell = cells[randomCell];
+                if (autoCell) {
+                    autoCell.style.backgroundColor = "#C1CEFE";
+                    setTimeout(() => {
+                        autoCell.style.backgroundColor = "";
+                        updateScreen(game.playRound(randomCell));
+                        updateUndoButton();
+                    }, AUTO_MOVE_HIGHLIGHT_DELAY);
                 }
             }
-            // Undo in order of most recent
-            movesToUndo
-                .sort((a, b) => b.index - a.index)
-                .forEach(() => moveHistory.pop());
-            movesToUndo.forEach(({ move }) => {
-                game.undoMove(move.cellIndex);
-            });
-        }
-        else {
-            // Player VS Player
-            moveHistory.pop();
-            game.undoMove(lastMove.cellIndex);
-        }
-        if (timerEnabled) {
-            stopTimer();
-            pausedTime = null;
-        }
+        });
+    }
+    // Game Logic
+    function initializeGame(xName, oName) {
+        playerXName = xName;
+        playerOName = oName;
+        game = createGameController(playerXName, playerOName);
+        board = game.getBoard();
+        gameState.setInitialized(true);
         updateScreen();
-        undoBtn.disabled = true;
-        console.log(`Move(s) undone`);
-    }
-    function updateUndoButton() {
-        // Allow undo if there is atleast one move and the last move wasnt auto placed
-        if (moveHistory.length === 0) {
-            undoBtn.disabled = true;
-        }
-        else {
-            const lastMove = moveHistory[moveHistory.length - 1];
-            undoBtn.disabled = lastMove.wasAutoMove;
-        }
+        updateScoreBoard();
     }
     function startGame() {
-        const playerXName = playerXNameInput.value.trim() || "Player X";
-        let playerOName;
-        if (aiToggle.checked) {
-            isAIEnabled = true;
-            aiDifficulty = aiDifficultySelect.value;
-            playerOName = `Varush AI (${aiDifficulty.charAt(0).toUpperCase() + aiDifficulty.slice(1)})`;
-        }
-        else {
-            isAIEnabled = false;
-            playerOName = playerONameInput.value.trim() || "Player O";
-        }
-        initializeGame(playerXName, playerOName);
-        playerSetupOverlay.setAttribute("aria-hidden", "true");
-        // Focus first cell after starting
-        setTimeout(() => {
-            const firstCell = document.querySelector(".cell");
-            firstCell?.focus();
-        }, 100);
-    }
-    function handlePlayerSetupKeydown(e) {
-        // Only start if enter is pressed on the StartGameBtn
-        if (e.key === "Enter" && e.target === startGameBtn) {
-            e.preventDefault();
-            // Prevent event from bubbling
-            e.stopPropagation();
-            startGame();
-            return;
-        }
-        // Handle Enter on checkbox
-        if (e.key === "Enter" && e.target === aiToggle) {
-            e.preventDefault();
-            aiToggle.checked = !aiToggle.checked;
-            toggleAISetup();
-        }
-    }
-    // Keyboard Navigation Handler
-    function handleKeyboardNavigation(e) {
-        const cells = Array.from(boardDiv.querySelectorAll(".cell"));
-        // Only handle if Focus is on a Cell
-        const activeElement = document.activeElement;
-        if (!(activeElement instanceof HTMLElement) ||
-            !activeElement.classList.contains("cell"))
-            return;
-        // Handle Arrow Keys
-        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-            e.preventDefault();
-            const currentRow = Math.floor(focusedCellIndex / 3);
-            const currentCol = focusedCellIndex % 3;
-            let newIndex = focusedCellIndex;
-            switch (e.key) {
-                case "ArrowUp":
-                    newIndex = currentRow > 0 ? focusedCellIndex - 3 : focusedCellIndex;
-                    break;
-                case "ArrowDown":
-                    newIndex = currentRow < 2 ? focusedCellIndex + 3 : focusedCellIndex;
-                    break;
-                case "ArrowLeft":
-                    newIndex = currentCol > 0 ? focusedCellIndex - 1 : focusedCellIndex;
-                    break;
-                case "ArrowRight":
-                    newIndex = currentCol < 2 ? focusedCellIndex + 1 : focusedCellIndex;
-                    break;
+        ErrorBoundary.wrap(() => {
+            const xName = playerXNameInput.value.trim() || "Player X";
+            let oName;
+            if (aiToggle.checked) {
+                isAIEnabled = true;
+                aiDifficulty = aiDifficultySelect.value;
+                oName = `Varush AI (${aiDifficulty.charAt(0).toUpperCase() + aiDifficulty.slice(1)})`;
             }
-            // TabIndex Update
-            cells[focusedCellIndex].tabIndex = -1;
-            cells[newIndex].tabIndex = 0;
-            cells[newIndex].focus();
-            focusedCellIndex = newIndex;
-        }
-        // Handle Enter/Space to Place Token
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            const currentCell = cells[focusedCellIndex];
-            if (currentCell && !currentCell.disabled)
-                currentCell.click();
-        }
+            else {
+                isAIEnabled = false;
+                oName = playerONameInput.value.trim() || "Player O";
+            }
+            initializeGame(xName, oName);
+            closeModal(playerSetupOverlay);
+            // Focus first cell after starting
+            setTimeout(() => {
+                const firstCell = document.querySelector(".cell");
+                firstCell?.focus();
+            }, START_DELAY);
+        });
     }
-    // Track Focused Cell
-    function handleCellFocus(e) {
-        const target = e.target;
-        if (!(target instanceof HTMLElement))
+    // Function to Reset Game
+    function resetGame() {
+        if (!gameState.isInitialized() || !game)
             return;
-        const index = target.dataset.index;
-        if (index !== undefined) {
-            focusedCellIndex = Number(index);
-        }
+        ErrorBoundary.wrap(() => {
+            console.clear();
+            timerManager.stop();
+            undoManager.clear();
+            gameState.setAIThinking(false);
+            renderBoard(board, "new");
+            game.resetPlayer();
+            const activePlayer = game.getActivePlayer().name;
+            playerTurnDiv.textContent = `${activePlayer}'s Turn`;
+            updateScoreBoard();
+            // Re-enable buttons after game reset
+            const cells = Array.from(boardDiv.querySelectorAll(".cell"));
+            cells.forEach((btn) => (btn.disabled = false));
+            updateUndoButton();
+            // Restart Timer if Enabled
+            if (timerManager.isTimerEnabled())
+                timerManager.start();
+        });
     }
-    const updateScoreBoard = () => {
-        if (!isGameInitialized)
+    // Function to Reset Scoreboard
+    function resetScore() {
+        if (!gameState.isInitialized() || !game)
+            return;
+        ErrorBoundary.wrap(() => {
+            // Reset Everything
+            gameState.reset();
+            undoManager.clear();
+            timerManager.stop();
+            timerContainer.classList.remove("active");
+            isAIEnabled = false;
+            game.resetWins();
+            updateScoreBoard();
+            // Clear board
+            playerTurnDiv.textContent = "";
+            boardDiv.textContent = "";
+            updateUndoButton();
+            // Show player name customization modal
+            openModal(playerSetupOverlay);
+            playerXNameInput.value = "";
+            playerONameInput.value = "";
+            aiToggle.checked = false;
+            toggleAISetup();
+            playerXNameInput.focus();
+        });
+    }
+    function performUndo() {
+        if (!game)
+            return;
+        if (!undoManager.canUndo()) {
+            playerTurnDiv.textContent = "Cannot Undo Automatic Moves!";
+            setTimeout(() => {
+                if (game) {
+                    playerTurnDiv.textContent = `${game.getActivePlayer().name}'s Turn`;
+                }
+            }, ERROR_MESSAGE_DELAY);
+            return;
+        }
+        ErrorBoundary.wrap(() => {
+            undoManager.undoMove(isAIEnabled, (cellIndex) => {
+                if (game)
+                    game.undoMove(cellIndex);
+            });
+            if (timerManager.isTimerEnabled()) {
+                timerManager.stop();
+            }
+            updateScreen();
+            undoBtn.disabled = true;
+            logger.info("Move(s) undone");
+        });
+    }
+    function updateUndoButton() {
+        undoBtn.disabled = !undoManager.canUndo();
+    }
+    function updateScoreBoard() {
+        if (!gameState.isInitialized() || !game)
             return;
         // Get new version of number of wins per player
         const playerXWins = game.getPlayerXWins();
@@ -1082,60 +415,59 @@ function ScreenController() {
             playerXScore.classList.remove("activePlayer");
             playerOScore.classList.add("activePlayer");
         }
-    };
-    // Add eventListeners for the board
-    function clickHandlerBoard(e) {
-        if (!isGameInitialized)
-            return;
-        // Prevent clicks during AI turn
-        if (isAIEnabled && isAIThinking)
-            return;
-        const target = e.target;
-        if (!(target instanceof HTMLElement))
-            return;
-        // Target the element with the dataset name previously set
-        const indexOfCell = target.dataset.index;
-        const selectedCell = Number(indexOfCell);
-        // Make sure a column was clicked and not the gaps
-        if (Number.isNaN(selectedCell))
-            return;
-        // Check if move is valid before recording
-        if (board[selectedCell]?.getValue() !== "")
-            return;
-        // When playing against AI, only allow X placements by player
-        if (isAIEnabled && game.getActivePlayer().token !== "X")
-            return;
-        // Record move in history
-        isAutoMove = false;
-        moveHistory.push({
-            cellIndex: selectedCell,
-            player: game.getActivePlayer().token,
-            wasAutoMove: false,
-        });
-        // Play round and after every round --> Update Screen
-        updateScreen(game.playRound(selectedCell));
-        updateUndoButton();
     }
-    // Function to Reset Game
-    function resetGame() {
-        if (!isGameInitialized)
+    // Update Screen method
+    function updateScreen(isWinner = null) {
+        if (!gameState.isInitialized() || !game)
             return;
-        console.clear();
-        stopTimer();
-        moveHistory = [];
-        isAIThinking = false;
-        renderBoard(board, "new");
-        game.resetPlayer();
-        const activePlayer = game.getActivePlayer().name;
-        playerTurnDiv.textContent = `${activePlayer}'s Turn`;
-        updateScoreBoard();
-        // Re-enable buttons after game reset
+        ErrorBoundary.wrap(() => {
+            // Get New version of board + active Player
+            const activePlayer = game.getActivePlayer().name;
+            updateScoreBoard();
+            renderBoard(board);
+            if (isWinner) {
+                handleWin(isWinner, activePlayer);
+                return;
+            }
+            const availableCells = board.filter((cells) => cells.getValue() === "");
+            if (availableCells.length === 0) {
+                handleDraw();
+                return;
+            }
+            playerTurnDiv.textContent = `${activePlayer}'s Turn`;
+            // Start/Restart timer for next move
+            if (timerManager.isTimerEnabled())
+                timerManager.start();
+            // Trigger AI move if its AI's turn
+            if (isAIEnabled && game.getActivePlayer().token === "O") {
+                makeAIMove();
+            }
+        });
+    }
+    function handleWin(winnerCells, winnerName) {
+        timerManager.stop();
+        undoManager.clear();
+        undoBtn.disabled = true;
+        if (timerManager.isTimerEnabled()) {
+            timerManager.showWaitingMessage();
+        }
+        const [a, b, c] = winnerCells;
         const cells = Array.from(boardDiv.querySelectorAll(".cell"));
-        cells.forEach((btn) => (btn.disabled = false));
-        updateUndoButton();
-        // Restart Timer if Enabled
-        if (timerEnabled)
-            startTimer();
+        [a, b, c].forEach((index) => cells[index]?.classList.add("winner"));
+        cells.forEach((cell) => (cell.disabled = true));
+        playerTurnDiv.textContent = `${winnerName} Wins!`;
+        logger.info(`${winnerName} is the WINNER!`);
+        game.addWin();
+        updateScoreBoard();
+    }
+    function handleDraw() {
+        timerManager.stop();
+        undoManager.clear();
+        undoBtn.disabled = true;
+        if (timerManager.isTimerEnabled()) {
+            timerManager.showWaitingMessage();
+        }
+        playerTurnDiv.textContent = "It's a Draw!";
     }
     // Function to Render Board
     function renderBoard(boardState, status = "existing") {
@@ -1149,7 +481,7 @@ function ScreenController() {
             // Create a data attribute to identify the column + set textContent to cell value
             cellButton.dataset.index = String(index);
             // Make Keyboard Focusable
-            cellButton.tabIndex = index === focusedCellIndex ? 0 : -1;
+            cellButton.tabIndex = index === gameState.getFocusedCellIndex() ? 0 : -1;
             if (status === "existing") {
                 cellButton.textContent = cell.getValue();
             }
@@ -1157,179 +489,177 @@ function ScreenController() {
                 cellButton.textContent = cell.resetValue();
             }
             // Label each cell for Screen reader users
-            const row = Math.floor(index / 3) + 1;
-            const col = (index % 3) + 1;
+            const row = Math.floor(index / GRID_SIZE) + 1;
+            const col = (index % GRID_SIZE) + 1;
             const value = cell.getValue();
             const state = value === "" ? "empty" : value;
-            cellButton.setAttribute("aria-label", `Row ${row} Column ${col}, ${state}`);
+            cellButton.setAttribute(ARIA.LABEL, `Row ${row} Column ${col}, ${state}`);
             // Add Focus Event Listener
-            cellButton.addEventListener("focus", handleCellFocus);
+            eventManager.register(cellButton, "focus", handleCellFocus);
             boardDiv.appendChild(cellButton);
         });
         // Sticky Focus
         const cells = Array.from(boardDiv.querySelectorAll(".cell"));
-        cells[focusedCellIndex]?.focus();
+        cells[gameState.getFocusedCellIndex()]?.focus();
     }
-    // Update Screen method
-    const updateScreen = (isWinner = null) => {
-        if (!isGameInitialized)
-            return;
-        // Get New version of board + active Player
-        const activePlayer = game.getActivePlayer().name;
-        updateScoreBoard();
-        renderBoard(board);
-        if (isWinner) {
-            // Stop Timer on Win
-            stopTimer();
-            moveHistory = [];
-            undoBtn.disabled = true;
-            // Show Next Round message if timer is enabled
-            if (timerEnabled) {
-                timerContainer.classList.add("active");
-                timerBar.style.width = "100%";
-                timerText.textContent = "Waiting For Next Round";
-                timerBar.classList.remove("warning");
-            }
-            // Set variables for isWinner Values
-            const [a, b, c] = isWinner;
-            const cells = Array.from(boardDiv.querySelectorAll(".cell"));
-            [a, b, c].forEach((index) => cells[index]?.classList.add("winner"));
-            cells.forEach((cellBtn) => (cellBtn.disabled = true));
-            // Print Winner
-            playerTurnDiv.textContent = `${activePlayer} Wins!`;
-            console.log(`${activePlayer} is the WINNER!`);
-            game.addWin();
-            updateScoreBoard();
-            // Can redirect to transparent Game Over screen
+    // Keyboard Navigation
+    function handleKeyboardNavigation(e) {
+        const cells = Array.from(boardDiv.querySelectorAll(".cell"));
+        const activeElement = document.activeElement;
+        if (!(activeElement instanceof HTMLElement) ||
+            !activeElement.classList.contains("cell")) {
             return;
         }
-        const availableCells = board.filter((cells) => cells.getValue() === "");
-        if (availableCells.length === 0) {
-            stopTimer();
-            moveHistory = [];
-            undoBtn.disabled = true;
-            // Show Next Round message if timer is enabled
-            if (timerEnabled) {
-                timerContainer.classList.add("active");
-                timerBar.style.width = "100%";
-                timerText.textContent = "Waiting For Next Round";
-                timerBar.classList.remove("warning");
-            }
-            playerTurnDiv.textContent = `Its a Draw!`;
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+            e.preventDefault();
+            const direction = e.key.replace("Arrow", "").toLowerCase();
+            const newIndex = KeyboardManager.navigateGrid(gameState.getFocusedCellIndex(), direction);
+            cells[gameState.getFocusedCellIndex()].tabIndex = -1;
+            cells[newIndex].tabIndex = 0;
+            cells[newIndex].focus();
+            gameState.setFocusedCellIndex(newIndex);
+        }
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            const currentCell = cells[gameState.getFocusedCellIndex()];
+            if (currentCell && !currentCell.disabled)
+                currentCell.click();
+        }
+    }
+    function handleCellFocus(e) {
+        const target = e.target;
+        if (!(target instanceof HTMLElement))
+            return;
+        const index = target.dataset.index;
+        if (index !== undefined) {
+            gameState.setFocusedCellIndex(Number(index));
+        }
+    }
+    // Click Handlers
+    function clickHandlerBoard(e) {
+        if (!gameState.isInitialized() || !game)
+            return;
+        if (isAIEnabled && gameState.isAIThinking())
+            return;
+        const target = e.target;
+        if (!(target instanceof HTMLElement))
+            return;
+        const indexOfCell = target.dataset.index;
+        const selectedCell = Number(indexOfCell);
+        if (Number.isNaN(selectedCell))
+            return;
+        if (board[selectedCell]?.getValue() !== "")
+            return;
+        if (isAIEnabled && game.getActivePlayer().token !== "X")
+            return;
+        ErrorBoundary.wrap(() => {
+            if (!game)
+                return;
+            undoManager.recordMove(selectedCell, game.getActivePlayer().token, false);
+            updateScreen(game.playRound(selectedCell));
+            updateUndoButton();
+        });
+    }
+    // Helper Function
+    function toggleAISetup() {
+        if (aiToggle.checked) {
+            playerOGroup.style.display = "none";
+            aiDifficultyGroup.style.display = "block";
+            isAIEnabled = true;
+        }
+        else {
+            playerOGroup.style.display = "flex";
+            aiDifficultyGroup.style.display = "none";
+            isAIEnabled = false;
+        }
+    }
+    function focusRandomAvailableCell() {
+        const availableCells = board
+            .map((cell, index) => ({ cell, index }))
+            .filter(({ cell }) => cell.getValue() === "")
+            .map(({ index }) => index);
+        if (availableCells.length > 0) {
+            const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
+            gameState.setFocusedCellIndex(randomCell);
+            const cells = Array.from(document.querySelectorAll(".cell"));
+            cells.forEach((btn, i) => (btn.tabIndex = i === randomCell ? 0 : -1));
+            cells[randomCell]?.focus();
+        }
+    }
+    function refocusCell() {
+        if (gameState.isInitialized()) {
+            setTimeout(() => {
+                const cells = Array.from(document.querySelectorAll(".cell"));
+                cells[gameState.getFocusedCellIndex()]?.focus();
+            }, START_DELAY);
+        }
+    }
+    function handlePlayerSetupKeydown(e) {
+        if (e.key === "Enter" && e.target === startGameBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            startGame();
             return;
         }
-        playerTurnDiv.textContent = `${activePlayer}'s Turn`;
-        // Start/Restart timer for next move
-        if (timerEnabled)
-            startTimer();
-        // Trigger AI move if its AI's turn
-        if (isAIEnabled && game.getActivePlayer().token === "O") {
-            makeAIMove();
+        if (e.key === "Enter" && e.target === aiToggle) {
+            e.preventDefault();
+            aiToggle.checked = !aiToggle.checked;
+            toggleAISetup();
         }
-    };
-    // Function to Reset Scoreboard
-    function resetScore() {
-        if (!isGameInitialized)
-            return;
-        // Reset Everything
-        isGameInitialized = false;
-        focusedCellIndex = 0;
-        moveHistory = [];
-        stopTimer();
-        timerContainer.classList.remove("active");
-        isAIEnabled = false;
-        isAIThinking = false;
-        game.resetWins();
-        updateScoreBoard();
-        // Clear board
-        playerTurnDiv.textContent = "";
-        boardDiv.textContent = "";
-        updateUndoButton();
-        // Show player name customization modal
-        playerSetupOverlay.setAttribute("aria-hidden", "false");
-        playerXNameInput.value = "";
-        playerONameInput.value = "";
-        aiToggle.checked = false;
-        toggleAISetup();
-        const cleanup = focusContainer(playerSetupModal);
-        if (cleanup)
-            activeFocus.push(cleanup);
+    }
+    function setupInitialFocus() {
         playerXNameInput.focus();
     }
-    // Board Event Listeners
-    boardDiv.addEventListener("click", clickHandlerBoard);
-    boardDiv.addEventListener("keydown", handleKeyboardNavigation);
-    resetGameBtn.addEventListener("click", resetGame);
-    resetScoreBtn.addEventListener("click", resetScore);
-    undoBtn.addEventListener("click", undoMove);
-    // Settings Event Listeners
-    settingsBtn.addEventListener("click", openSettings);
-    closeSettingsBtn.addEventListener("click", closeSettings);
-    settingsOverlay.addEventListener("click", (e) => {
-        if (e.target === settingsOverlay)
-            closeSettings();
+    // Event Listeners
+    function setupEventListeners() {
+        // Board
+        eventManager.register(boardDiv, "click", clickHandlerBoard);
+        eventManager.register(boardDiv, "keydown", handleKeyboardNavigation);
+        // Buttons
+        eventManager.register(resetGameBtn, "click", resetGame);
+        eventManager.register(resetScoreBtn, "click", resetScore);
+        eventManager.register(undoBtn, "click", performUndo);
+        // Settings
+        eventManager.register(settingsBtn, "click", openSettings);
+        eventManager.register(closeSettingsBtn, "click", closeSettings);
+        eventManager.register(settingsOverlay, "click", (e) => {
+            if (e.target === settingsOverlay)
+                closeSettings();
+        });
+        eventManager.register(settingsOverlay, "keydown", handleSettingsKeydown);
+        // Shortcuts
+        eventManager.register(shortcutsBtn, "click", openShortcuts);
+        eventManager.register(closeShortcutsBtn, "click", closeShortcuts);
+        eventManager.register(shortcutsOverlay, "click", (e) => {
+            if (e.target === shortcutsOverlay)
+                closeShortcuts();
+        });
+        eventManager.register(shortcutsOverlay, "keydown", (e) => {
+            if (e.key === "Escape")
+                closeShortcuts();
+        });
+        // Player Setup
+        eventManager.register(startGameBtn, "click", startGame);
+        eventManager.register(playerSetupOverlay, "keydown", handlePlayerSetupKeydown);
+        eventManager.register(aiToggle, "change", toggleAISetup);
+        // Timer
+        eventManager.register(enableTimerCheckbox, "change", () => {
+            timerManager.setEnabled(enableTimerCheckbox.checked);
+            timerDurationSetting.style.display = enableTimerCheckbox.checked
+                ? "block"
+                : "none";
+        });
+        eventManager.register(timerDurationSelect, "change", () => {
+            const newDuration = parseInt(timerDurationSelect.value);
+            timerManager.setDuration(newDuration);
+            enableTimerDescription.textContent = `Automatically place a random move after ${newDuration} seconds`;
+        });
+    }
+    // Cleanup on unload
+    window.addEventListener("beforeunload", () => {
+        eventManager.cleanup();
+        keyboardManager.disable();
     });
-    settingsOverlay.addEventListener("keydown", handleSettingsKeydown);
-    // Player Setup Event Listeners
-    startGameBtn.addEventListener("click", startGame);
-    playerSetupOverlay.addEventListener("keydown", handlePlayerSetupKeydown);
-    // Setup initial focus container for player setup
-    const initialCleanup = focusContainer(playerSetupModal);
-    if (initialCleanup)
-        activeFocus.push(initialCleanup);
-    playerXNameInput.focus();
-    // Accessibility Event Listener
-    reduceMotionCheckbox.addEventListener("change", () => {
-        toggleAnimations();
-        localStorage.setItem("reduceMotion", reduceMotionCheckbox.checked.toString());
-    });
-    highContrastCheckbox.addEventListener("change", () => {
-        toggleHighContrast();
-        localStorage.setItem("highContrast", highContrastCheckbox.checked.toString());
-    });
-    largeTextCheckbox.addEventListener("change", () => {
-        toggleLargeText();
-        localStorage.setItem("largeText", largeTextCheckbox.checked.toString());
-    });
-    enableTimerCheckbox.addEventListener("change", toggleTimer);
-    timerDurationSelect.addEventListener("change", () => {
-        const wasTimerRunning = timerInterval !== null;
-        // Stop current timer
-        if (wasTimerRunning)
-            stopTimer();
-        // Update duration
-        timerDuration = parseInt(timerDurationSelect.value);
-        localStorage.setItem("timerDuration", timerDuration.toString());
-        // Update description
-        enableTimerDescription.textContent = `Automatically place a random move after ${timerDuration} seconds`;
-        // Check if any modal is open
-        const isModalOpen = playerSetupOverlay.getAttribute("aria-hidden") === "false" ||
-            shortcutsOverlay.getAttribute("aria-hidden") === "false" ||
-            settingsOverlay.getAttribute("aria-hidden") === "false";
-        // Restart timer with new duration if it was running and modals are closed
-        if (wasTimerRunning && isGameInitialized && !isModalOpen) {
-            pausedTime = null;
-            currentTime = timerDuration;
-            startTimer();
-        }
-        else if (isModalOpen) {
-            // Reset display but dont start
-            pausedTime = null;
-            currentTime = timerDuration;
-            updateTimerDisplay();
-        }
-        console.log(`Timer duration change to: ${timerDuration} seconds`);
-    });
-    // AI Event Listeners
-    aiToggle.addEventListener("change", toggleAISetup);
-    // Shortcuts Event Listeners
-    shortcutsBtn.addEventListener("click", openShortcuts);
-    closeShortcutsBtn.addEventListener("click", closeShortcuts);
-    shortcutsOverlay.addEventListener("click", (e) => {
-        if (e.target === shortcutsOverlay)
-            closeShortcuts();
-    });
-    shortcutsOverlay.addEventListener("keydown", handleShortcutsKeydown);
-    document.addEventListener("keydown", handleGlobalShortcuts);
 }
+// Start Application
 ScreenController();

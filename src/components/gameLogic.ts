@@ -1,16 +1,16 @@
 // GameLogic
 import {
   Token,
-  Cell as CellInterface,
+  Cell,
   GameBoard,
   Player,
   GameController,
   WinnerLine,
-} from "./types";
-import { WIN_CONDITIONS, CELL_COUNT } from "./constants";
+} from "./types.js";
+import { WIN_CONDITIONS, CELL_COUNT } from "./constants.js";
 
 // Create a Cell
-export function Cell(): CellInterface {
+export function createCell(): Cell {
   let value: "" | Token = "";
 
   const addToken = (player: Token): void => {
@@ -28,15 +28,15 @@ export function Cell(): CellInterface {
 }
 
 // Create GameBoard
-function gameBoard(): GameBoard {
+function createGameBoard(): GameBoard {
   const cellCount = CELL_COUNT;
-  const board: CellInterface[] = [];
+  const board: Cell[] = [];
 
   for (let i = 0; i < cellCount; i++) {
-    board.push(Cell());
+    board.push(createCell());
   }
 
-  const getBoard = (): CellInterface[] => board;
+  const getBoard = (): Cell[] => board;
 
   const displayToken = (cellIndex: number, player: Token): void => {
     const selectedCell = board[cellIndex];
@@ -55,11 +55,11 @@ function gameBoard(): GameBoard {
 }
 
 // GameController
-export function GameController(
+export function createGameController(
   playerOneName = "Player X",
   playerTwoName = "Player O"
 ): GameController {
-  const board = gameBoard();
+  const board = createGameBoard();
 
   const players: [Player, Player] = [
     {

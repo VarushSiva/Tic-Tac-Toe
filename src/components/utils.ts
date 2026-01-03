@@ -1,5 +1,6 @@
 // Utility Functions
-import { ARIA } from "./constants";
+import { ARIA } from "./constants.js";
+import { Cell } from "./types.js";
 
 // DOM Utility
 export function mustFind<T extends Element>(
@@ -15,18 +16,16 @@ export function isModalOpen(modalElement: HTMLElement): boolean {
   return modalElement.getAttribute(ARIA.HIDDEN) === ARIA.FALSE;
 }
 
-export function setModalState(
-  modalElement: HTMLElement,
-  isOpen: boolean
-): void {
-  modalElement.setAttribute(ARIA.HIDDEN, isOpen ? ARIA.FALSE : ARIA.TRUE);
+export function openModal(modalElement: HTMLElement): void {
+  modalElement.setAttribute(ARIA.HIDDEN, ARIA.FALSE);
+}
+
+export function closeModal(modalElement: HTMLElement): void {
+  modalElement.setAttribute(ARIA.HIDDEN, ARIA.TRUE);
 }
 
 // GameState Utility
-export function isGameOver(
-  board: { getValue: () => string }[],
-  turnText: string
-): boolean {
+export function isGameOver(board: Cell[], turnText: string): boolean {
   const availableCells = board.filter((cell) => cell.getValue() === "");
   return availableCells.length === 0 || turnText.includes("Wins!");
 }

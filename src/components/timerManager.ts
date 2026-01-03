@@ -2,8 +2,8 @@ import {
   DEFAULT_TIMER_DURATION,
   TIMER_WARNING_THRESHOLD_RATIO,
   STORAGE_KEYS,
-} from "./constants";
-import { saveToStorage, loadFromStorage } from "./utils";
+} from "./constants.js";
+import { saveToStorage, loadFromStorage } from "./utils.js";
 
 export class TimerManager {
   private duration: number = DEFAULT_TIMER_DURATION;

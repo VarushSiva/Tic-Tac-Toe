@@ -1,5 +1,5 @@
 // ModalManager
-import { setModalState } from "./utils";
+import { openModal, closeModal } from "./utils.js";
 
 export class ModalManager {
   private activeFocus: Array<() => void> = [];
@@ -11,7 +11,7 @@ export class ModalManager {
     modalElement: HTMLElement,
     focusElement: HTMLElement
   ): void {
-    setModalState(overlayElement, true);
+    openModal(overlayElement);
 
     if (this.onPause) this.onPause();
 
@@ -22,7 +22,7 @@ export class ModalManager {
   }
 
   close(overlayElement: HTMLElement, returnFocusElement?: HTMLElement): void {
-    setModalState(overlayElement, false);
+    closeModal(overlayElement);
 
     this.clearFocus();
 

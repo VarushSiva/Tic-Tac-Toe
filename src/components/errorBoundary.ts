@@ -1,5 +1,5 @@
 // Error Boundary
-import { logger } from "./logger";
+import { logger } from "./logger.js";
 
 export class ErrorBoundary {
   static wrap<T>(fn: () => T, fallback?: T): T | undefined {
@@ -23,7 +23,7 @@ export class ErrorBoundary {
     }
   }
 
-  static setupGlobalErrorhandler(): void {
+  static setupGlobalErrorHandler(): void {
     window.addEventListener("error", (event) => {
       logger.error("Global error: ", event.error);
       event.preventDefault();

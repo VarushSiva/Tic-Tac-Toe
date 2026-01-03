@@ -1,6 +1,6 @@
 // AIStrategy
-import { Token, Cell } from "./types";
-import { WIN_CONDITIONS } from "./constants";
+import { Token, Cell } from "./types.js";
+import { WIN_CONDITIONS } from "./constants.js";
 
 export interface IAIStrategy {
   selectMove(board: Cell[], player: Token, opponent: Token): number;
