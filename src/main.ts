@@ -1,11 +1,5 @@
 import { createGameController } from "./components/gameLogic.js";
-import {
-  mustFind,
-  isGameOver,
-  isModalOpen,
-  openModal,
-  closeModal,
-} from "./components/utils.js";
+import { mustFind, isGameOver, isModalOpen } from "./components/utils.js";
 import { ModalManager } from "./components/modalManager.js";
 import { AccessibilityManager } from "./components/accessibilityManager.js";
 import { AIStrategyFactory } from "./components/aiStrategy.js";
@@ -26,12 +20,7 @@ import {
   ERROR_MESSAGE_DELAY,
   GRID_SIZE,
 } from "./components/constants.js";
-import type {
-  AIDifficulty,
-  Token,
-  GameController,
-  Cell,
-} from "./components/types.js";
+import type { AIDifficulty, GameController, Cell } from "./components/types.js";
 
 // Screen Controller - Visuals
 function ScreenController() {
@@ -620,7 +609,7 @@ function ScreenController() {
       }
 
       initializeGame(xName, oName);
-      closeModal(playerSetupOverlay);
+      modalManager.close(playerSetupOverlay);
 
       // Focus first cell after starting
       setTimeout(() => {
@@ -681,13 +670,12 @@ function ScreenController() {
       updateUndoButton();
 
       // Show player name customization modal
-      openModal(playerSetupOverlay);
       playerXNameInput.value = "";
       playerONameInput.value = "";
       aiToggle.checked = false;
       toggleAISetup();
 
-      playerXNameInput.focus();
+      modalManager.open(playerSetupOverlay, playerSetupModal, playerXNameInput);
     });
   }
 
@@ -993,7 +981,8 @@ function ScreenController() {
   }
 
   function setupInitialFocus(): void {
-    playerXNameInput.focus();
+    // Player setup as inital + trap focus
+    modalManager.open(playerSetupOverlay, playerSetupModal, playerXNameInput);
   }
 
   // Event Listeners
