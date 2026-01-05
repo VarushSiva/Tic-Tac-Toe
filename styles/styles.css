@@ -497,6 +497,11 @@ body.high-contrast {
   background-image: none !important;
 }
 
+body.high-contrast.active {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 body.high-contrast .container,
 body.high-contrast .scoreBoard,
 body.high-contrast .settingsModal,

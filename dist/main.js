@@ -277,7 +277,7 @@ function ScreenController() {
                 const cells = Array.from(document.querySelectorAll(".cell"));
                 const autoCell = cells[randomCell];
                 if (autoCell) {
-                    autoCell.style.backgroundColor = "#C1CEFE";
+                    autoCell.style.backgroundColor = "var(--color-highlight)";
                     setTimeout(() => {
                         autoCell.style.backgroundColor = "";
                         updateScreen(game.playRound(randomCell));
