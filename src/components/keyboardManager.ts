@@ -3,10 +3,17 @@ import { GRID_SIZE } from "./constants.js";
 import { getCellPosition, getIndexFromPosition } from "./utils.js";
 
 export type ShortcutCallback = (event: KeyboardEvent) => void;
+export type ShortcutGuard = (event: KeyboardEvent) => boolean;
 
 export class KeyboardManager {
   private shortcuts = new Map<string, ShortcutCallback>();
   private boundHandler: ((e: KeyboardEvent) => void) | null = null;
+  private guard: ShortcutGuard | null = null;
+
+  // Global guard that decides whether shortcuts should run
+  setGuard(guard: ShortcutGuard | null): void {
+    this.guard = guard;
+  }
 
   registerShortcut(key: string, callback: ShortcutCallback): void {
     this.shortcuts.set(key.toLowerCase(), callback);
@@ -31,6 +38,7 @@ export class KeyboardManager {
   }
 
   private handleKeydown(e: KeyboardEvent): void {
+    if (this.guard && !this.guard(e)) return;
     const key = e.key.toLowerCase();
     const callback = this.shortcuts.get(key);
 

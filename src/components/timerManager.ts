@@ -11,6 +11,7 @@ export class TimerManager {
   private pausedTime: number | null = null;
   private interval: number | null = null;
   private isEnabled: boolean = false;
+  private isRunning: boolean = false;
 
   constructor(
     private timerBar: HTMLElement,
@@ -25,9 +26,10 @@ export class TimerManager {
     if (!this.isEnabled) return;
 
     this.stop();
+    this.pausedTime = null;
     this.currentTime = this.duration;
-    this.updateDisplay();
-    this.timerContainer.classList.add("active");
+    this.showIdle(this.currentTime);
+    this.isRunning = true;
 
     this.interval = window.setInterval(() => {
       this.currentTime--;
@@ -41,6 +43,7 @@ export class TimerManager {
       }
 
       if (this.currentTime <= 0) {
+        this.stop();
         this.onExpire();
       }
     }, 1000);
@@ -52,6 +55,7 @@ export class TimerManager {
       this.interval = null;
     }
     this.timerBar.classList.remove("warning");
+    this.isRunning = false;
   }
 
   pause(): void {
@@ -62,11 +66,14 @@ export class TimerManager {
   }
 
   resume(): void {
+    if (!this.isEnabled) return;
     if (this.pausedTime !== null) {
       this.currentTime = this.pausedTime;
       this.pausedTime = null;
       this.updateDisplay();
       this.timerContainer.classList.add("active");
+
+      this.isRunning = true;
 
       this.interval = window.setInterval(() => {
         this.currentTime--;
@@ -80,6 +87,7 @@ export class TimerManager {
         }
 
         if (this.currentTime <= 0) {
+          this.stop();
           this.onExpire();
         }
       }, 1000);
@@ -88,8 +96,14 @@ export class TimerManager {
 
   setDuration(seconds: number): void {
     this.duration = seconds;
+    this.pausedTime = null;
     this.currentTime = seconds;
-    this.updateDisplay();
+
+    if (this.isRunning && this.isEnabled) {
+      this.start();
+    } else {
+      this.updateDisplay();
+    }
     saveToStorage(STORAGE_KEYS.TIMER_DURATION, seconds.toString());
   }
 
@@ -97,9 +111,26 @@ export class TimerManager {
     this.isEnabled = enabled;
     if (!enabled) {
       this.stop();
-      this.timerContainer.classList.remove("active");
+      this.hide();
+      this.pausedTime = null;
+      this.currentTime = this.duration;
     }
     saveToStorage(STORAGE_KEYS.TIMER_ENABLED, enabled.toString());
+  }
+
+  hide(): void {
+    this.timerContainer.classList.remove("active");
+    this.timerBar.classList.remove("warning");
+    this.timerBar.style.width = "";
+    this.timerText.textContent = "";
+  }
+
+  showIdle(seconds: number = this.duration): void {
+    this.timerContainer.classList.add("active");
+    this.timerBar.classList.remove("warning");
+    this.timerBar.style.width = "100%";
+    this.timerText.textContent = `${seconds}s`;
+    this.currentTime = seconds;
   }
 
   showWaitingMessage(): void {
@@ -107,6 +138,7 @@ export class TimerManager {
     this.timerBar.style.width = "100%";
     this.timerText.textContent = "Waiting for Next Round";
     this.timerBar.classList.remove("warning");
+    this.isRunning = false;
   }
 
   getDuration(): number {
@@ -115,6 +147,10 @@ export class TimerManager {
 
   isTimerEnabled(): boolean {
     return this.isEnabled;
+  }
+
+  isCountdownRunning(): boolean {
+    return this.isRunning;
   }
 
   private updateDisplay(): void {

@@ -11,15 +11,17 @@ export class TimerManager {
         this.pausedTime = null;
         this.interval = null;
         this.isEnabled = false;
+        this.isRunning = false;
         this.loadPreferences();
     }
     start() {
         if (!this.isEnabled)
             return;
         this.stop();
+        this.pausedTime = null;
         this.currentTime = this.duration;
-        this.updateDisplay();
-        this.timerContainer.classList.add("active");
+        this.showIdle(this.currentTime);
+        this.isRunning = true;
         this.interval = window.setInterval(() => {
             this.currentTime--;
             this.updateDisplay();
@@ -28,6 +30,7 @@ export class TimerManager {
                 this.timerBar.classList.add("warning");
             }
             if (this.currentTime <= 0) {
+                this.stop();
                 this.onExpire();
             }
         }, 1000);
@@ -38,6 +41,7 @@ export class TimerManager {
             this.interval = null;
         }
         this.timerBar.classList.remove("warning");
+        this.isRunning = false;
     }
     pause() {
         if (this.interval) {
@@ -46,11 +50,14 @@ export class TimerManager {
         }
     }
     resume() {
+        if (!this.isEnabled)
+            return;
         if (this.pausedTime !== null) {
             this.currentTime = this.pausedTime;
             this.pausedTime = null;
             this.updateDisplay();
             this.timerContainer.classList.add("active");
+            this.isRunning = true;
             this.interval = window.setInterval(() => {
                 this.currentTime--;
                 this.updateDisplay();
@@ -59,6 +66,7 @@ export class TimerManager {
                     this.timerBar.classList.add("warning");
                 }
                 if (this.currentTime <= 0) {
+                    this.stop();
                     this.onExpire();
                 }
             }, 1000);
@@ -66,29 +74,54 @@ export class TimerManager {
     }
     setDuration(seconds) {
         this.duration = seconds;
+        this.pausedTime = null;
         this.currentTime = seconds;
-        this.updateDisplay();
+        if (this.isRunning && this.isEnabled) {
+            this.start();
+        }
+        else {
+            this.updateDisplay();
+        }
         saveToStorage(STORAGE_KEYS.TIMER_DURATION, seconds.toString());
     }
     setEnabled(enabled) {
         this.isEnabled = enabled;
         if (!enabled) {
             this.stop();
-            this.timerContainer.classList.remove("active");
+            this.hide();
+            this.pausedTime = null;
+            this.currentTime = this.duration;
         }
         saveToStorage(STORAGE_KEYS.TIMER_ENABLED, enabled.toString());
+    }
+    hide() {
+        this.timerContainer.classList.remove("active");
+        this.timerBar.classList.remove("warning");
+        this.timerBar.style.width = "";
+        this.timerText.textContent = "";
+    }
+    showIdle(seconds = this.duration) {
+        this.timerContainer.classList.add("active");
+        this.timerBar.classList.remove("warning");
+        this.timerBar.style.width = "100%";
+        this.timerText.textContent = `${seconds}s`;
+        this.currentTime = seconds;
     }
     showWaitingMessage() {
         this.timerContainer.classList.add("active");
         this.timerBar.style.width = "100%";
         this.timerText.textContent = "Waiting for Next Round";
         this.timerBar.classList.remove("warning");
+        this.isRunning = false;
     }
     getDuration() {
         return this.duration;
     }
     isTimerEnabled() {
         return this.isEnabled;
+    }
+    isCountdownRunning() {
+        return this.isRunning;
     }
     updateDisplay() {
         const percentage = (this.currentTime / this.duration) * 100;

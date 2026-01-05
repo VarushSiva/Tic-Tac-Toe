@@ -5,6 +5,11 @@ export class KeyboardManager {
     constructor() {
         this.shortcuts = new Map();
         this.boundHandler = null;
+        this.guard = null;
+    }
+    // Global guard that decides whether shortcuts should run
+    setGuard(guard) {
+        this.guard = guard;
     }
     registerShortcut(key, callback) {
         this.shortcuts.set(key.toLowerCase(), callback);
@@ -25,6 +30,8 @@ export class KeyboardManager {
         }
     }
     handleKeydown(e) {
+        if (this.guard && !this.guard(e))
+            return;
         const key = e.key.toLowerCase();
         const callback = this.shortcuts.get(key);
         if (callback) {

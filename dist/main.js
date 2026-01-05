@@ -143,6 +143,53 @@ function ScreenController() {
         }
         timerDurationSelect.value = timerManager.getDuration().toString();
     }
+    // Timer UI
+    function anyModalOpenForTimer() {
+        return (isModalOpen(playerSetupOverlay) ||
+            isModalOpen(settingsOverlay) ||
+            isModalOpen(shortcutsOverlay));
+    }
+    function handleTimerToggle(enabled) {
+        timerManager.setEnabled(enabled);
+        timerDurationSetting.style.display = enabled ? "block" : "none";
+        if (!enabled)
+            return;
+        // If game isnt started, keep timer hidden
+        if (!gameState.isInitialized()) {
+            timerManager.hide();
+            return;
+        }
+        // If game is over, show/hide the waiting message if enabled
+        if (isGameOver(board, playerTurnDiv.textContent || "")) {
+            timerManager.showWaitingMessage();
+            return;
+        }
+        // If modal is open, show timer but dont start counting
+        if (anyModalOpenForTimer()) {
+            timerManager.stop();
+            timerManager.showIdle(timerManager.getDuration());
+            return;
+        }
+        timerManager.start();
+    }
+    function handleTimerDurationChange(newDuration) {
+        timerManager.setDuration(newDuration);
+        enableTimerDescription.textContent = `Automatically place a random move after ${newDuration} seconds`;
+        if (!timerManager.isTimerEnabled())
+            return;
+        if (!gameState.isInitialized())
+            return;
+        if (isGameOver(board, playerTurnDiv.textContent || "")) {
+            timerManager.showWaitingMessage();
+            return;
+        }
+        if (anyModalOpenForTimer()) {
+            timerManager.stop();
+            timerManager.showIdle(newDuration);
+            return;
+        }
+        timerManager.start();
+    }
     // Theme Setup
     function initializeThemes() {
         document.querySelectorAll(".themeBtn").forEach((btn) => {
@@ -155,6 +202,19 @@ function ScreenController() {
     }
     // Keyboard Shortcuts
     function initializeKeyboardShortcuts() {
+        keyboardManager.setGuard((e) => {
+            const isTyping = e.target instanceof HTMLInputElement ||
+                e.target instanceof HTMLTextAreaElement ||
+                e.target instanceof HTMLSelectElement;
+            if (isModalOpen(playerSetupOverlay))
+                return false;
+            if (isTyping)
+                return false;
+            if (isModalOpen(settingsOverlay) || isModalOpen(shortcutsOverlay)) {
+                return false;
+            }
+            return true;
+        });
         keyboardManager.registerShortcut("b", (e) => {
             e.preventDefault();
             if (!gameState.isInitialized())
@@ -351,7 +411,7 @@ function ScreenController() {
             gameState.reset();
             undoManager.clear();
             timerManager.stop();
-            timerContainer.classList.remove("active");
+            timerManager.hide();
             isAIEnabled = false;
             game.resetWins();
             updateScoreBoard();
@@ -371,7 +431,7 @@ function ScreenController() {
     function performUndo() {
         if (!game)
             return;
-        if (!undoManager.canUndo()) {
+        if (!undoManager.canUndo(isAIEnabled)) {
             playerTurnDiv.textContent = "Cannot Undo Automatic Moves!";
             setTimeout(() => {
                 if (game) {
@@ -389,12 +449,12 @@ function ScreenController() {
                 timerManager.stop();
             }
             updateScreen();
-            undoBtn.disabled = true;
+            updateUndoButton();
             logger.info("Move(s) undone");
         });
     }
     function updateUndoButton() {
-        undoBtn.disabled = !undoManager.canUndo();
+        undoBtn.disabled = !undoManager.canUndo(isAIEnabled);
     }
     function updateScoreBoard() {
         if (!gameState.isInitialized() || !game)
@@ -644,15 +704,11 @@ function ScreenController() {
         eventManager.register(aiToggle, "change", toggleAISetup);
         // Timer
         eventManager.register(enableTimerCheckbox, "change", () => {
-            timerManager.setEnabled(enableTimerCheckbox.checked);
-            timerDurationSetting.style.display = enableTimerCheckbox.checked
-                ? "block"
-                : "none";
+            handleTimerToggle(enableTimerCheckbox.checked);
         });
         eventManager.register(timerDurationSelect, "change", () => {
             const newDuration = parseInt(timerDurationSelect.value);
-            timerManager.setDuration(newDuration);
-            enableTimerDescription.textContent = `Automatically place a random move after ${newDuration} seconds`;
+            handleTimerDurationChange(newDuration);
         });
     }
     // Cleanup on unload

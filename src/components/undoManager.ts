@@ -8,10 +8,19 @@ export class UndoManager {
     this.history.push({ cellIndex, player, wasAutoMove });
   }
 
-  canUndo(): boolean {
+  canUndo(isAIMode: boolean = false): boolean {
     if (this.history.length === 0) return false;
+
     const lastMove = this.history[this.history.length - 1];
-    return !lastMove.wasAutoMove;
+    if (lastMove.wasAutoMove) return false;
+
+    if (isAIMode && lastMove.player === "O") {
+      // Undo removes AI move + player move.
+      const previous = this.history[this.history.length - 2];
+      if (previous && previous.wasAutoMove) return false;
+    }
+
+    return true;
   }
 
   getLastMove(): MoveHistory | null {
@@ -20,8 +29,11 @@ export class UndoManager {
       : null;
   }
 
-  undoMove(isAIMode: boolean, undoCallback: (cellIndex: number) => void): void {
-    if (!this.canUndo()) return;
+  undoMove(
+    isAIMode: boolean,
+    undoCallback: (cellIndex: number) => void
+  ): number {
+    if (!this.canUndo(isAIMode)) return 0;
 
     const movesToUndo: MoveHistory[] = [];
 
@@ -48,6 +60,8 @@ export class UndoManager {
 
     // Run undo callbacks
     movesToUndo.forEach((move) => undoCallback(move.cellIndex));
+
+    return movesToUndo.length;
   }
 
   clear(): void {
