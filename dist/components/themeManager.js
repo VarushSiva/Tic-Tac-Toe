@@ -38,9 +38,11 @@ export class ThemeManager {
         // Update active state on theme buttons
         document.querySelectorAll(".themeBtn").forEach((button) => {
             button.classList.remove("active");
+            button.setAttribute("aria-checked", "false");
         });
-        const activeBtn = document.querySelector(`[data-theme="${themeName}"]`);
+        const activeBtn = document.querySelector(`.themeBtn[data-theme="${themeName}"]`);
         activeBtn?.classList.add("active");
+        activeBtn?.setAttribute("aria-checked", "true");
     }
     loadSavedTheme() {
         const saved = loadFromStorage(STORAGE_KEYS.THEME);

@@ -156,6 +156,7 @@ export class TimerManager {
   private updateDisplay(): void {
     const percentage = (this.currentTime / this.duration) * 100;
     this.timerBar.style.width = `${percentage}%`;
+    this.timerBar.setAttribute("aria-valuenow", percentage.toString());
     this.timerText.textContent = `${this.currentTime}s`;
   }
 

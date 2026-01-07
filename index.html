@@ -33,9 +33,17 @@
           aria-live="polite"
           aria-atomic="true"
         ></h2>
-        <div class="timerContainer">
-          <div class="timerBar" id="timerBar"></div>
-          <span class="timerText" id="timerText"></span>
+        <div class="timerContainer" role="timer" aria-label="Move timer">
+          <div
+            class="timerBar"
+            id="timerBar"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="100"
+            aria-label="Time remaining"
+          ></div>
+          <span class="timerText" id="timerText" aria-live="polite"></span>
         </div>
         <div
           class="board"
@@ -48,7 +56,15 @@
           Need help? Press <kbd>?</kbd> to view keyboard shortcuts!
         </p>
         <div class="undoContainer">
-          <button type="button" class="undoBtn" disabled>Undo Move</button>
+          <button
+            type="button"
+            class="undoBtn"
+            disabled
+            aria-label="Undo last move"
+            aria-describedby="undoStatus"
+          >
+            Undo Move
+          </button>
         </div>
         <div class="resetBtn">
           <button type="button" class="resetGame">New Round</button>
@@ -68,17 +84,19 @@
       </h4>
     </div>
     <!-- Colour Palette -->
-    <div class="colourPalette">
+    <div class="colourPalette" role="radiogroup" aria-labelledby="paletteTitle">
       <h3 class="paletteTitle">Themes</h3>
       <!-- Default -->
       <button
         type="button"
         class="themeBtn"
         data-theme="default"
+        role="radio"
+        aria-checked="true"
         aria-label="Default theme"
       >
         <span class="themeName">Default</span>
-        <div class="themePreview">
+        <div class="themePreview" aria-hidden="true">
           <span style="background: #a0ddff"></span>
           <span style="background: #758ecd"></span>
           <span style="background: #c1cefe"></span>
@@ -92,6 +110,8 @@
         type="button"
         class="themeBtn"
         data-theme="halloween"
+        role="radio"
+        aria-checked="false"
         aria-label="Halloween theme"
       >
         <span class="themeName">Halloween</span>
@@ -109,6 +129,8 @@
         type="button"
         class="themeBtn"
         data-theme="christmas"
+        role="radio"
+        aria-checked="false"
         aria-label="Christmas theme"
       >
         <span class="themeName">Christmas</span>
@@ -126,6 +148,8 @@
         type="button"
         class="themeBtn"
         data-theme="valentine"
+        role="radio"
+        aria-checked="false"
         aria-label="Valentines theme"
       >
         <span class="themeName">Valentines</span>
