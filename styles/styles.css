@@ -297,7 +297,7 @@ a:active {
 }
 
 .themeBtn.active .themeName {
-  color: var(--color-background-container);
+  color: var(--color-text);
 }
 
 .themePreview {
