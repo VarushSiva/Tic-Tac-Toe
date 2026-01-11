@@ -261,7 +261,7 @@ a:active {
 
 .themeBtn {
   width: 200px;
-  padding: 15px;
+  padding: 10px;
   background-color: var(--color-background-container);
   border: 2px solid var(--color-background-medium);
   border-radius: 15px;
@@ -302,7 +302,7 @@ a:active {
 
 .themePreview {
   display: flex;
-  gap: 5px;
+  gap: 4px;
   justify-content: center;
 }
 
